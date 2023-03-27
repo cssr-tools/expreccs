@@ -1,0 +1,60 @@
+"""Set the full path to the flow executable and flags"""
+flow --enable-opm-rst-file=true 
+
+"""Set the model parameters"""
+15150 15150 27               #Reginonal aquifer length, width, and depth [m]
+15 15 3                      #Number of x-, y-, and z-cells [-] 
+6060 6060 0 9090 9090 27     #Site xi, yi, zi, xf, yf, and zf box positions [m]
+15 15 9                      #Number of x-, y-, and z-cells in the site reservoir [-]
+10100 10100 0 0.01 10        #Regional fault x, y, and z positions [m] and x and y multipliers for the trans
+6565 7777 0 7979 8383 0 0.0 0.0 #Site fault x, y, and z positions [m] (initial and final) and x and y multipliers for the trans
+9                            #Number of layers  
+
+"""Set the saturation functions"""
+krw * (sew) ** 1.5       #Wetting rel perm saturation function [-]
+krc * (1 - sew) ** 1.5   #Non-wetting rel perm saturation function [-]
+pec * sew ** (-(1./1.5)) #Capillary pressure saturation function [Pa]
+
+"""Properties sat functions"""
+"""swi [-], swrg [-], krg [-], krw [-],pe [Pa]"""
+SWI5 0.12 SWRG5 0.10 KRW5 1. KRG1 1. PRE1 3060.00
+SWI4 0.12 SWRG4 0.10 KRW4 1. KRG1 1. PRE1 3870.63
+SWI5 0.12 SWRG5 0.10 KRW5 1. KRG1 1. PRE1 3060.00
+SWI4 0.12 SWRG4 0.10 KRW4 1. KRG1 1. PRE1 3870.63
+SWI1 0.32 SWRG1 0.10 KRW1 1. KRG1 1. PRE1 193531.39
+SWI2 0.14 SWRG2 0.10 KRW2 1. KRG1 1. PRE1 8654.99
+SWI3 0.12 SWRG3 0.10 KRW3 1. KRG1 1. PRE1 6120.00
+SWI2 0.14 SWRG2 0.10 KRW2 1. KRG1 1. PRE1 8654.99
+SWI3 0.12 SWRG3 0.10 KRW3 1. KRG1 1. PRE1 6120.00
+
+"""Properties rock"""
+"""K [mD], phi [-]"""
+PERM5 1013.25 PORO5 0.25
+PERM4 506.625 PORO4 0.20
+PERM5 1013.25 PORO5 0.25
+PERM4 506.625 PORO4 0.20
+PERM1 0.10132 PORO1 0.10
+PERM2 101.324 PORO2 0.20
+PERM3 202.650 PORO3 0.20
+PERM2 101.324 PORO2 0.20
+PERM3 202.650 PORO3 0.20
+
+"""Wells position"""
+"""x, y, and z position [m]"""
+7180 7180 5  #Well 1 
+7970 7970 5  #Well 2
+10605 10605 5 #Well 3 
+10605 4545 5  #Well 4
+
+"""Define the injection values 'inj[]'""" 
+"""injection time [d], time step size to write results [d], injection rates [kg/day], injected fluid (0 water, 1 co2)"""
+73. 73. 5e5 1 5e5 1 1e7 1 0 0
+73. 73. 5e5 1 5e5 1 1e7 1 0 0
+73. 73. 5e5 1 5e5 1 1e7 1 0 0
+73. 73. 5e5 1 5e5 1 1e7 1 0 0
+73. 73. 5e5 1 5e5 1 1e7 1 0 0
+73. 73. 5e5 1 5e5 1 0 0 1e7 1
+73. 73. 5e5 1 5e5 1 0 0 1e7 1
+73. 73. 5e5 1 5e5 1 0 0 1e7 1
+73. 73. 5e5 1 5e5 1 0 0 1e7 1
+73. 73. 5e5 1 5e5 1 0 0 1e7 1 

@@ -127,3 +127,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# MacOS
+.DS_Store
+
+# Extra folders
+gift
+vexpreccs
+examples/output
+developing
+workshop
