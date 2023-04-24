@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration file &mdash; expreccs  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #aaaaaa" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #aaaaaa" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">expreccs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration file</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuration_file.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration-file">
+<h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading"></a></h1>
+<p>The first input parameter is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="sd">&quot;&quot;&quot;Set the full path to the flow executable and flags&quot;&quot;&quot;</span>
+<span class="linenos">2</span><span class="n">flow</span> <span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">opm</span><span class="o">-</span><span class="n">rst</span><span class="o">-</span><span class="n">file</span><span class="o">=</span><span class="n">true</span>
+</pre></div>
+</div>
+<p>If <strong>flow</strong> is not in your path, then write the full path to the executable
+(e.g., /Users/dmar/Github/opm/build/opm-simulators/bin/flow).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you have installed flow with MPI support, then you can run the simulations in
+parallel by adding <strong>mpirun -np N flow …</strong> where N is the number of cpus.</p>
+</div>
+<p>The following input corresponds to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 4</span><span class="sd">&quot;&quot;&quot;Set the model parameters&quot;&quot;&quot;</span>
+<span class="linenos"> 5</span><span class="mi">15150</span> <span class="mi">15150</span> <span class="mi">27</span>                  <span class="c1">#Reginonal aquifer length, width, and depth [m]</span>
+<span class="linenos"> 6</span><span class="mi">15</span> <span class="mi">15</span> <span class="mi">3</span>                         <span class="c1">#Number of x-, y-, and z-cells [-]</span>
+<span class="linenos"> 7</span><span class="mi">6060</span> <span class="mi">6060</span> <span class="mi">0</span> <span class="mi">9090</span> <span class="mi">9090</span> <span class="mi">27</span>        <span class="c1">#Site xi, yi, zi, xf, yf, and zf box positions [m]</span>
+<span class="linenos"> 8</span><span class="mi">15</span> <span class="mi">15</span> <span class="mi">9</span>                         <span class="c1">#Number of x-, y-, and z-cells in the site reservoir [-]</span>
+<span class="linenos"> 9</span><span class="mi">10100</span> <span class="mi">10100</span> <span class="mi">0</span> <span class="mf">0.01</span> <span class="mi">10</span>           <span class="c1">#Regional fault x, y, and z positions [m] and x and y multipliers for the trans</span>
+<span class="linenos">10</span><span class="mi">6565</span> <span class="mi">7777</span> <span class="mi">0</span> <span class="mi">7979</span> <span class="mi">8383</span> <span class="mi">0</span> <span class="mf">0.0</span> <span class="mf">0.0</span> <span class="c1">#Site fault x, y, and z positions [m] (initial and final) and x and y multipliers for the trans</span>
+<span class="linenos">11</span><span class="mi">9</span>                               <span class="c1">#Number of layers</span>
+</pre></div>
+</div>
+<p>Here we first set the dimensions of the Regional model and the number of cells for the discretization,
+where the origen is located in the left top corner. Then the site model is defined by giving the coordinates
+of a box, and right after the discretization is set, which also defines the grid size for the reference simulations.
+The following line defines a fault along the z-direction in the Regional model, where the first three entries define the
+position of the fault extending from the top and right boundaries, while the last two entries defne the multipliers for
+the transmissibilities in the x and y directions. Finally, we set the number of layers along the z direction, which allows
+to consider different rock and saturation function properties, which are given in the following lines:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">13</span><span class="sd">&quot;&quot;&quot;Set the saturation functions&quot;&quot;&quot;</span>
+<span class="linenos">14</span><span class="n">krw</span> <span class="o">*</span> <span class="p">(</span><span class="n">sew</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.5</span>       <span class="c1">#Wetting rel perm saturation function [-]</span>
+<span class="linenos">15</span><span class="n">krc</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sew</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.5</span>   <span class="c1">#Non-wetting rel perm saturation function [-]</span>
+<span class="linenos">16</span><span class="n">pec</span> <span class="o">*</span> <span class="n">sew</span> <span class="o">**</span> <span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="mf">1.</span><span class="o">/</span><span class="mf">1.5</span><span class="p">))</span> <span class="c1">#Capillary pressure saturation function [Pa]</span>
+</pre></div>
+</div>
+<p>In this example we consider properties for the sands number 1 to 5 as described in the
+<a class="reference external" href="https://www.spe.org/en/csp/">11th SPE CSP</a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">18</span><span class="sd">&quot;&quot;&quot;Properties sat functions&quot;&quot;&quot;</span>
+<span class="linenos">19</span><span class="sd">&quot;&quot;&quot;swi [-], swrg [-], krg [-], krw [-],pe [Pa]&quot;&quot;&quot;</span>
+<span class="linenos">20</span><span class="n">SWI5</span> <span class="mf">0.12</span> <span class="n">SWRG5</span> <span class="mf">0.10</span> <span class="n">KRW5</span> <span class="mf">1.</span> <span class="n">KRG5</span> <span class="mf">1.</span> <span class="n">PRE5</span> <span class="mf">3060.00</span>
+<span class="linenos">21</span><span class="n">SWI4</span> <span class="mf">0.12</span> <span class="n">SWRG4</span> <span class="mf">0.10</span> <span class="n">KRW4</span> <span class="mf">1.</span> <span class="n">KRG4</span> <span class="mf">1.</span> <span class="n">PRE4</span> <span class="mf">3870.63</span>
+<span class="linenos">22</span><span class="n">SWI5</span> <span class="mf">0.12</span> <span class="n">SWRG5</span> <span class="mf">0.10</span> <span class="n">KRW5</span> <span class="mf">1.</span> <span class="n">KRG5</span> <span class="mf">1.</span> <span class="n">PRE4</span> <span class="mf">3060.00</span>
+<span class="linenos">23</span><span class="n">SWI4</span> <span class="mf">0.12</span> <span class="n">SWRG4</span> <span class="mf">0.10</span> <span class="n">KRW4</span> <span class="mf">1.</span> <span class="n">KRG4</span> <span class="mf">1.</span> <span class="n">PRE5</span> <span class="mf">3870.63</span>
+<span class="linenos">24</span><span class="n">SWI1</span> <span class="mf">0.32</span> <span class="n">SWRG1</span> <span class="mf">0.10</span> <span class="n">KRW1</span> <span class="mf">1.</span> <span class="n">KRG1</span> <span class="mf">1.</span> <span class="n">PRE1</span> <span class="mf">193531.39</span>
+<span class="linenos">25</span><span class="n">SWI2</span> <span class="mf">0.14</span> <span class="n">SWRG2</span> <span class="mf">0.10</span> <span class="n">KRW2</span> <span class="mf">1.</span> <span class="n">KRG2</span> <span class="mf">1.</span> <span class="n">PRE2</span> <span class="mf">8654.99</span>
+<span class="linenos">26</span><span class="n">SWI3</span> <span class="mf">0.12</span> <span class="n">SWRG3</span> <span class="mf">0.10</span> <span class="n">KRW3</span> <span class="mf">1.</span> <span class="n">KRG3</span> <span class="mf">1.</span> <span class="n">PRE3</span> <span class="mf">6120.00</span>
+<span class="linenos">27</span><span class="n">SWI2</span> <span class="mf">0.14</span> <span class="n">SWRG2</span> <span class="mf">0.10</span> <span class="n">KRW2</span> <span class="mf">1.</span> <span class="n">KRG2</span> <span class="mf">1.</span> <span class="n">PRE2</span> <span class="mf">8654.99</span>
+<span class="linenos">28</span><span class="n">SWI3</span> <span class="mf">0.12</span> <span class="n">SWRG3</span> <span class="mf">0.10</span> <span class="n">KRW3</span> <span class="mf">1.</span> <span class="n">KRG3</span> <span class="mf">1.</span> <span class="n">PRE3</span> <span class="mf">6120.00</span>
+</pre></div>
+</div>
+<p>Simillarly for the rock properties:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">30</span><span class="sd">&quot;&quot;&quot;Properties rock&quot;&quot;&quot;</span>
+<span class="linenos">31</span><span class="sd">&quot;&quot;&quot;K [mD], phi [-]&quot;&quot;&quot;</span>
+<span class="linenos">32</span><span class="n">PERM5</span> <span class="mf">1013.25</span> <span class="n">PORO5</span> <span class="mf">0.25</span>
+<span class="linenos">33</span><span class="n">PERM4</span> <span class="mf">506.625</span> <span class="n">PORO4</span> <span class="mf">0.20</span>
+<span class="linenos">34</span><span class="n">PERM5</span> <span class="mf">1013.25</span> <span class="n">PORO5</span> <span class="mf">0.25</span>
+<span class="linenos">35</span><span class="n">PERM4</span> <span class="mf">506.625</span> <span class="n">PORO4</span> <span class="mf">0.20</span>
+<span class="linenos">36</span><span class="n">PERM1</span> <span class="mf">0.10132</span> <span class="n">PORO1</span> <span class="mf">0.10</span>
+<span class="linenos">37</span><span class="n">PERM2</span> <span class="mf">101.324</span> <span class="n">PORO2</span> <span class="mf">0.20</span>
+<span class="linenos">38</span><span class="n">PERM3</span> <span class="mf">202.650</span> <span class="n">PORO3</span> <span class="mf">0.20</span>
+<span class="linenos">39</span><span class="n">PERM2</span> <span class="mf">101.324</span> <span class="n">PORO2</span> <span class="mf">0.20</span>
+<span class="linenos">40</span><span class="n">PERM3</span> <span class="mf">202.650</span> <span class="n">PORO3</span> <span class="mf">0.20</span>
+</pre></div>
+</div>
+<p>As seen from the previous values, the finnest sand corresponds to No. 1 and it gets coarser
+towards sand No. 5.</p>
+<p>Now we proceed to define the location of the wells:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">42</span><span class="sd">&quot;&quot;&quot;Wells position&quot;&quot;&quot;</span>
+<span class="linenos">43</span><span class="sd">&quot;&quot;&quot;x, y, and z position [m]&quot;&quot;&quot;</span>
+<span class="linenos">44</span><span class="mi">7180</span>   <span class="mi">7180</span> <span class="mi">5</span>  <span class="c1">#Well 1</span>
+<span class="linenos">45</span><span class="mi">7970</span>   <span class="mi">7970</span> <span class="mi">5</span>  <span class="c1">#Well 2</span>
+<span class="linenos">46</span><span class="mi">10605</span> <span class="mi">10605</span> <span class="mi">5</span>  <span class="c1">#Well 3</span>
+<span class="linenos">47</span><span class="mi">10605</span>  <span class="mi">4545</span> <span class="mi">5</span>  <span class="c1">#Well 4</span>
+</pre></div>
+</div>
+<p>The implementation allows to add as many wells as desired and the injection rates are given in the following entries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">49</span><span class="sd">&quot;&quot;&quot;Define the injection values &#39;inj[]&#39;&quot;&quot;&quot;</span>
+<span class="linenos">50</span><span class="sd">&quot;&quot;&quot;injection time [d], time step size to write results [d], injection rates [kg/day], injected fluid (0 water, 1 co2)&quot;&quot;&quot;</span>
+<span class="linenos">51</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">52</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">53</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">54</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">55</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">56</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
+<span class="linenos">57</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
+<span class="linenos">58</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
+<span class="linenos">59</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
+<span class="linenos">60</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Since we defined four wells (two of them inside the site model), then each row of the schedule has 10 entries, corresponding to
+the first two defining the injection time and number of restart files in the solution, and 2*4 additional entries to define the injection
+rates and injected fluid from well 1 to well 4 respectively.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Keep the linebreak between the sections in the whole configuration file (in the current implementation this is used for the reading of the parameters).</p>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-left" title="Introduction" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="examples.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, NORCE Norwegian Research Centre AS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

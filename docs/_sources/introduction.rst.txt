@@ -12,7 +12,7 @@ extended to consider additional available models in OPM.
 
 Concept
 -------
-Simplified and flexible testing framework for two-stage approach to improve regional (purple+blue regions)/site (blue region) simulations:
+Simplified and flexible testing framework for two-stage approach to improve regional (purple+blue regions)/site(blue region) simulations:
 
 - Simulate the regional model (all timesteps).
 - Identify connections on the regional model that corresponds to the boundary of the site model.
