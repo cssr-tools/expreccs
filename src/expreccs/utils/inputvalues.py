@@ -27,7 +27,7 @@ def process_input(dic, in_file):
 
 def readthefirstpart(lol, dic):
     """
-    Function to process the lines from the wells until the threshold of the input file
+    Function to process the lines in the configuration file.
 
     Args:
         lol (list): List of lines read from the input file
@@ -83,7 +83,7 @@ def readthefirstpart(lol, dic):
                 float(row[7]),
                 float(row[9]) / 1.0e5,
             ]
-        )
+        )  # Convert the pressure to bars
     index += 3 + dic["satnum"]
     for i in range(dic["satnum"]):  # Rock values
         row = list((lol[index + i][0].strip()).split())

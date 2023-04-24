@@ -1,11 +1,11 @@
 ==============
-About template
+About expreccs
 ==============
 
-.. image:: ./figs/pressure.png
-    :scale: 35%
+.. image:: ./figs/about.png
+    :scale: 50%
 
-This **template** package was funded by 
-NORCE Norwegian Research Centre As [project number 101070]. 
+The **expreccs** package was funded by 
+the Research Council of Norway [project number 104908]. 
 
 Contributions are more than welcome using the fork and pull request approach.

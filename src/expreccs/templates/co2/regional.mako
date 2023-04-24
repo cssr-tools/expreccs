@@ -93,6 +93,14 @@ ${dic["fault_mult"][1]}
 %endfor
 %endfor
 /
+
+BCCON 
+1 1 ${dic['regional_noCells'][0]} 1 1 1* 1* Y- /
+2 1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* Y /
+3 1 1 1 ${dic['regional_noCells'][1]} 1* 1* X- /
+4 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][0]} 1 ${dic['regional_noCells'][1]} 1* 1* X /
+/
+
 ----------------------------------------------------------------------------
 PROPS
 ----------------------------------------------------------------------------
@@ -121,13 +129,6 @@ EQUIL
 
 RPTRST 
  'BASIC=2' FLOWS FLORES DEN/
-
-BC 
-1 ${dic['regional_noCells'][0]} 1 1 1* 1* Y- FREE /
-1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* Y FREE /
-1 1 1 ${dic['regional_noCells'][1]} 1* 1* X- FREE /
-${dic['regional_noCells'][0]} ${dic['regional_noCells'][0]} 1 ${dic['regional_noCells'][1]} 1* 1* X FREE /
-/
 
 ----------------------------------------------------------------------------
 SUMMARY
@@ -188,6 +189,12 @@ WCONINJE
 'RATE' ${f"{dic['inj'][j][2*(i+1)] / 998.108 : E}"}  1* 400/
 %endif
 % endfor
+/
+BC 
+1 FREE /
+2 FREE /
+3 FREE /
+4 FREE /
 /
 TSTEP
 ${round(dic['inj'][j][0]/dic['inj'][j][1])}*${dic['inj'][j][1]}

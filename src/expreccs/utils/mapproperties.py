@@ -10,7 +10,7 @@ from ecl.grid import EclGrid
 
 def positions_regional(dic):
     """
-    Function to locate well positions
+    Function to locate well, site, and fault positions
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -71,7 +71,7 @@ def positions_regional(dic):
 
 def positions_site(dic):
     """
-    Function to locate well positions
+    Function to locate well and fault positions in the site reservoir.
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -117,7 +117,7 @@ def positions_site(dic):
 
 def positions_reference(dic):
     """
-    Function to locate well positions
+    Function to locate well, fault, and site positions in the reference reservoir.
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -176,7 +176,7 @@ def positions_reference(dic):
 
 def aquaflux(dic):
     """
-    Function to read the fluxes from the regional
+    Function to read the fluxes and pressures from the regional
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -232,14 +232,19 @@ def aquaflux(dic):
     for keyword in [
         "FLOOILI+",
         "FLOOILJ+",
+        "PRESSURE",
         "AQUFLUX_bottom",
         "AQUFLUX_top",
         "AQUFLUX_right",
         "AQUFLUX_left",
+        "PRESSURE_bottom",
+        "PRESSURE_top",
+        "PRESSURE_right",
+        "PRESSURE_left",
     ]:
         dic[keyword] = [[] for _ in range(dic["rst"].num_report_steps())]
     for i in range(dic["rst"].num_report_steps()):
-        for keyword in ["FLOOILI+", "FLOOILJ+"]:
+        for keyword in ["FLOOILI+", "FLOOILJ+", "PRESSURE"]:
             dic[keyword][i].append(np.array(dic["rst"].iget_kw(keyword)[i]))
         dic["AQUFLUX_bottom"][i].append(
             [
@@ -267,6 +272,38 @@ def aquaflux(dic):
                 np.array(dic["FLOOILI+"][i][0][j])
                 / (dic["regional_dsize"][1] * dic["regional_dsize"][2])
                 for j in dic["cells_left"]
+            ]
+        )
+        dic["PRESSURE_bottom"][i].append(
+            [
+                0.5
+                * (
+                    dic["PRESSURE"][i][0][j]
+                    + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
+                )
+                for j in dic["cells_bottom"]
+            ]
+        )
+        dic["PRESSURE_top"][i].append(
+            [
+                0.5
+                * (
+                    dic["PRESSURE"][i][0][j]
+                    + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
+                )
+                for j in dic["cells_top"]
+            ]
+        )
+        dic["PRESSURE_left"][i].append(
+            [
+                0.5 * (dic["PRESSURE"][i][0][j] + dic["PRESSURE"][i][0][j + 1])
+                for j in dic["cells_left"]
+            ]
+        )
+        dic["PRESSURE_right"][i].append(
+            [
+                0.5 * (dic["PRESSURE"][i][0][j] + dic["PRESSURE"][i][0][j + 1])
+                for j in dic["cells_right"]
             ]
         )
     return dic

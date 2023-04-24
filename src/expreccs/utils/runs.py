@@ -22,7 +22,7 @@ def simulations(dic, name):
 
 def plotting(dic, time):
     """
-    Function to generate and run the plotting.py file
+    Function to run the plotting.py file
 
     Args:
         dic (dict): Global dictionary with required parameters

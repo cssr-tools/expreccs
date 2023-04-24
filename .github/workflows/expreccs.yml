@@ -8,7 +8,7 @@ on:
    
 jobs:
   run-pyff-local:
-    timeout-minutes: 30
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
@@ -29,12 +29,14 @@ jobs:
     
     - name: Install Flow Simulator
       run: |
-        sudo apt-get update
+        sudo apt-get update -y
         sudo apt-get install software-properties-common
-        sudo apt-add-repository ppa:opm/ppa
-        sudo apt-get update
-        sudo apt-get install mpi-default-bin
-        sudo apt-get install libopm-simulators-bin
+        sudo apt-get install -y build-essential gfortran pkg-config cmake
+        sudo apt-get install -y mpi-default-dev
+        sudo apt-get install -y libblas-dev libboost-all-dev libsuitesparse-dev libtrilinos-zoltan-dev
+        chmod u+x build_dune_and_opm-flow.bash
+        ./build_dune_and_opm-flow.bash
+        alias flow='/home/runner/work/expreccs/expreccs/build/opm-simulators/bin/flow_gasoil'
         
     - name: Install test dependecies
       run: |

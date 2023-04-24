@@ -1,4 +1,3 @@
 ecl
 mako
 matplotlib
-setuptools_scm

@@ -92,6 +92,10 @@ n += 1
 %endfor
 /
 
+BCCON 
+${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} 1 1 1 1 1 1 Y-/
+/
+
 ----------------------------------------------------------------------------
 PROPS
 ----------------------------------------------------------------------------
@@ -121,10 +125,6 @@ EQUIL
 
 RPTRST 
  'BASIC=2' FLOWS FLORES DEN/
-
-BC 
-1 2 1 1 1* 1* Y- FREE /
-/
 
 AQUANCON
 -- Aq#  I1 I2  J1   J2  K1 K2 FACE
@@ -243,6 +243,9 @@ ${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])} ${dic['AQU
 ${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])} ${dic['AQUFLUX_top'][j+1][0][i]} /
 % endif
 % endfor
+/
+BC
+${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][j+1][0][0]} /
 /
 TSTEP
 ${round(dic['inj'][j][0]/dic['inj'][j][1])}*${dic['inj'][j][1]}

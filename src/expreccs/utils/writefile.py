@@ -9,7 +9,7 @@ from mako.template import Template
 
 def reference_files(dic):
     """
-    Function to write opm-related files by running mako templates
+    Function to write opm-related reference files by running mako templates
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -42,7 +42,7 @@ def reference_files(dic):
 
 def regional_files(dic):
     """
-    Function to write opm-related files by running mako templates
+    Function to write opm-related regional files by running mako templates
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -92,7 +92,7 @@ def regional_files(dic):
 
 def site_files(dic):
     """
-    Function to write opm-related files by running mako templates
+    Function to write opm-related site files by running mako templates
 
     Args:
         dic (dict): Global dictionary with required parameters

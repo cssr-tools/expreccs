@@ -1,5 +1,5 @@
 """"
-Script to plot the top surface for a CO2 model
+Script to plot the top surface for the reference, regionla, and site reservoirs.
 """
 
 from datetime import timedelta
@@ -77,7 +77,7 @@ def main():
 
 def difference(dic):
     """
-    Function to plot the difference between the referece ans site simulations
+    Function to plot the difference between the referece and site simulations
     in the last time step
 
     Args:

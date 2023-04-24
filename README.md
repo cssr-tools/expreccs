@@ -5,7 +5,7 @@
 
 # Expansion of ResourCes for CO2 Storage on the Horda Platform (ExpReCCS)
 
-<img src="docs/text/figs/expreccs.gif" width="830" height="400">
+<img src="docs/text/figs/expreccs.gif" width="830" height="500">
 
 This repository contains scripts to set up a workflow to run site and regional reservoirs
 for CO2 storage using the [_OPM-Flow_](https://opm-project.org/?page_id=19) simulator.
@@ -14,16 +14,22 @@ for CO2 storage using the [_OPM-Flow_](https://opm-project.org/?page_id=19) simu
 You will first need to install
 * Flow (https://opm-project.org)
 
-You can install the requirements in a virtual environment with the following commands:
+There are active pull requests to the master branches of OPM to update the boundary conditions
+in the schedule section. Then, for now you need to build OPM from source and clone the branches
+bc_schedule. To build dune and the corresponding OPM branches from source, you can run the script
+`./build_dune_and_opm-flow.bash`, which in turn should build flow in the folder 
+./build/opm-simulators/bin/flow.
+
+You can install the Python requirements in a virtual environment with the following commands:
 
 ```bash
 # Clone the repo
 git clone https://github.com/daavid00/expreccs.git
 # Get inside the folder
 cd expreccs
-# Create virtual environment
+# Create the virtual environment
 python3 -m venv vexpreccs
-# Activate virtual environment
+# Activate the virtual environment
 source vexpreccs/bin/activate
 # Upgrade pip, setuptools, and wheel
 pip install --upgrade pip setuptools wheel
@@ -42,4 +48,4 @@ flow executable and simulation parameters. See the .txt files in the examples
 folders.
 
 ## Getting started
-See the [_documentation_](https://daavid00.github.io/expreccs/introduction.html).
+See the [_documentation_](https://daavid00.github.io/expreccs/introduction.html). 

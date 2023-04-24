@@ -17,7 +17,7 @@ def expreccs():
     """Main function"""
     start_time = time.monotonic()
     parser = argparse.ArgumentParser(
-        description="Main script to run a CO2 model with OPM Flow."
+        description="Main script to simulate regional and site reservoirs for CO2 storage."
     )
     parser.add_argument(
         "-i",
