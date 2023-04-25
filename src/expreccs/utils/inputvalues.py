@@ -60,7 +60,7 @@ def readthefirstpart(lol, dic):
     ]
     for name in ["regional", "site"]:
         dic[f"{name}_dsize"] = [
-            round(dic[f"{name}_dims"][i] / dic[f"{name}_noCells"][i]) for i in range(3)
+            dic[f"{name}_dims"][i] / dic[f"{name}_noCells"][i] for i in range(3)
         ]
     dic["reference_noCells"] = [
         round(dic["regional_dims"][j] / dic["site_dsize"][j]) for j in range(3)

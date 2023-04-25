@@ -36,7 +36,6 @@ jobs:
         sudo apt-get install -y libblas-dev libboost-all-dev libsuitesparse-dev libtrilinos-zoltan-dev
         chmod u+x build_dune_and_opm-flow.bash
         ./build_dune_and_opm-flow.bash
-        alias flow='/home/runner/work/expreccs/expreccs/build/opm-simulators/bin/flow_gasoil'
         
     - name: Install test dependecies
       run: |

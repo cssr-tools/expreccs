@@ -130,12 +130,12 @@ AQUANCON
 -- Aq#  I1 I2  J1   J2  K1 K2 FACE
 % for k in range(dic['regional_noCells'][2]):
 % for i in range(dic["left_noCells"]):
-${i+1+k*dic["left_noCells"]} 1  1  ${1+i*round(dic['site_noCells'][0]/dic["left_noCells"])} ${(i+1)*round(dic['site_noCells'][1]/dic["left_noCells"])} ${k*round(dic['site_noCells'][2]/dic["regional_noCells"][2])+1} ${(k+1)*round(dic['site_noCells'][2]/dic["regional_noCells"][2])}	'I-'	  1.00      1  /
+${i+1+k*dic["left_noCells"]} 1  1  ${1+i*round(dic['site_noCells'][1]/dic["left_noCells"])} ${(i+1)*round(dic['site_noCells'][1]/dic["left_noCells"])} ${k*round(dic['site_noCells'][2]/dic["regional_noCells"][2])+1} ${(k+1)*round(dic['site_noCells'][2]/dic["regional_noCells"][2])}	'I-'	  1.00      1  /
 % endfor
 % endfor
 % for k in range(dic['regional_noCells'][2]):
 % for i in range(dic["right_noCells"]):
-${i+1+k*dic["right_noCells"]+len(dic['AQUFLUX_left'][0][0])} ${dic['site_noCells'][0]}  ${dic['site_noCells'][0]}  ${1+i*round(dic['site_noCells'][0]/dic["right_noCells"])} ${(i+1)*round(dic['site_noCells'][1]/dic["right_noCells"])} ${k*round(dic['site_noCells'][2]/dic["regional_noCells"][2])+1} ${(k+1)*round(dic['site_noCells'][2]/dic["regional_noCells"][2])}	'I'	  1.00      1  /
+${i+1+k*dic["right_noCells"]+len(dic['AQUFLUX_left'][0][0])} ${dic['site_noCells'][0]}  ${dic['site_noCells'][0]}  ${1+i*round(dic['site_noCells'][1]/dic["right_noCells"])} ${(i+1)*round(dic['site_noCells'][1]/dic["right_noCells"])} ${k*round(dic['site_noCells'][2]/dic["regional_noCells"][2])+1} ${(k+1)*round(dic['site_noCells'][2]/dic["regional_noCells"][2])}	'I'	  1.00      1  /
 % endfor
 % endfor
 % for k in range(dic['regional_noCells'][2]):

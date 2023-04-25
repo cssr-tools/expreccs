@@ -44,7 +44,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration file</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#reservoir-related-parameters">Reservoir-related parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rock-related-parameters">Rock-related parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#well-related-parameters">Well-related parameters</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
@@ -77,19 +82,22 @@
              
   <section id="configuration-file">
 <h1>Configuration file<a class="headerlink" href="#configuration-file" title="Permalink to this heading"></a></h1>
-<p>The first input parameter is:</p>
+<p>The first input parameter in the configuration file is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="sd">&quot;&quot;&quot;Set the full path to the flow executable and flags&quot;&quot;&quot;</span>
 <span class="linenos">2</span><span class="n">flow</span> <span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">opm</span><span class="o">-</span><span class="n">rst</span><span class="o">-</span><span class="n">file</span><span class="o">=</span><span class="n">true</span>
 </pre></div>
 </div>
 <p>If <strong>flow</strong> is not in your path, then write the full path to the executable
-(e.g., /Users/dmar/Github/opm/build/opm-simulators/bin/flow).</p>
+(e.g., /Users/dmar/Github/opm/build/opm-simulators/bin/flow). We also add in the same
+line as many flags as required (see the OPM Flow documentation <a class="reference external" href="https://opm-project.org/?page_id=955">here</a>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you have installed flow with MPI support, then you can run the simulations in
 parallel by adding <strong>mpirun -np N flow …</strong> where N is the number of cpus.</p>
 </div>
-<p>The following input corresponds to:</p>
+<section id="reservoir-related-parameters">
+<h2>Reservoir-related parameters<a class="headerlink" href="#reservoir-related-parameters" title="Permalink to this heading"></a></h2>
+<p>The following input lines are:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 4</span><span class="sd">&quot;&quot;&quot;Set the model parameters&quot;&quot;&quot;</span>
 <span class="linenos"> 5</span><span class="mi">15150</span> <span class="mi">15150</span> <span class="mi">27</span>                  <span class="c1">#Reginonal aquifer length, width, and depth [m]</span>
 <span class="linenos"> 6</span><span class="mi">15</span> <span class="mi">15</span> <span class="mi">3</span>                         <span class="c1">#Number of x-, y-, and z-cells [-]</span>
@@ -100,13 +108,40 @@ parallel by adding <strong>mpirun -np N flow …</strong> where N is the number 
 <span class="linenos">11</span><span class="mi">9</span>                               <span class="c1">#Number of layers</span>
 </pre></div>
 </div>
-<p>Here we first set the dimensions of the Regional model and the number of cells for the discretization,
-where the origen is located in the left top corner. Then the site model is defined by giving the coordinates
-of a box, and right after the discretization is set, which also defines the grid size for the reference simulations.
-The following line defines a fault along the z-direction in the Regional model, where the first three entries define the
-position of the fault extending from the top and right boundaries, while the last two entries defne the multipliers for
-the transmissibilities in the x and y directions. Finally, we set the number of layers along the z direction, which allows
-to consider different rock and saturation function properties, which are given in the following lines:</p>
+<p>Here we first set the dimensions of the regional model and the number of cells for the discretization,
+where the origen is located in the left bottom corner. Then the site model is defined by giving the coordinates
+of a box, and right after the discretization is set, which also defines the grid size for the reference simulations.</p>
+<figure class="align-default" id="id1">
+<img alt="_images/gridding.png" src="_images/gridding.png" />
+<figcaption>
+<p><span class="caption-text">The four different grids created by the previous lines. The reference case have the same grid size as the site
+cases, while the regional model have grid sizes 5 times larger in the xy directions and 3 times larger in the
+z direction. The location of the site model in the regional model is also depicted in the upper-left corner in
+this documentation (the 9 blue cells correspond to the site location).</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The following line defines a fault along the z-direction in the regional model, where the first three entries define the
+position of the fault extending from the top and right boundaries, while the last two entries define the multipliers for
+the transmissibilities in the x and y directions. Similarly it is possible to define a fault in the site model, which extends
+from the given initial location and continues in zig-zag until the given final location.</p>
+<figure class="align-default" id="id2">
+<img alt="_images/tranxy.png" src="_images/tranxy.png" />
+<figcaption>
+<p><span class="caption-text">Visualization of the transmissibilities in the x (left) and y (right) direction in the reference grid.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>Finally, we set the number of layers along the z direction, which allows to consider different rock and saturation function properties.</p>
+<figure class="align-default" id="id3">
+<img alt="_images/sands.png" src="_images/sands.png" />
+<figcaption>
+<p><span class="caption-text">The number of the rocks for the (left) site/reference and (right) regional decks. We observe that for the regional model the lowest
+number of the rock is kept in the coarser cell.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+</section>
+<section id="rock-related-parameters">
+<h2>Rock-related parameters<a class="headerlink" href="#rock-related-parameters" title="Permalink to this heading"></a></h2>
+<p>The following entries define the rock related parameters:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">13</span><span class="sd">&quot;&quot;&quot;Set the saturation functions&quot;&quot;&quot;</span>
 <span class="linenos">14</span><span class="n">krw</span> <span class="o">*</span> <span class="p">(</span><span class="n">sew</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.5</span>       <span class="c1">#Wetting rel perm saturation function [-]</span>
 <span class="linenos">15</span><span class="n">krc</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">sew</span><span class="p">)</span> <span class="o">**</span> <span class="mf">1.5</span>   <span class="c1">#Non-wetting rel perm saturation function [-]</span>
@@ -144,6 +179,9 @@ to consider different rock and saturation function properties, which are given i
 </div>
 <p>As seen from the previous values, the finnest sand corresponds to No. 1 and it gets coarser
 towards sand No. 5.</p>
+</section>
+<section id="well-related-parameters">
+<h2>Well-related parameters<a class="headerlink" href="#well-related-parameters" title="Permalink to this heading"></a></h2>
 <p>Now we proceed to define the location of the wells:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">42</span><span class="sd">&quot;&quot;&quot;Wells position&quot;&quot;&quot;</span>
 <span class="linenos">43</span><span class="sd">&quot;&quot;&quot;x, y, and z position [m]&quot;&quot;&quot;</span>
@@ -153,19 +191,28 @@ towards sand No. 5.</p>
 <span class="linenos">47</span><span class="mi">10605</span>  <span class="mi">4545</span> <span class="mi">5</span>  <span class="c1">#Well 4</span>
 </pre></div>
 </div>
-<p>The implementation allows to add as many wells as desired and the injection rates are given in the following entries:</p>
+<p>The implementation allows to add as many wells as desired in the site and regional model.</p>
+<figure class="align-default" id="id4">
+<img alt="_images/wells.png" src="_images/wells.png" />
+<figcaption>
+<p><span class="caption-text">The location of the wells in the four different grids. We observe that for the regional model
+wells 0 and 1 in the site location share the same cells along the z-direction. Then the approach
+is to project the fluxes/presures on the site boundaries from the regional simulations.</span><a class="headerlink" href="#id4" title="Permalink to this image"></a></p>
+</figcaption>
+</figure>
+<p>The injection rates are given in the following entries:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">49</span><span class="sd">&quot;&quot;&quot;Define the injection values &#39;inj[]&#39;&quot;&quot;&quot;</span>
 <span class="linenos">50</span><span class="sd">&quot;&quot;&quot;injection time [d], time step size to write results [d], injection rates [kg/day], injected fluid (0 water, 1 co2)&quot;&quot;&quot;</span>
-<span class="linenos">51</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
-<span class="linenos">52</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
-<span class="linenos">53</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
-<span class="linenos">54</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
-<span class="linenos">55</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">1e7</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
-<span class="linenos">56</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
-<span class="linenos">57</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
-<span class="linenos">58</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
-<span class="linenos">59</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
-<span class="linenos">60</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mf">5e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">1e7</span> <span class="mi">1</span>
+<span class="linenos">51</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">5e6</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">52</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">5e6</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">53</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">5e6</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">54</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">5e6</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">55</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">5e6</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span>
+<span class="linenos">56</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">5e6</span> <span class="mi">1</span>
+<span class="linenos">57</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">5e6</span> <span class="mi">1</span>
+<span class="linenos">58</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">5e6</span> <span class="mi">1</span>
+<span class="linenos">59</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">5e6</span> <span class="mi">1</span>
+<span class="linenos">60</span><span class="mf">73.</span> <span class="mf">73.</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mf">3e5</span> <span class="mi">1</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mf">5e6</span> <span class="mi">1</span>
 </pre></div>
 </div>
 <p>Since we defined four wells (two of them inside the site model), then each row of the schedule has 10 entries, corresponding to
@@ -175,6 +222,7 @@ rates and injected fluid from well 1 to well 4 respectively.</p>
 <p class="admonition-title">Warning</p>
 <p>Keep the linebreak between the sections in the whole configuration file (in the current implementation this is used for the reading of the parameters).</p>
 </div>
+</section>
 </section>
 
 

@@ -32,6 +32,7 @@ def main():
     dic["rhog_ref"] = 1.86843  # CO2 reference density
     dic["sat_thr"] = 1e-3  # Threshold for the gas saturation
     dic["quantity"] = ["mass", "saturation", "pressure"]
+    dic["units"] = ["kg", "-", "bar"]
     for reservoir in ["reference", "regional", "site", "site_openboundaries"]:
         case = dic["path"] + f"{reservoir.upper()}"
         dic[f"{reservoir}_rst"] = EclFile(case + ".UNRST")
@@ -77,7 +78,7 @@ def main():
 
 def difference(dic):
     """
-    Function to plot the difference between the referece and site simulations
+    Function to plot the difference between the reference and site simulations
     in the last time step
 
     Args:
@@ -88,7 +89,7 @@ def difference(dic):
 
     """
     for reservoir in ["site", "site_openboundaries"]:
-        for quantity in dic["quantity"]:
+        for j, quantity in enumerate(dic["quantity"]):
             dic[f"{reservoir}_difference_{quantity}"] = (
                 dic[f"reference_{quantity}_array"][-1][dic["reference_fipn"] == 1]
                 - dic[f"{reservoir}_{quantity}_array"][-1]
@@ -98,7 +99,7 @@ def difference(dic):
                     f"{reservoir}_mass_array"
                 ][-1].sum()
             dic[f"{reservoir}_difference_{quantity}_plot"] = np.zeros(
-                [len(dic["site_xmx"]) - 1, len(dic["site_ymy"]) - 1]
+                [len(dic["site_ymy"]) - 1, len(dic["site_xmx"]) - 1]
             )
             for i in np.arange(0, len(dic["site_ymy"]) - 1):
                 dic[f"{reservoir}_difference_{quantity}_plot"][i, :] = dic[
@@ -121,9 +122,12 @@ def difference(dic):
                 ]
             )
             axis.axis("scaled")
+            axis.set_xlabel("[m]")
+            axis.set_ylabel("[m]")
             axis.set_title(
                 f"sum abs({quantity}Reference-{quantity}Site)"
-                + f" ({abs(dic[f'{reservoir}_difference_{quantity}_plot']).sum() : .2E})"
+                + f"={abs(dic[f'{reservoir}_difference_{quantity}_plot']).sum():.2E}"
+                + f" [{dic['units'][j]}]"
             )
             divider = make_axes_locatable(axis)
             cax = divider.append_axes("right", size="5%", pad=1e-3)
@@ -162,13 +166,19 @@ def over_time_distance(dic):
     fig, axis = plt.subplots()
     dic["fig"].append(fig)
     dic["axis"].append(axis)
+    dic["boxi"] = dic["site_grid"].getNodePos(0, 0, 0)
+    dic["boxf"] = dic["site_grid"].getNodePos(
+        dic["site_grid"].getNX(),
+        dic["site_grid"].getNY(),
+        dic["site_grid"].getNZ(),
+    )
+    dic["dx_half_size"] = (
+        0.5 * (dic["boxf"][0] - dic["boxi"][0]) / (dic["site_grid"].getNX())
+    )
+    dic["dy_half_size"] = (
+        0.5 * (dic["boxf"][1] - dic["boxi"][1]) / (dic["site_grid"].getNY())
+    )
     for j, reservoir in enumerate(["site", "site_openboundaries", "reference"]):
-        dic["boxi"] = dic["site_grid"].getNodePos(0, 0, 0)
-        dic["boxf"] = dic["site_grid"].getNodePos(
-            dic["site_grid"].getNX(),
-            dic["site_grid"].getNY(),
-            dic["site_grid"].getNZ(),
-        )
         dic[f"{reservoir}_indicator_plot"] = []
         for quantity in dic["quantity"][1:]:
             dic[f"{reservoir}_difference_{quantity}"] = []
@@ -190,11 +200,21 @@ def over_time_distance(dic):
                 )
             if points.size > 0:
                 closest_distance = np.zeros(4)
-                for i, border in enumerate([dic["boxi"][0], dic["boxf"][0]]):
+                for i, border in enumerate(
+                    [
+                        dic["boxi"][0] + dic["dx_half_size"],
+                        dic["boxf"][0] - dic["dx_half_size"],
+                    ]
+                ):
                     closest_distance[i] = min(
                         np.array([abs(row[0] - border) for row in points])
                     )
-                for i, border in enumerate([(dic["boxi"][1]), (dic["boxf"][1])]):
+                for i, border in enumerate(
+                    [
+                        (dic["boxi"][1] + dic["dy_half_size"]),
+                        (dic["boxf"][1] - dic["dy_half_size"]),
+                    ]
+                ):
                     closest_distance[i + 2] = min(
                         np.array([abs(row[1] - border) for row in points])
                     )
@@ -211,7 +231,7 @@ def over_time_distance(dic):
             label=f"{reservoir}",
         )
     dic["axis"][-1].set_title(
-        f'Minimum CO2 distance to the borders (thr={dic["sat_thr"]})'
+        "Minimum " + r"CO$_2$" + f' distance to the borders (sat thr={dic["sat_thr"]})'
     )
     dic["axis"][-1].set_ylabel("Distance [m]", fontsize=12)
     dic["axis"][-1].set_xlabel("Time", fontsize=12)
@@ -236,9 +256,11 @@ def over_time_max_difference(dic):
         fig, axis = plt.subplots()
         dic["fig"].append(fig)
         dic["axis"].append(axis)
+        dic[f"reference_maximum_{quantity}"] = []
     for j, reservoir in enumerate(["site", "site_openboundaries"]):
         for quantity in dic["quantity"][1:]:
             dic[f"{reservoir}_difference_{quantity}"] = []
+            dic[f"{reservoir}_maximum_{quantity}"] = []
             fig, axis = plt.subplots()
             dic["fig"].append(fig)
             dic["axis"].append(axis)
@@ -254,17 +276,36 @@ def over_time_max_difference(dic):
                         )
                     )
                 )
+                dic[f"{reservoir}_maximum_{quantity}"].append(
+                    max(dic[f"{reservoir}_{quantity}_array"][nrst])
+                )
+                if reservoir == "site":
+                    dic[f"reference_maximum_{quantity}"].append(
+                        max(
+                            dic[f"reference_{quantity}_array"][nrst][
+                                dic["reference_fipn"] == 1
+                            ]
+                        )
+                    )
         for i, quantity in enumerate(dic["quantity"][1:]):
+            label = (
+                f"{reservoir} (max {quantity} of "
+                + f"{np.array(dic[f'{reservoir}_maximum_{quantity}']).max():.2E}"
+                + f"[{dic['units'][i+1]}])"
+            )
             dic["axis"][i].plot(
                 dic[f"{reservoir}_rst"].dates,
                 dic[f"{reservoir}_difference_{quantity}"],
                 color=color[j],
                 linestyle=linestyle[j],
-                label=f"{reservoir}",
+                label=label,
             )
     for i, quantity in enumerate(dic["quantity"][1:]):
-        dic["axis"][i].set_title(f"Maximum {quantity} difference")
-        dic["axis"][i].set_ylabel("Difference", fontsize=12)
+        dic["axis"][i].set_title(
+            f"Maximum {quantity} difference (w.r.t. reference, max {quantity} of "
+            + f"{np.array(dic[f'reference_maximum_{quantity}']).max():.2E} [{dic['units'][i+1]}]))"
+        )
+        dic["axis"][i].set_ylabel(f"Difference [{dic['units'][i+1]}]", fontsize=12)
         dic["axis"][i].set_xlabel("Time", fontsize=12)
         dic["axis"][i].legend()
         dic["axis"][i].xaxis.set_tick_params(size=6, rotation=45)
@@ -300,11 +341,11 @@ def final_time_maps(dic):
         )
         for quantity in dic["quantity"]:
             dic[f"{reservoir}_{quantity}_plot"] = np.zeros(
-                [len(dic[f"{reservoir}_xmx"]) - 1, len(dic[f"{reservoir}_ymy"]) - 1]
+                [len(dic[f"{reservoir}_ymy"]) - 1, len(dic[f"{reservoir}_xmx"]) - 1]
             )
             if quantity == "mass":
                 for i in np.arange(0, len(dic[f"{reservoir}_ymy"]) - 1):
-                    dic[f"{reservoir}_{quantity}_plot"][i, :] = (
+                    dic[f"{reservoir}_{quantity}_plot"][-1 - i, :] = (
                         dic[f"{reservoir}_{quantity}_array"][-1][
                             i
                             * (len(dic[f"{reservoir}_xmx"]) - 1) : (i + 1)
@@ -314,7 +355,7 @@ def final_time_maps(dic):
                     )
             else:
                 for i in np.arange(0, len(dic[f"{reservoir}_ymy"]) - 1):
-                    dic[f"{reservoir}_{quantity}_plot"][i, :] = dic[
+                    dic[f"{reservoir}_{quantity}_plot"][-1 - i, :] = dic[
                         f"{reservoir}_{quantity}_array"
                     ][-1][
                         i
@@ -351,8 +392,10 @@ def final_time_maps(dic):
                     shading="flat",
                     cmap="jet",
                 )
-                axis.set_title(f"{quantity}")
+                axis.set_title(f"{quantity} [-]")
             axis.axis("scaled")
+            axis.set_xlabel("[m]")
+            axis.set_ylabel("[m]")
             divider = make_axes_locatable(axis)
             cax = divider.append_axes("right", size="5%", pad=0.05)
             vect = np.linspace(

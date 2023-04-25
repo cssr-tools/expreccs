@@ -3,12 +3,11 @@ Introduction
 ============
 
 .. image:: ./figs/introduction.gif
-    :scale: 100%
+    :scale: 50%
 
 This documentation describes the content of the **expreccs** package.
 The numerical simulations for the CO2 are performed using the 
-`Flow <https://opm-project.org/?page_id=19>`_ simulator. This Python-based framework could be ('easily') 
-extended to consider additional available models in OPM.
+`Flow <https://opm-project.org/?page_id=19>`_ simulator.
 
 Concept
 -------

@@ -49,3 +49,8 @@ folders.
 
 ## Getting started
 See the [_documentation_](https://daavid00.github.io/expreccs/introduction.html). 
+
+## About expreccs
+The expreccs package was funded by Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 104908].
+This is work in progress. [_Here_](https://www.norceresearch.no/en/projects/expansion-of-resources-for-co2-storage-on-the-horda-platform-expreccs) is the link to the project details.
+Contributions are more than welcome using the fork and pull request approach.
