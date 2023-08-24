@@ -1,3 +1,4 @@
+-- Copyright (C) 2023 NORCE
 ----------------------------------------------------------------------------
 RUNSPEC
 ----------------------------------------------------------------------------
@@ -244,7 +245,7 @@ ${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQ
 % endif
 % endfor
 /
-BC
+BCPROP
 ${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][j+1][0][0]} /
 /
 TSTEP

@@ -12,7 +12,7 @@ done
 # OPM modules
 for repo in common grid models simulators
 do
-    git clone https://github.com/daavid00/opm-$repo.git --branch bc_schedule
+    git clone https://github.com/OPM/opm-$repo.git
 done
 
 mkdir build
