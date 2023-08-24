@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 NORCE
+# SPDX-License-Identifier: GPL-3.0
+
 """Main script"""
 import os
 import time

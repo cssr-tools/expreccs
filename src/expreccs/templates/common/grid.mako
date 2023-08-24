@@ -1,3 +1,4 @@
+-- Copyright (C) 2023 NORCE
 SPECGRID
 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][2]} 1 F
 /

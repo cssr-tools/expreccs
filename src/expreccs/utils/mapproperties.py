@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2023 NORCE
+# SPDX-License-Identifier: GPL-3.0
+
 """
 Utiliy function for finding the well i,j, and k ids.
 """
