@@ -1,3 +1,5 @@
 ecl
 mako
+scipy
+pandas
 matplotlib

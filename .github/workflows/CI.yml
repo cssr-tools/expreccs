@@ -1,4 +1,4 @@
-name: Run expreccs executable
+name: Run the expreccs executable
 
 on:
  push:
@@ -34,13 +34,38 @@ jobs:
         sudo apt-get install -y build-essential gfortran pkg-config cmake
         sudo apt-get install -y mpi-default-dev
         sudo apt-get install -y libblas-dev libboost-all-dev libsuitesparse-dev libtrilinos-zoltan-dev
-        chmod u+x build_dune_and_opm-flow.bash
-        ./build_dune_and_opm-flow.bash
+        sudo apt-get install libdune-common-dev libdune-geometry-dev libdune-istl-dev libdune-grid-dev
+
+        CURRENT_DIRECTORY="$PWD"
+
+        # OPM modules
+        for repo in common grid models simulators
+        do
+            git clone https://github.com/OPM/opm-$repo.git
+        done
+
+        mkdir build
+
+        for repo in common grid models
+        do
+            mkdir build/opm-$repo
+            cd build/opm-$repo
+            cmake -DUSE_MPI=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid" $CURRENT_DIRECTORY/opm-$repo
+            make -j
+            cd ../..
+        done    
+
+        mkdir build/opm-simulators
+        cd build/opm-simulators
+        cmake -DUSE_MPI=0 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid;$CURRENT_DIRECTORY/build/opm-models" $CURRENT_DIRECTORY/opm-simulators
+        make -j flow_gasoil
+        cd ../..
         
     - name: Install test dependecies
       run: |
         pip install --upgrade pip setuptools wheel
         pip install -r dev-requirements.txt
+        pip install opm
         
     - name: Install expreccs
       run: |

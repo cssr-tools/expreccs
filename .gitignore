@@ -131,9 +131,26 @@ dmypy.json
 # MacOS
 .DS_Store
 
+# DUNE
+dune-common/
+dune-geometry/
+dune-grid/
+dune-istl/
+
+# The OPM
+opm-common/
+opm-grid/
+opm-models/
+opm-simulators/
+
 # Extra folders
+tests/configs/output
+tests/configs/compare
 gift
 vexpreccs
 examples/output
 developing
 workshop
+debugging
+cssr
+results

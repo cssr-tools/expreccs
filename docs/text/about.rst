@@ -5,7 +5,7 @@ About expreccs
 .. image:: ./figs/about.png
     :scale: 50%
 
-The **expreccs** package was funded by 
+The **expreccs** package is funded by 
 Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 104908]. 
 
 This is work in progress. 

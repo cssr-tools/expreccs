@@ -13,15 +13,15 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Output folder" href="output_folder.html" />
-    <link rel="prev" title="expreccs.visualization package" href="expreccs.visualization.html" /> 
+    <link rel="prev" title="expreccs.visualization.maps2d module" href="expreccs.visualization.maps2d.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
 </ul>
 
@@ -81,16 +82,17 @@
            <div itemprop="articleBody">
              
   <section id="module-expreccs.visualization.plotting">
-<span id="expreccs-visualization-plotting-module"></span><h1>expreccs.visualization.plotting module<a class="headerlink" href="#module-expreccs.visualization.plotting" title="Permalink to this heading"></a></h1>
+<span id="expreccs-visualization-plotting-module"></span><h1>expreccs.visualization.plotting module<a class="headerlink" href="#module-expreccs.visualization.plotting" title="Link to this heading"></a></h1>
 <p>”
-Script to plot the top surface for the reference, regionla, and site reservoirs.</p>
+Script to plot the top surface for the reference, regional, and site reservoirs.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.visualization.plotting.difference">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.difference" title="Permalink to this definition"></a></dt>
-<dd><p>Function to plot the difference between the reference and site simulations
-in the last time step</p>
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_labels_difference">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_labels_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_labels_difference" title="Link to this definition"></a></dt>
+<dd><p>Function to handle the labeling for improve visualization.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+res (str): Name of the reservoir
+j (int): Indice for the reservoir</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
@@ -98,24 +100,43 @@ in the last time step</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.visualization.plotting.final_time_maps">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">final_time_maps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.final_time_maps" title="Permalink to this definition"></a></dt>
-<dd><p>Function to plot the 2D maps for the different reservoirs and quantities</p>
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_labels_distance">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_labels_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_labels_distance" title="Link to this definition"></a></dt>
+<dd><p>Function to handle the labeling for better visualization.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+nfol (int): Indice for the color
+res (str): Name of the reservoir
+fol (str): Name of the output folder
+j (int): Indice for the reservoir</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_smsp_time">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_smsp_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_smsp_time" title="Link to this definition"></a></dt>
+<dd><p>Function to chandle the times in the summary files</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+str (study): Name of the folder containing the results</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.main">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.main" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.main" title="Link to this definition"></a></dt>
 <dd><p>Postprocessing</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_distance">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_distance" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_distance" title="Link to this definition"></a></dt>
 <dd><p>Function to plot the distance from the closest saturation cell to the site border</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
@@ -125,8 +146,92 @@ in the last time step</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_max_difference">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_max_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_max_difference" title="Permalink to this definition"></a></dt>
-<dd><p>Function to plot the the max difference between pressure and saturation.</p>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_max_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_max_difference" title="Link to this definition"></a></dt>
+<dd><p>Function to plot the the max difference between pressure/saturation.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.plot_results">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.plot_results" title="Link to this definition"></a></dt>
+<dd><p>Function to plot the 2D maps/1D projections for the different quantities</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.positions_ecl">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">positions_ecl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.positions_ecl" title="Link to this definition"></a></dt>
+<dd><p>Function to extract the point coordinates using ecl</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+fol (str): Name of the output folder
+res (str): Name of the reservoir
+nrst (int): Indice for the schedule</p>
+</dd>
+<dt>Returns:</dt><dd><p>points (list): x,y,z coordinates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.positions_opm">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">positions_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.positions_opm" title="Link to this definition"></a></dt>
+<dd><p>Function to extract the point coordinates using opm</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+fol (str): Name of the output folder
+res (str): Name of the reservoir
+nrst (int): Indice for the schedule</p>
+</dd>
+<dt>Returns:</dt><dd><p>points (list): x,y,z coordinates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.reading_ecl">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">reading_ecl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.reading_ecl" title="Link to this definition"></a></dt>
+<dd><p>Function to read the deck quantities using ecl</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.reading_opm">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">reading_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.reading_opm" title="Link to this definition"></a></dt>
+<dd><p>Function to read the deck quantities using opm</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.well_well_well">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">well_well_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.well_well_well" title="Link to this definition"></a></dt>
+<dd><p>Function to plot the injection rates and BHP</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.wells_site">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">wells_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nquan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndeck</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nwell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.wells_site" title="Link to this definition"></a></dt>
+<dd><p>Function to plot the injection rates and BHP</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
 </dd>
@@ -139,7 +244,7 @@ in the last time step</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="expreccs.visualization.html" class="btn btn-neutral float-left" title="expreccs.visualization package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="expreccs.visualization.maps2d.html" class="btn btn-neutral float-left" title="expreccs.visualization.maps2d module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="output_folder.html" class="btn btn-neutral float-right" title="Output folder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

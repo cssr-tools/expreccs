@@ -1,6 +1,11 @@
 ==================
 Configuration file
 ==================
+We consider the configuration file (`input.txt <https://github.com/daavid00/expreccs/blob/main/examples/input.txt>`_) available in the 
+examples folder. The parameters are chosen to show the functionality and capabilities of the **expreccs** framework regarding generation
+of corner-point grids (cpg), heterogeinities (e.g., different rock properties, faults), adding wells, and defining schedules for the
+operations. See the (`example1.txt <https://github.com/daavid00/expreccs/blob/main/examples/input.txt>`_) for a simpler configuration
+file. 
 
 The first input parameter in the configuration file is:
 
@@ -8,10 +13,10 @@ The first input parameter in the configuration file is:
     :linenos:
 
     """Set the full path to the flow executable and flags"""
-    flow --enable-opm-rst-file=true 
+    flow --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true  
 
 If **flow** is not in your path, then write the full path to the executable
-(e.g., /Users/dmar/Github/opm/build/opm-simulators/bin/flow). We also add in the same 
+(e.g., /Users/dmar/expreccs/build/opm-simulators/bin/flow). We also add in the same 
 line as many flags as required (see the OPM Flow documentation `here <https://opm-project.org/?page_id=955>`_).
 
 .. note::
@@ -29,40 +34,36 @@ The following input lines are:
     :lineno-start: 4
 
     """Set the model parameters"""
-    15150 15150 27                  #Reginonal aquifer length, width, and depth [m]
-    15 15 3                         #Number of x-, y-, and z-cells [-] 
-    6060 6060 0 9090 9090 27        #Site xi, yi, zi, xf, yf, and zf box positions [m]
-    15 15 9                         #Number of x-, y-, and z-cells in the site reservoir [-]
-    10100 10100 0 0.01 10           #Regional fault x, y, and z positions [m] and x and y multipliers for the trans
-    6565 7777 0 7979 8383 0 0.0 0.0 #Site fault x, y, and z positions [m] (initial and final) and x and y multipliers for the trans
-    9                               #Number of layers  
+    45000 15000 81              #Reginonal aquifer length, width, and depth [m]
+    3,5,5                       #Variable array of x-refinment (Regional)
+    5,5,5                       #Variable array of y-refinment (Regional)
+    1,1,1                       #Variable array of z-refinment (Regional)
+    1,1,1,5,5,15,15,15,15,15,5,5,5,5,5 #Variable array of x-refinment (Reference)
+    25,25,25                    #Variable array of y-refinment (Reference)
+    6,5,5,5,3,3,3,3,3           #Variable array of z-refinment (Reference)
+    18000 5000 27000 10000      #Site xi, yi, xf, and yf box positions [m]
+    free                        #Use free/closed/porv for the Regional aquifer (if porv, enter the value after a space (e.g, porv 1e5))
+    free                        #Use free/closed/porv/flux/pres for the BC site (if porv, enter the value after a space (e.g, porv 1e3))
+    9000 11000 0.01 10 22.5     #Regional fault x and y positions [m], x and y multipliers for the trans, and height of the jump on the fault interface [m]
+    21583 5710 24081 8233 0.0 0.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
+    9,9,9,9,9,9,9,9,9           #Thicknes of the layers (Reference) 
+    2E7 60 50                   #Pressure on the reservoir top [Pa], and top and bottom temperature [C]
+    (20-20*mt.sin((2*mt.pi*(x+y)/10000))) #The function for the reservoir surface
 
-Here we first set the dimensions of the regional model and the number of cells for the discretization,
+Here we first set the dimensions of the regional model and the grid size for the discretization,
 where the origen is located in the left bottom corner. Then the site model is defined by giving the coordinates
-of a box, and right after the discretization is set, which also defines the grid size for the reference simulations.
+of the box. On lines 13 and 14 we define the BC for the regional and site models, where flux/press in the site model 
+projects the fluxes/pressures from the regional simulations. The following line defines a fault along the z-direction in 
+the regional model. Similarly it is possible to define a fault in the site model, which extends from the given initial 
+location and continues in zig-zag until the given final location. Finally, we set the thicknes of the layers along the z direction, 
+which allows to consider different rock and saturation function properties, as well as the reservoir conditions (pressure and temperature), 
+and the z position of the tops cells as a function of the (x,y) location.
 
-.. figure:: figs/gridding.png
+.. figure:: figs/grids.png
 
-    The four different grids created by the previous lines. The reference case have the same grid size as the site 
-    cases, while the regional model have grid sizes 5 times larger in the xy directions and 3 times larger in the
-    z direction. The location of the site model in the regional model is also depicted in the upper-left corner in 
-    this documentation (the 9 blue cells correspond to the site location).
-
-The following line defines a fault along the z-direction in the regional model, where the first three entries define the
-position of the fault extending from the top and right boundaries, while the last two entries define the multipliers for 
-the transmissibilities in the x and y directions. Similarly it is possible to define a fault in the site model, which extends
-from the given initial location and continues in zig-zag until the given final location. 
-
-.. figure:: figs/tranxy.png
-
-    Visualization of the transmissibilities in the x (left) and y (right) direction in the reference grid.
-
-Finally, we set the number of layers along the z direction, which allows to consider different rock and saturation function properties.
-
-.. figure:: figs/sands.png
-
-    The number of the rocks for the (left) site/reference and (right) regional decks. We observe that for the regional model the lowest
-    number of the rock is kept in the coarser cell. 
+    The site location in the regional model (upper left), the fault in the site model (upper right), the number of rock for the different properties
+    in the regional (lower left) and reference (lower right) models. We observe that for the regional model the closest
+    rock properties are kept in the coarser cell. 
 
 
 ***********************
@@ -72,52 +73,57 @@ The following entries define the rock related parameters:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 13
+    :lineno-start: 21
 
     """Set the saturation functions"""
-    krw * (sew) ** 1.5       #Wetting rel perm saturation function [-]
-    krc * (1 - sew) ** 1.5   #Non-wetting rel perm saturation function [-]
-    pec * sew ** (-(1./1.5)) #Capillary pressure saturation function [Pa]  
+    krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
+    krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn      #Non-wetting rel perm saturation function [-]
+    pec * ((sw - swi) / (1.0 - sni - swi)) ** (-(1.0 / npe))  #Capillary pressure saturation function [Pa]  
 
 In this example we consider properties for the sands number 1 to 5 as described in the 
 `11th SPE CSP <https://www.spe.org/en/csp/>`_:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 18
+    :lineno-start: 26
 
     """Properties sat functions"""
-    """swi [-], swrg [-], krg [-], krw [-],pe [Pa]"""
-    SWI5 0.12 SWRG5 0.10 KRW5 1. KRG5 1. PRE5 3060.00
-    SWI4 0.12 SWRG4 0.10 KRW4 1. KRG4 1. PRE4 3870.63
-    SWI5 0.12 SWRG5 0.10 KRW5 1. KRG5 1. PRE4 3060.00
-    SWI4 0.12 SWRG4 0.10 KRW4 1. KRG4 1. PRE5 3870.63
-    SWI1 0.32 SWRG1 0.10 KRW1 1. KRG1 1. PRE1 193531.39
-    SWI2 0.14 SWRG2 0.10 KRW2 1. KRG2 1. PRE2 8654.99
-    SWI3 0.12 SWRG3 0.10 KRW3 1. KRG3 1. PRE3 6120.00
-    SWI2 0.14 SWRG2 0.10 KRW2 1. KRG2 1. PRE2 8654.99
-    SWI3 0.12 SWRG3 0.10 KRW3 1. KRG3 1. PRE3 6120.00
+    """swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
+    SWI5 0.12 SNI5 0.10 KRW5 1. KRN5 1. PRE4 3060.00 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI4 0.12 SNI4 0.10 KRW4 1. KRN4 1. PRE4 3870.63 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI5 0.12 SNI5 0.10 KRW5 1. KRN5 1. PRE5 3060.00 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI4 0.12 SNI4 0.10 KRW4 1. KRN4 1. PRE4 3870.63 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI1 0.32 SNI1 0.10 KRW1 1. KRN1 1. PRE1 193531. NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI2 0.14 SNI2 0.10 KRW2 1. KRN2 1. PRE2 8654.99 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI3 0.12 SNI3 0.10 KRW3 1. KRN3 1. PRE3 6120.00 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI2 0.14 SNI2 0.10 KRW2 1. KRN2 1. PRE2 8654.99 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI3 0.12 SNI3 0.10 KRW3 1. KRN3 1. PRE3 6120.00 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
 
 Simillarly for the rock properties:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 30
+    :lineno-start: 38
 
     """Properties rock"""
-    """K [mD], phi [-]"""
-    PERM5 1013.25 PORO5 0.25
-    PERM4 506.625 PORO4 0.20
-    PERM5 1013.25 PORO5 0.25
-    PERM4 506.625 PORO4 0.20
-    PERM1 0.10132 PORO1 0.10
-    PERM2 101.324 PORO2 0.20
-    PERM3 202.650 PORO3 0.20
-    PERM2 101.324 PORO2 0.20
-    PERM3 202.650 PORO3 0.20
+    """Kxy [mD], Kz [mD], phi [-]"""
+    PERMXY5 1013.25 PERMZ5 101.325 PORO5 0.25
+    PERMXY4 506.625 PERMZ4 50.6625 PORO4 0.20
+    PERMXY5 1013.25 PERMZ5 101.325 PORO5 0.25
+    PERMXY4 506.625 PERMZ4 50.6625 PORO4 0.20
+    PERMXY1 0.10132 PERMZ1 .010132 PORO1 0.10
+    PERMXY2 101.324 PERMZ2 10.1324 PORO2 0.20
+    PERMXY3 202.650 PERMZ3 20.2650 PORO3 0.20
+    PERMXY2 101.324 PERMZ2 10.1324 PORO2 0.20
+    PERMXY3 202.650 PERMZ3 20.2650 PORO3 0.20
 
-As seen from the previous values, the finnest sand corresponds to No. 1 and it gets coarser
-towards sand No. 5.
+As seen from the previous values, the finnest rock corresponds to No. 1 and it gets coarser
+towards rock No. 5.
+
+.. note::
+    The names for the saturation functions and rock properties are not used in the framework (they are used to
+    ease the visualization of the parameter values in the configuration file, i.e., writing PERMABC in line 40 has 
+    no impact, so far the name has at least one character since this is used in the reading of the values).
 
 ***********************
 Well-related parameters
@@ -127,45 +133,57 @@ Now we proceed to define the location of the wells:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 42
+    :lineno-start: 50
 
     """Wells position"""
-    """x, y, and z position [m]"""
-    7180   7180 5  #Well 1 
-    7970   7970 5  #Well 2
-    10605 10605 5  #Well 3 
-    10605  4545 5  #Well 4
+    """x, y, zi, and zf positions [m]"""
+    21180 7068  0 81 #Well 0 
+    24200 7800 15 65 #Well 1
+    21718 7122 45 81 #Well 2
+    14518 11377 0 50 #Well 3 
+    31679 8883  0 30 #Well 4
+    28477 2732  0 81 #Well 5
 
 The implementation allows to add as many wells as desired in the site and regional model.
 
 .. figure:: figs/wells.png
 
-    The location of the wells in the four different grids. We observe that for the regional model
-    wells 0 and 1 in the site location share the same cells along the z-direction. Then the approach
-    is to project the fluxes/presures on the site boundaries from the regional simulations.    
+    The location of the wells in the regional, site, and reference models. We observe that for the regional model
+    wells 0 and 2 share the same cells along the z-direction. 
 
 The injection rates are given in the following entries:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 49
+    :lineno-start: 59
 
     """Define the injection values 'inj[]'""" 
-    """injection time [d], time step size to write results [d], injection rates [kg/day], injected fluid (0 water, 1 co2)"""
-    73. 73. 3e5 1 3e5 1 5e6 1 0 0
-    73. 73. 3e5 1 3e5 1 5e6 1 0 0
-    73. 73. 3e5 1 3e5 1 5e6 1 0 0
-    73. 73. 3e5 1 3e5 1 5e6 1 0 0
-    73. 73. 3e5 1 3e5 1 5e6 1 0 0
-    73. 73. 3e5 1 3e5 1 0 0 5e6 1
-    73. 73. 3e5 1 3e5 1 0 0 5e6 1
-    73. 73. 3e5 1 3e5 1 0 0 5e6 1
-    73. 73. 3e5 1 3e5 1 0 0 5e6 1
-    73. 73. 3e5 1 3e5 1 0 0 5e6 1 
+    """injection time [d], time step size to write results [d], maximum time step [d], fluid (0 wetting, 1 non-wetting), injection rates [kg/day], fluid ..., injection, ..."""
+    365. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1 5e6 0 1e7 
+    365. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1   0 0 1e7
 
-Since we defined four wells (two of them inside the site model), then each row of the schedule has 10 entries, corresponding to
-the first two defining the injection time and number of restart files in the solution, and 2*4 additional entries to define the injection 
-rates and injected fluid from well 1 to well 4 respectively. 
+Since we defined six wells (three of them inside the site model), then each row of the schedule has 15 entries, corresponding to
+the first three defining the injection time, number of restart files in the solution, and maximum solver time step, and 2*6 additional 
+entries to define injected fluid (0 water, 1 CO2) and the injection rates from well 0 to well 5 respectively. 
 
 .. warning::
-    Keep the linebreak between the sections in the whole configuration file (in the current implementation this is used for the reading of the parameters).
+    Keep the linebreak between the sections in the whole configuration file and do not add linebreaks inside the sections
+    (in the current implementation this is used for the reading of the parameters).
+
+******************
+Simulation results
+******************
+Since the configuration file's name is input.txt, then it can be run by the following command:
+
+.. code-block:: bash
+
+    expreccs
+
+the following is a screenshot using ResInsight to visualize the pressure and gas saturation at the end of the simulation:
+
+.. figure:: figs/confile.png
+
+    Then the approach is to project the fluxes/presures on the site boundaries from the regional simulations instead of
+    using free flow as in this example.  
+
+See the :doc:`examples <./examples>` section for further examples of configuration files and argument options for **expreccs**.

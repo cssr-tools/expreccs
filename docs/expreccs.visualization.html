@@ -13,14 +13,14 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="expreccs.visualization.plotting module" href="expreccs.visualization.plotting.html" />
+    <link rel="next" title="expreccs.visualization.maps2d module" href="expreccs.visualization.maps2d.html" />
     <link rel="prev" title="expreccs.utils.writefile module" href="expreccs.utils.writefile.html" /> 
 </head>
 
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
 </ul>
 
@@ -80,24 +81,37 @@
            <div itemprop="articleBody">
              
   <section id="expreccs-visualization-package">
-<h1>expreccs.visualization package<a class="headerlink" href="#expreccs-visualization-package" title="Permalink to this heading"></a></h1>
+<h1>expreccs.visualization package<a class="headerlink" href="#expreccs-visualization-package" title="Link to this heading"></a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="expreccs.visualization.maps2d.html">expreccs.visualization.maps2d module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.maps2d.html#expreccs.visualization.maps2d.final_time_maps"><code class="docutils literal notranslate"><span class="pre">final_time_maps()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.maps2d.html#expreccs.visualization.maps2d.final_time_maps_difference"><code class="docutils literal notranslate"><span class="pre">final_time_maps_difference()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.visualization.plotting.html">expreccs.visualization.plotting module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.difference"><code class="docutils literal notranslate"><span class="pre">difference()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.final_time_maps"><code class="docutils literal notranslate"><span class="pre">final_time_maps()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.handle_labels_difference"><code class="docutils literal notranslate"><span class="pre">handle_labels_difference()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.handle_labels_distance"><code class="docutils literal notranslate"><span class="pre">handle_labels_distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.handle_smsp_time"><code class="docutils literal notranslate"><span class="pre">handle_smsp_time()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.over_time_distance"><code class="docutils literal notranslate"><span class="pre">over_time_distance()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.over_time_max_difference"><code class="docutils literal notranslate"><span class="pre">over_time_max_difference()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.plot_results"><code class="docutils literal notranslate"><span class="pre">plot_results()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.positions_ecl"><code class="docutils literal notranslate"><span class="pre">positions_ecl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.positions_opm"><code class="docutils literal notranslate"><span class="pre">positions_opm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.reading_ecl"><code class="docutils literal notranslate"><span class="pre">reading_ecl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.reading_opm"><code class="docutils literal notranslate"><span class="pre">reading_opm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.well_well_well"><code class="docutils literal notranslate"><span class="pre">well_well_well()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.visualization.plotting.html#expreccs.visualization.plotting.wells_site"><code class="docutils literal notranslate"><span class="pre">wells_site()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </div>
 </section>
 <section id="module-expreccs.visualization">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-expreccs.visualization" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-expreccs.visualization" title="Link to this heading"></a></h2>
 </section>
 </section>
 
@@ -106,7 +120,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="expreccs.utils.writefile.html" class="btn btn-neutral float-left" title="expreccs.utils.writefile module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="expreccs.visualization.plotting.html" class="btn btn-neutral float-right" title="expreccs.visualization.plotting module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="expreccs.visualization.maps2d.html" class="btn btn-neutral float-right" title="expreccs.visualization.maps2d module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

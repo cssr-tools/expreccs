@@ -1,6 +1,7 @@
 include README.md
 include LICENSE
 include src/expreccs/core/*
-include src/expreccs/templates/co2/*
 include src/expreccs/templates/common/*
+include src/expreccs/templates/decks/*
 include src/expreccs/utils/*
+include src/expreccs/visualization/*

@@ -13,9 +13,9 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
 </ul>
 
@@ -80,18 +81,24 @@
            <div itemprop="articleBody">
              
   <section id="expreccs-utils-package">
-<h1>expreccs.utils package<a class="headerlink" href="#expreccs-utils-package" title="Permalink to this heading"></a></h1>
+<h1>expreccs.utils package<a class="headerlink" href="#expreccs-utils-package" title="Link to this heading"></a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.inputvalues.html">expreccs.utils.inputvalues module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.inputvalues.html#expreccs.utils.inputvalues.process_input"><code class="docutils literal notranslate"><span class="pre">process_input()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.inputvalues.html#expreccs.utils.inputvalues.readthefirstpart"><code class="docutils literal notranslate"><span class="pre">readthefirstpart()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.inputvalues.html#expreccs.utils.inputvalues.readthesecondpart"><code class="docutils literal notranslate"><span class="pre">readthesecondpart()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.inputvalues.html#expreccs.utils.inputvalues.set_xy_grid_function"><code class="docutils literal notranslate"><span class="pre">set_xy_grid_function()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.mapproperties.html">expreccs.utils.mapproperties module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.aquaflux"><code class="docutils literal notranslate"><span class="pre">aquaflux()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.aquaflux_ecl"><code class="docutils literal notranslate"><span class="pre">aquaflux_ecl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.aquaflux_opm"><code class="docutils literal notranslate"><span class="pre">aquaflux_opm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.handle_stencil_ecl"><code class="docutils literal notranslate"><span class="pre">handle_stencil_ecl()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.handle_stencil_opm"><code class="docutils literal notranslate"><span class="pre">handle_stencil_opm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.mapping_properties"><code class="docutils literal notranslate"><span class="pre">mapping_properties()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.positions_reference"><code class="docutils literal notranslate"><span class="pre">positions_reference()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.positions_regional"><code class="docutils literal notranslate"><span class="pre">positions_regional()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapproperties.html#expreccs.utils.mapproperties.positions_site"><code class="docutils literal notranslate"><span class="pre">positions_site()</span></code></a></li>
@@ -103,16 +110,16 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.writefile.html">expreccs.utils.writefile module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.writefile.html#expreccs.utils.writefile.reference_files"><code class="docutils literal notranslate"><span class="pre">reference_files()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.writefile.html#expreccs.utils.writefile.regional_files"><code class="docutils literal notranslate"><span class="pre">regional_files()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.writefile.html#expreccs.utils.writefile.site_files"><code class="docutils literal notranslate"><span class="pre">site_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.writefile.html#expreccs.utils.writefile.write_files"><code class="docutils literal notranslate"><span class="pre">write_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.writefile.html#expreccs.utils.writefile.write_folders"><code class="docutils literal notranslate"><span class="pre">write_folders()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.writefile.html#expreccs.utils.writefile.write_properties"><code class="docutils literal notranslate"><span class="pre">write_properties()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </div>
 </section>
 <section id="module-expreccs.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-expreccs.utils" title="Permalink to this heading"></a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-expreccs.utils" title="Link to this heading"></a></h2>
 </section>
 </section>
 

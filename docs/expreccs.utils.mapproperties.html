@@ -13,9 +13,9 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -50,6 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
 </ul>
 
@@ -81,11 +82,11 @@
            <div itemprop="articleBody">
              
   <section id="module-expreccs.utils.mapproperties">
-<span id="expreccs-utils-mapproperties-module"></span><h1>expreccs.utils.mapproperties module<a class="headerlink" href="#module-expreccs.utils.mapproperties" title="Permalink to this heading"></a></h1>
+<span id="expreccs-utils-mapproperties-module"></span><h1>expreccs.utils.mapproperties module<a class="headerlink" href="#module-expreccs.utils.mapproperties" title="Link to this heading"></a></h1>
 <p>Utiliy function for finding the well i,j, and k ids.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.mapproperties.aquaflux">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">aquaflux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.aquaflux" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="expreccs.utils.mapproperties.aquaflux_ecl">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">aquaflux_ecl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.aquaflux_ecl" title="Link to this definition"></a></dt>
 <dd><p>Function to read the fluxes and pressures from the regional</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
@@ -96,8 +97,58 @@
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.mapproperties.aquaflux_opm">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">aquaflux_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.aquaflux_opm" title="Link to this definition"></a></dt>
+<dd><p>Function to read the fluxes and pressures from the regional</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.mapproperties.handle_stencil_ecl">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">handle_stencil_ecl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.handle_stencil_ecl" title="Link to this definition"></a></dt>
+<dd><p>Function to project the cell pressures to the cell faces</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+i (int): Counter for the time in the schedule</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.mapproperties.handle_stencil_opm">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">handle_stencil_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.handle_stencil_opm" title="Link to this definition"></a></dt>
+<dd><p>Function to project the cell pressures to the cell faces</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+i (int): Counter for the time in the schedule</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.mapproperties.mapping_properties">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">mapping_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.mapping_properties" title="Link to this definition"></a></dt>
+<dd><p>Function to handle the reservoir location settings.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapproperties.positions_reference">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_reference" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_reference" title="Link to this definition"></a></dt>
 <dd><p>Function to locate well, fault, and site positions in the reference reservoir.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
@@ -109,7 +160,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapproperties.positions_regional">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_regional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_regional" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_regional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_regional" title="Link to this definition"></a></dt>
 <dd><p>Function to locate well, site, and fault positions</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
@@ -121,7 +172,7 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapproperties.positions_site">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_site" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_site" title="Link to this definition"></a></dt>
 <dd><p>Function to locate well and fault positions in the site reservoir.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>

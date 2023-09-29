@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   expreccs.visualization.maps2d
    expreccs.visualization.plotting
 
 Module contents

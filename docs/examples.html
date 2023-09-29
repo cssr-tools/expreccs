@@ -13,9 +13,9 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=b3ba4146"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
         <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -48,12 +48,13 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration file</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#test">Test</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#larger-case">Larger case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-1">Example 1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-2">Example 2</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
 </ul>
 
@@ -82,75 +83,60 @@
            <div itemprop="articleBody">
              
   <section id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading"></a></h1>
-<section id="test">
-<h2>Test<a class="headerlink" href="#test" title="Permalink to this heading"></a></h2>
-<p>In this example we consider the configuration file described in the
-<a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> section, which is available in the
-examples folder and also used for the testing of the framework by pytest
-(<a class="reference external" href="https://github.com/daavid00/expreccs/blob/main/examples/input.txt">link to the file</a>).</p>
-<p>If the configuration file is saved as ‘example.txt’ and the generated files are to be
-saved in a folder called ‘results’, then this is achieved by the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example.txt<span class="w"> </span>-o<span class="w"> </span>results
+<h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
+<section id="example-1">
+<h2>Example 1<a class="headerlink" href="#example-1" title="Link to this heading"></a></h2>
+<p>We consider the configuration file ‘example1.txt’ in the
+examples folder. If the results are to be saved in a folder called ‘hello_world’,
+this is achieved by the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world
 </pre></div>
 </div>
-<p>The execution time was less than a minute and the following is a screenshot using
-ResInsight to visualize the gas saturation:</p>
+<p>Then we can change in line 14 the BC projections from the regional simulations from
+‘flux’ to ‘pres’, and run the following command to only simulate the site model:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site
+</pre></div>
+</div>
+<p>We can do the same to set pore volume multipliers by adding ‘porv 1e2’ in line 14, and
+to also visualize the results in PNGs figures, we run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>-p<span class="w"> </span>yes
+</pre></div>
+</div>
+<p>Below are some of the figures generated inside the postprocessing folder:</p>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/reference_watfluxi+.png"><img alt="_images/reference_watfluxi%2B.png" src="_images/reference_watfluxi%2B.png" style="width: 462.40000000000003px; height: 375.20000000000005px;" /></a>
+</figure>
+<figure class="align-default">
+<a class="reference internal image-reference" href="_images/regional_watfluxi+.png"><img alt="_images/regional_watfluxi%2B.png" src="_images/regional_watfluxi%2B.png" style="width: 462.40000000000003px; height: 376.8px;" /></a>
+</figure>
 <figure class="align-default" id="id1">
-<img alt="_images/test_saturation.png" src="_images/test_saturation.png" />
+<a class="reference internal image-reference" href="_images/site_flux_watfluxi+.png"><img alt="_images/site_flux_watfluxi%2B.png" src="_images/site_flux_watfluxi%2B.png" style="width: 454.40000000000003px; height: 375.20000000000005px;" /></a>
 <figcaption>
-<p><span class="caption-text">Simulation results of the gas saturation at the end of the simulations.</span><a class="headerlink" href="#id1" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Final water flux (sm3/day) in the x direction for (top) the reference, (middle) regional, and
+(bottom) site (with fluxes as BC).</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<p>To measure the error w.r.t. the referenece simulations, the following plots
-are created by the <strong>expreccs</strong> executable:</p>
 <figure class="align-default">
 <img alt="_images/maximum_pressure_difference_over_time.png" src="_images/maximum_pressure_difference_over_time.png" />
 </figure>
 <figure class="align-default">
-<img alt="_images/maximum_saturation_difference_over_time.png" src="_images/maximum_saturation_difference_over_time.png" />
+<img alt="_images/wells_pressure_site_reference.png" src="_images/wells_pressure_site_reference.png" />
 </figure>
 <figure class="align-default" id="id2">
-<img alt="_images/test_distance_from_border.png" src="_images/test_distance_from_border.png" />
-<figcaption>
-<p><span class="caption-text">Comparison of (top) pressure, (middle) gas saturation, and (botton) minimum
-distance from the CO2 plume to the site boundaries.</span><a class="headerlink" href="#id2" title="Permalink to this image"></a></p>
-</figcaption>
-</figure>
-<p>We observe that for this example using the fluxes from the regional model on the site simulation
-results in better predictions as compared to the site simulations with open boundaries (constant
-pressure conditions).</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The current implementation projects the fluxes from the regional simulations on the site model
-and only on one cell-face the pressure (see the generated input decks to locate the cell face).</p>
-</div>
-</section>
-<section id="larger-case">
-<h2>Larger case<a class="headerlink" href="#larger-case" title="Permalink to this heading"></a></h2>
-<p>We now increase the number of cells in the site reservoir from [15, 15, 9] to:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">8</span><span class="mi">75</span> <span class="mi">75</span> <span class="mi">27</span>                        <span class="c1">#Number of x-, y-, and z-cells in the site reservoir [-]s</span>
-</pre></div>
-</div>
-<p>This results on 3 796 875 cells on the reference simulation. Then we run the framework on a cluster
-with flow and mpi:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">2</span><span class="n">mpirun</span> <span class="o">-</span><span class="n">np</span> <span class="mi">57</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">AD</span><span class="o">.</span><span class="n">NORCERESEARCH</span><span class="o">.</span><span class="n">NO</span><span class="o">/</span><span class="n">dmar</span><span class="o">/</span><span class="n">Github</span><span class="o">/</span><span class="n">opm</span><span class="o">/</span><span class="n">build</span><span class="o">/</span><span class="n">opm</span><span class="o">-</span><span class="n">simulators</span><span class="o">/</span><span class="nb">bin</span><span class="o">/</span><span class="n">flow</span> <span class="o">--</span><span class="n">enable</span><span class="o">-</span><span class="n">opm</span><span class="o">-</span><span class="n">rst</span><span class="o">-</span><span class="n">file</span><span class="o">=</span><span class="n">true</span> <span class="o">--</span><span class="n">solver</span><span class="o">-</span><span class="nb">max</span><span class="o">-</span><span class="n">time</span><span class="o">-</span><span class="n">step</span><span class="o">-</span><span class="ow">in</span><span class="o">-</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span>
-</pre></div>
-</div>
-<p>The four simulations finished in less than an hour and the following are some of the generated figures:</p>
-<figure class="align-default">
-<img alt="_images/reference_saturation.png" src="_images/reference_saturation.png" />
-</figure>
-<figure class="align-default">
-<img alt="_images/site_saturation.png" src="_images/site_saturation.png" />
-</figure>
-<figure class="align-default" id="id3">
 <img alt="_images/distance_from_border.png" src="_images/distance_from_border.png" />
 <figcaption>
-<p><span class="caption-text">Simulation results of the gas saturation (top) in the reference and (middle) site and (bottom) distance
-from the CO2 plume to the border.</span><a class="headerlink" href="#id3" title="Permalink to this image"></a></p>
+<p><span class="caption-text">Comparison of cell pressures (max abs value) w.r.t the reference pressure (top), well BHPs (middle), and minimum
+distance from the CO2 plume to the site boundaries (bottom).</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+</section>
+<section id="example-2">
+<h2>Example 2<a class="headerlink" href="#example-2" title="Link to this heading"></a></h2>
+<p>The configuration file example2.txt set a more complex geological model with more grid cells (1 417 500). This was used
+to generate the animation (using ResInsight) in the <a class="reference internal" href="introduction.html"><span class="doc">introduction section</span></a> by running</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example2.txt<span class="w"> </span>-m<span class="w"> </span>reference
+</pre></div>
+</div>
 </section>
 </section>
 

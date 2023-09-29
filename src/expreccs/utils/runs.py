@@ -5,7 +5,7 @@
 Utiliy functions to run the studies.
 """
 import os
-import subprocess
+from expreccs.visualization.plotting import plot_results
 
 
 def simulations(dic, name):
@@ -16,10 +16,9 @@ def simulations(dic, name):
         dic (dict): Global dictionary with required parameters
 
     """
-    os.chdir(f"{dic['exe']}/{dic['fol']}/output")
     os.system(
-        f"{dic['flow']} --output-dir={dic['exe']}/{dic['fol']}/output "
-        f"{dic['exe']}/{dic['fol']}/preprocessing/{name.upper()}.DATA  & wait\n"
+        f"{dic['flow']} --output-dir={dic['exe']}/{dic['fol']}/output/{name} "
+        f"{dic['exe']}/{dic['fol']}/preprocessing/{name}/{name.upper()}.DATA  & wait\n"
     )
 
 
@@ -31,15 +30,16 @@ def plotting(dic, time):
         dic (dict): Global dictionary with required parameters
 
     """
+    dic["folders"] = [dic["fol"]]
+    dic["time"] = time
     os.chdir(f"{dic['exe']}/{dic['fol']}/postprocessing")
-    prosc = subprocess.run(
-        [
-            "python",
-            f"{dic['pat']}/visualization/plotting.py",
-            f"-t {time}",
-            "-p " + f"{dic['exe']}/{dic['fol']}/output/",
-        ],
-        check=True,
-    )
-    if prosc.returncode != 0:
-        raise ValueError(f"Invalid result: { prosc.returncode }")
+    plot_exe = [
+        "python",
+        f"{dic['pat']}/visualization/plotting.py",
+        f"-t {time}",
+        f"-f {dic['fol']}",
+        f"-m {dic['mode']}",
+        f"-r {dic['reading']}",
+    ]
+    print(" ".join(plot_exe))
+    plot_results(dic)

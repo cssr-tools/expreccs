@@ -11,6 +11,7 @@ Welcome to expreccs's documentation!
    examples
    api
    output_folder
+   related
    about
 
 Indices and tables
