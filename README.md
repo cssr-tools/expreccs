@@ -2,8 +2,9 @@
 <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![DOI](https://zenodo.org/badge/619946083.svg)](https://zenodo.org/badge/latestdoi/619946083)
 
-# A Python framework for the ExpReCCS Expansion of ResourCes for CO2 Storage on the Horda Platform (project)
+# A Python framework for the ExpReCCS (Expansion of ResourCes for CO2 Storage on the Horda Platform) project
 
 <img src="docs/text/figs/expreccs.gif" width="830" height="500">
 
