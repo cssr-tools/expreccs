@@ -6,7 +6,7 @@ About expreccs
     :scale: 50%
 
 The **expreccs** package is funded by 
-Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 104908]. 
+Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 336294]. 
 
 This is work in progress. 
 `Here <https://www.norceresearch.no/en/projects/expansion-of-resources-for-co2-storage-on-the-horda-platform-expreccs>`_ is the link to the project details.
