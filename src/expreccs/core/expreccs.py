@@ -8,12 +8,14 @@ import argparse
 from expreccs.utils.inputvalues import process_input
 from expreccs.utils.runs import simulations, plotting
 from expreccs.utils.writefile import write_folders, write_files, write_properties
-from expreccs.utils.mapproperties import (
+from expreccs.utils.mapproperties import mapping_properties
+from expreccs.visualization.plotting import plot_results
+from expreccs.utils.mapboundaries import (
     aquaflux_ecl,
     aquaflux_opm,
-    mapping_properties,
+    porv_projections,
+    porv_regional_segmentation,
 )
-from expreccs.visualization.plotting import plot_results
 
 
 def expreccs():
@@ -39,8 +41,8 @@ def expreccs():
         "--mode",
         default="all",
         help="Run the whole framework ('all'), only the reference ('reference'), "
-        "only the site ('site'), or only regional and site models ('noreference') "
-        " ('all' by default).",
+        "only the site ('site'), only regional and site models ('noreference') "
+        " or none 'none' ('all' by default).",
     )
     parser.add_argument(
         "-c",
@@ -91,6 +93,7 @@ def expreccs():
         write_files(dic, "reference")
         simulations(dic, "reference")
     if dic["mode"] in ["all", "regional", "noreference"]:
+        dic = porv_regional_segmentation(dic)
         write_files(dic, "regional")
         simulations(dic, "regional")
     if dic["mode"] in ["all", "site", "noreference"]:
@@ -99,6 +102,8 @@ def expreccs():
                 dic = aquaflux_ecl(dic)
             else:
                 dic = aquaflux_opm(dic)
+        elif dic["site_bctype"] == "porvproj":
+            dic = porv_projections(dic)
         write_files(dic, f"site_{dic['site_bctype']}")
         simulations(dic, f"site_{dic['site_bctype']}")
 

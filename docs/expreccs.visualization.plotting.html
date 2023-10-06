@@ -86,6 +86,16 @@
 <p>”
 Script to plot the top surface for the reference, regional, and site reservoirs.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.fpr_site">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">fpr_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndeck</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opmn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.fpr_site" title="Link to this definition"></a></dt>
+<dd><p>Function to plot the fiel average pressure</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_labels_difference">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_labels_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_labels_difference" title="Link to this definition"></a></dt>
 <dd><p>Function to handle the labeling for improve visualization.</p>
@@ -148,6 +158,16 @@ str (study): Name of the folder containing the results</p>
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_max_difference">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_max_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_max_difference" title="Link to this definition"></a></dt>
 <dd><p>Function to plot the the max difference between pressure/saturation.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_sensor">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_sensor" title="Link to this definition"></a></dt>
+<dd><p>Function to plot the the quantities on the sensor.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
 </dd>
@@ -220,10 +240,12 @@ nrst (int): Indice for the schedule</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.well_well_well">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">well_well_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.well_well_well" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">well_well_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.well_well_well" title="Link to this definition"></a></dt>
 <dd><p>Function to plot the injection rates and BHP</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
+i (int): Index of the quantity
+quantity (str): Name of the quantity</p>
 </dd>
 </dl>
 </dd></dl>

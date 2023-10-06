@@ -99,11 +99,15 @@ def readthefirstpart(lol, dic):
     dic["regional_bctype"] = (lol[12][0].strip()).split()[0]
     dic["reference_bctype"] = dic["regional_bctype"]
     if dic["regional_bctype"] == "porv":
-        dic["regional_porv"] = float((lol[12][0].strip()).split()[1])
-        dic["reference_porv"] = float((lol[12][0].strip()).split()[1])
+        dic["regional_porv"] = [
+            float((lol[12][0].strip()).split()[j + 1]) for j in range(4)
+        ]
+        dic["reference_porv"] = dic["regional_porv"]
     dic["site_bctype"] = (lol[13][0].strip()).split()[0]
     if dic["site_bctype"] == "porv":
-        dic["site_porv"] = float((lol[13][0].strip()).split()[1])
+        dic["site_porv"] = [
+            float((lol[13][0].strip()).split()[j + 1]) for j in range(4)
+        ]
     dic["fault_location"] = [float((lol[14][0].strip()).split()[j]) for j in [0, 1]]
     dic["fault_location"].append(0)
     dic["fault_mult"] = [float((lol[14][0].strip()).split()[j]) for j in [2, 3]]
@@ -121,8 +125,10 @@ def readthefirstpart(lol, dic):
     dic["pressure"] = float((lol[17][0].strip()).split()[0]) / 1.0e5  # To bars
     dic["temp_top"] = float((lol[17][0].strip()).split()[1])
     dic["temp_bottom"] = float((lol[17][0].strip()).split()[2])
-    dic["z_xy"] = str(lol[18][0])  # The function for the reservoir surface
-    index = 21  # Increase this if more rows are added to the model parameters part
+    dic["rock_comp"] = float((lol[17][0].strip()).split()[3]) * 1.0e5  # To 1/bar
+    dic["sensor_location"] = [float((lol[18][0].strip()).split()[j]) for j in range(3)]
+    dic["z_xy"] = str(lol[19][0])  # The function for the reservoir surface
+    index = 22  # Increase this if more rows are added to the model parameters part
     dic = readthesecondpart(lol, dic, index)
     return dic
 
@@ -187,10 +193,21 @@ def readthesecondpart(lol, dic, index):
     dic["wellCoord"] = column
     index += len(dic["wellCoord"]) + 3
     column = []
+    if dic["site_bctype"] == "wells":
+        dic["bc_wells"] = []
     for i in range(len(lol) - index):
         if not lol[index + i]:
             break
         row = list((lol[index + i][0].strip()).split())
         column.append([float(row[j]) for j in range(3 + 2 * len(dic["wellCoord"]))])
+        if dic["site_bctype"] == "wells":
+            dic["bc_wells"].append(
+                [
+                    float(row[j]) / 1e5
+                    for j in range(
+                        3 + 2 * len(dic["wellCoord"]), 3 + 2 * len(dic["wellCoord"]) + 8
+                    )
+                ]
+            )
     dic["inj"] = column
     return dic

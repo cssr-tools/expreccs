@@ -78,6 +78,10 @@ def safu_evaluation():
                         f" {pcwce(1-value+para[8],para[0], para[1], para[4], para[7]):E} \n"
                     )
             file.write("/\n")
+        %if dic["rock_comp"] > 0:
+        file.write("ROCK\n")
+        file.write("277.0 ${dic["rock_comp"]} /")
+        % endif
 
 
 if __name__ == "__main__":

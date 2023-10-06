@@ -2,4 +2,5 @@ ecl
 mako
 scipy
 pandas
+shapely
 matplotlib

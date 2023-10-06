@@ -25,7 +25,7 @@ START
 1 'JAN' 2025 /
 
 WELLDIMS
-${len(dic['site_wellijk'])} ${dic['site_noCells'][2]} ${len(dic['site_wellijk'])} ${len(dic['site_wellijk'])} /
+${len(dic['site_wellijk'])+8} ${dic['site_noCells'][2]} ${len(dic['site_wellijk'])} ${len(dic['site_wellijk'])+8} /
 
 UNIFIN
 UNIFOUT
@@ -79,49 +79,22 @@ BCCON
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------
-BOX
-1 1 1 ${dic['site_noCells'][0]} 1* 1* / 
-MULTPV
-% for _ in range(dic['site_noCells'][2]):
-% for i in range(dic['site_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["site_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-1 ${dic['site_noCells'][0]} 1 1 1* 1* / 
-MULTPV
-% for _ in range(dic['site_noCells'][2]):
-% for i in range(dic['site_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["site_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* / 
-MULTPV
-% for _ in range(dic['site_noCells'][2]):
-% for i in range(dic['site_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["site_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* / 
-MULTPV
-% for _ in range(dic['site_noCells'][2]):
-% for i in range(dic['site_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["site_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
+OPERATE
+	PORV 1 ${dic['site_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["site_porv"][0]/(dic['site_noCells'][0]*dic['site_noCells'][2])}/
+	PORV ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* ADDX PORV ${dic["site_porv"][1]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+	PORV 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["site_porv"][2]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
+	PORV 1 1 1 ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["site_porv"][3]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+ / 
+%elif dic['site_bctype'] == 'porvproj':
+----------------------------------------------------------------------------
+EDIT
+----------------------------------------------------------------------------
+OPERATE
+	PORV 1 ${dic['site_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["pv_bottom"]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
+	PORV ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* ADDX PORV ${dic["pv_right"]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+	PORV 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["pv_top"]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
+	PORV 1 1 1 ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["pv_left"]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+ / 
 %endif
 ----------------------------------------------------------------------------
 PROPS
@@ -217,13 +190,33 @@ RPTRST
 
 WELSPECS
 % for i in range(len(dic['site_wellijk'])):
-	'INJ${i}'	'G1'	${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]}	1*	'GAS' /
+'INJ${i}'	'G1'	${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]}	1*	'GAS' /
 % endfor
+%if dic['site_bctype'] == 'wells':
+'BCINJ0' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1* 'OIL' /
+'BCINJ1' 'W' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
+'BCINJ2' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1* 'OIL' /
+'BCINJ3' 'W' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
+'BCPRO0' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1* 'OIL' /
+'BCPRO1' 'W' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
+'BCPRO2' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1* 'OIL' /
+'BCPRO3' 'W' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
+% endif
 /
 COMPDAT
 % for i in range(len(dic['site_wellijk'])):
-	'INJ${i}'	${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]}	${dic['site_wellijk'][i][2]}	${dic['site_wellijk'][i][3]}	'OPEN'	1*	1*	0.5 /
+	'INJ${i}'	${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]}	${dic['site_wellijk'][i][2]}	${dic['site_wellijk'][i][3]}	'OPEN'	1*	1*	0.2 /
 % endfor
+%if dic['site_bctype'] == 'wells':
+'BCINJ0' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCINJ1' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCINJ2' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCINJ3' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCPRO0' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCPRO1' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCPRO2' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+'BCPRO3' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
+% endif
 /
 % for j in range(len(dic['inj'])):
 TUNING
@@ -240,6 +233,12 @@ WCONINJE
 'RATE' ${f"{dic['inj'][j][2*(i+2)] / 998.108 : E}"}  1* 400/
 %endif
 % endfor
+% if dic['site_bctype'] == "wells":
+'BCINJ0' 'OIL' ${'OPEN' if dic['bc_wells'][j][0] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][1]}/
+'BCINJ1' 'OIL' ${'OPEN' if dic['bc_wells'][j][2] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][3]}/
+'BCINJ2' 'OIL' ${'OPEN' if dic['bc_wells'][j][4] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][5]}/
+'BCINJ3' 'OIL' ${'OPEN' if dic['bc_wells'][j][6] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][7]}/
+% endif
 /
 %if dic['site_bctype'] == 'flux':
 AQUFLUX
@@ -288,6 +287,13 @@ BCPROP
 2 FREE /
 3 FREE /
 4 FREE /
+/
+% elif dic['site_bctype'] == "wells":
+WCONPROD
+'BCPRO0' ${'OPEN' if dic['bc_wells'][j][0] == 0 else 'SHUT'} 'BHP' 5* ${dic['bc_wells'][j][1]}/
+'BCPRO1' ${'OPEN' if dic['bc_wells'][j][2] == 0 else 'SHUT'} 'BHP' 5* ${dic['bc_wells'][j][3]}/
+'BCPRO2' ${'OPEN' if dic['bc_wells'][j][4] == 0 else 'SHUT'} 'BHP' 5* ${dic['bc_wells'][j][5]}/
+'BCPRO3' ${'OPEN' if dic['bc_wells'][j][6] == 0 else 'SHUT'} 'BHP' 5* ${dic['bc_wells'][j][7]}/
 /
 %endif
 TSTEP

@@ -167,11 +167,15 @@ def plot_results(dic):
         plt.rcParams.update({"axes.grid": False})
         final_time_maps(dic)
         return
-    well_well_well(dic)
+    quantites = ["pressure", "CO2 rate", "H2O rate", "pressure average value"]
+    for i, quantity in enumerate(quantites):
+        well_well_well(dic, i, quantity)
     over_time_distance(dic)
     dic["fig"], dic["axis"] = [], []
+    dic["figs"], dic["axiss"] = [], []
     for nqua, quantity in enumerate(dic["quantity"]):
         over_time_max_difference(dic, nqua, quantity)
+        over_time_sensor(dic, nqua, quantity)
     if dic["compare"]:
         return
     plt.rcParams.update({"axes.grid": False})
@@ -213,62 +217,93 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     return dic
 
 
-def well_well_well(dic):
+def fpr_site(dic, nfol, ndeck, opmn):
     """
-    Function to plot the injection rates and BHP
+    Function to plot the fiel average pressure
 
     Args:
         dic (dict): Global dictionary with required parameters
 
     """
-    quantites = ["pressure", "CO2 rate", "H2O rate"]
+    yvalues = []
+    fol = dic["folders"][nfol]
+    res = dic[f"{fol}_decks"][ndeck]
+    for nrst, _ in enumerate(dic[f"{fol}/{res}_smsp_dates"]):
+        if dic["reading"] == "ecl":
+            yvalues.append(dic[f"{fol}/{res}_smsp"][f"{opmn}"].values[nrst])
+        else:
+            yvalues.append(dic[f"{fol}/{res}_smsp"][f"{opmn}"][nrst])
+    fols = f" ({fol})"
+    dic["axis"].step(
+        dic[f"{fol}/{res}_smsp_dates"],
+        yvalues,
+        label=f"{res}" + f"{fols if dic['compare'] else ''}",
+        color=dic["colors"][ndeck % len(dic["colors"])],
+        linestyle=dic["linestyle"][(-1 + nfol) % len(dic["linestyle"])],
+        lw=1,
+    )
+    return dic
+
+
+def well_well_well(dic, i, quantity):
+    """
+    Function to plot the injection rates and BHP
+
+    Args:
+        dic (dict): Global dictionary with required parameters
+        i (int): Index of the quantity
+        quantity (str): Name of the quantity
+
+    """
     units = [
         "BHP [Bar]",
         "Rate [sm3/day]",
         "Rate [sm3/day]",
+        "[Bar]",
     ]
-    for i, quantity in enumerate(quantites):
-        dic["fig"], dic["axis"] = plt.subplots()
-        for nfol, fol in enumerate(dic["folders"]):
-            for ndeck, res in enumerate(dic[f"{fol}_decks"]):
-                if res == "regional":
-                    continue
+    dic["fig"], dic["axis"] = plt.subplots()
+    for nfol, fol in enumerate(dic["folders"]):
+        for ndeck, res in enumerate(dic[f"{fol}_decks"]):
+            if res == "regional":
+                continue
+            if quantity == "pressure average value":
+                dic = fpr_site(dic, nfol, ndeck, "RPR:1")
+            else:
                 for nwell in range(dic[f"{fol}/{res}_nowells_site"]):
                     dic = wells_site(dic, i, nfol, ndeck, nwell)
-        dic["axis"].set_ylabel(units[i])
-        dic["axis"].set_xlabel("Time")
-        handles, labels = plt.gca().get_legend_handles_labels()
-        order = np.argsort(labels)
-        dic["axis"].legend(
-            [handles[idx] for idx in order], [labels[idx] for idx in order]
-        )
-        dic["axis"].set_title("Injectors in the site location")
-        dic["axis"].xaxis.set_tick_params(size=6, rotation=45)
-        dic["fig"].savefig(
-            f"{dic['where']}/wells_{quantity}_site_reference.png", bbox_inches="tight"
-        )
-        plt.close()
-        dic["fig"], dic["axis"] = plt.subplots()
-        for nfol, fol in enumerate(dic["folders"]):
-            for ndeck, res in enumerate(dic[f"{fol}_decks"]):
-                if "site" in res:
-                    continue
+    dic["axis"].set_ylabel(units[i])
+    dic["axis"].set_xlabel("Time")
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = np.argsort(labels)
+    dic["axis"].legend([handles[idx] for idx in order], [labels[idx] for idx in order])
+    dic["axis"].set_title("Site location")
+    dic["axis"].xaxis.set_tick_params(size=6, rotation=45)
+    dic["fig"].savefig(
+        f"{dic['where']}/wells_{quantity}_site_reference.png", bbox_inches="tight"
+    )
+    plt.close()
+    dic["fig"], dic["axis"] = plt.subplots()
+    for nfol, fol in enumerate(dic["folders"]):
+        for ndeck, res in enumerate(dic[f"{fol}_decks"]):
+            if "site" in res:
+                continue
+            if quantity == "pressure average value":
+                dic = fpr_site(dic, nfol, ndeck, "FPR")
+            else:
                 for nwell in range(dic[f"{fol}/{res}_nowells"]):
                     dic = wells_site(dic, i, nfol, ndeck, nwell)
-        dic["axis"].set_ylabel(units[i])
-        dic["axis"].set_xlabel("Time")
-        handles, labels = plt.gca().get_legend_handles_labels()
-        order = np.argsort(labels)
-        dic["axis"].legend(
-            [handles[idx] for idx in order], [labels[idx] for idx in order]
-        )
-        dic["axis"].set_title("Injectors in the regional location")
-        dic["axis"].xaxis.set_tick_params(size=6, rotation=45)
-        dic["fig"].savefig(
-            f"{dic['where']}/wells_{quantity}_regional_reference.png",
-            bbox_inches="tight",
-        )
-        plt.close()
+    dic["axis"].set_ylabel(units[i])
+    dic["axis"].set_xlabel("Time")
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = np.argsort(labels)
+    dic["axis"].legend([handles[idx] for idx in order], [labels[idx] for idx in order])
+    dic["axis"].set_title("Regional location")
+    dic["axis"].xaxis.set_tick_params(size=6, rotation=45)
+    dic["fig"].savefig(
+        f"{dic['where']}/wells_{quantity}_regional_reference.png",
+        bbox_inches="tight",
+    )
+    plt.close()
 
 
 def reading_ecl(dic):
@@ -302,6 +337,12 @@ def reading_ecl(dic):
             case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
             dic[f"{fol}/{res}_nowells"] = np.load(
                 dic["exe"] + "/" + fol + f"/output/{res}/nowells.npy"
+            )
+            dic[f"{fol}/{res}_sensor"] = int(
+                np.load(dic["exe"] + "/" + fol + f"/output/{res}/sensor.npy")
+            )
+            dic[f"{fol}/{res}_sensor_location"] = np.load(
+                dic["exe"] + "/" + fol + f"/output/{res}/sensor_location.npy"
             )
             dic[f"{fol}/{res}_nowells_site"] = np.load(
                 dic["exe"] + "/" + fol + f"/output/{res}/nowells_site.npy"
@@ -440,6 +481,12 @@ def reading_opm(dic):
             )
             dic[f"{fol}/{res}_nowells_site"] = np.load(
                 dic["exe"] + "/" + fol + f"/output/{res}/nowells_site.npy"
+            )
+            dic[f"{fol}/{res}_sensor"] = int(
+                np.load(dic["exe"] + "/" + fol + f"/output/{res}/sensor.npy")
+            )
+            dic[f"{fol}/{res}_sensor_location"] = np.load(
+                dic["exe"] + "/" + fol + f"/output/{res}/sensor_location.npy"
             )
             case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
             dic[f"{fol}/{res}_rst"] = OpmRst(case + ".UNRST")
@@ -827,6 +874,50 @@ def over_time_max_difference(dic, nqua, quantity):
     dic["axis"][nqua].xaxis.set_tick_params(rotation=45)
     dic["fig"][nqua].savefig(
         f"{dic['where']}/maximum_{dic['names'][nqua]}_difference_over_time.png",
+        bbox_inches="tight",
+    )
+    plt.close()
+
+
+def over_time_sensor(dic, nqua, quantity):
+    """
+    Function to plot the the quantities on the sensor.
+
+    Args:
+        dic (dict): Global dictionary with required parameters
+
+    """
+    fig, axis = plt.subplots()
+    dic["figs"].append(fig)
+    dic["axiss"].append(axis)
+    for _, fol in enumerate(dic["folders"]):
+        for j, res in enumerate(["reference"] + dic[f"{fol}_sites"]):
+            dic[f"{fol}/{res}_sensor_{quantity}"] = []
+            for nrst in range(dic[f"{fol}/{res}_num_rst"]):
+                dic[f"{fol}/{res}_sensor_{quantity}"].append(
+                    dic[f"{fol}/{res}_{quantity}_array"][nrst][
+                        dic[f"{fol}/{res}_sensor"]
+                    ]
+                )
+            dic["axiss"][nqua].plot(
+                dic[f"{fol}/{res}_dates"],
+                dic[f"{fol}/{res}_sensor_{quantity}"],
+                color=dic["colors"][j % len(dic["colors"])],
+                linestyle=dic["linestyle"][j % len(dic["linestyle"])],
+                label=res,
+            )
+            location = f"{dic[f'{fol}/{res}_sensor_location'][0]} ,"
+            location += f" {dic[f'{fol}/{res}_sensor_location'][1]}, "
+            location += f" {dic[f'{fol}/{res}_sensor_location'][2]}"
+    dic["axiss"][nqua].set_title(
+        f"{dic['names'][nqua]} at the sensor location {location} m"
+    )
+    dic["axiss"][nqua].set_ylabel(f"{dic['units'][nqua]}")
+    dic["axiss"][nqua].set_xlabel("Time")
+    dic["axiss"][nqua].legend()
+    dic["axiss"][nqua].xaxis.set_tick_params(rotation=45)
+    dic["figs"][nqua].savefig(
+        f"{dic['where']}/sensor_{dic['names'][nqua]}_over_time.png",
         bbox_inches="tight",
     )
     plt.close()

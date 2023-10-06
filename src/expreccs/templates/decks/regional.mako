@@ -45,50 +45,13 @@ BCCON
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------
-BOX
-1 1 1 ${dic['regional_noCells'][0]} 1* 1* / 
-MULTPV
-% for _ in range(dic['regional_noCells'][2]):
-% for i in range(dic['regional_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["regional_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-1 ${dic['regional_noCells'][0]} 1 1 1* 1* / 
-MULTPV
-% for _ in range(dic['regional_noCells'][2]):
-% for i in range(dic['regional_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["regional_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1 ${dic['regional_noCells'][0]} 1* 1* / 
-MULTPV
-% for _ in range(dic['regional_noCells'][2]):
-% for i in range(dic['regional_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["regional_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* / 
-MULTPV
-% for _ in range(dic['regional_noCells'][2]):
-% for i in range(dic['regional_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["regional_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-%endif
+OPERATE
+	PORV 1 ${dic['regional_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["regional_porv"][0]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])}/
+	PORV ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1 ${dic['regional_noCells'][0]} 1* 1* ADDX PORV ${dic["regional_porv"][1]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
+	PORV 1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][2]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])} /
+	PORV 1 1 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][3]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
+ / 
+ % endif
 ----------------------------------------------------------------------------
 PROPS
 ----------------------------------------------------------------------------
@@ -146,7 +109,7 @@ WELSPECS
 /
 COMPDAT
 % for i in range(len(dic['regional_wellijk'])):
-	'INJ${i}'	${dic['regional_wellijk'][i][0]}	${dic['regional_wellijk'][i][1]}	${dic['regional_wellijk'][i][2]}	${dic['regional_wellijk'][i][3]}	'OPEN'	1*	1*	0.5 /
+	'INJ${i}'	${dic['regional_wellijk'][i][0]}	${dic['regional_wellijk'][i][1]}	${dic['regional_wellijk'][i][2]}	${dic['regional_wellijk'][i][3]}	'OPEN'	1*	1*	0.2 /
 % endfor
 /
 % for j in range(len(dic['inj'])):

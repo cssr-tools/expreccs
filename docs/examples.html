@@ -87,19 +87,24 @@
 <section id="example-1">
 <h2>Example 1<a class="headerlink" href="#example-1" title="Link to this heading"></a></h2>
 <p>We consider the configuration file ‘example1.txt’ in the
-examples folder. If the results are to be saved in a folder called ‘hello_world’,
-this is achieved by the following command:</p>
+examples folder (the animation in the <a class="reference external" href="https://github.com/daavid00/expreccs">Github home page</a> was based on this configuration file).
+If the results are to be saved in a folder called ‘hello_world’, this is achieved by the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world
 </pre></div>
 </div>
 <p>Then we can change in line 14 the BC projections from the regional simulations from
 ‘flux’ to ‘pres’, and run the following command to only simulate the site model:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1_pres.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site
 </pre></div>
 </div>
-<p>We can do the same to set pore volume multipliers by adding ‘porv 1e2’ in line 14, and
-to also visualize the results in PNGs figures, we run the following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>-p<span class="w"> </span>yes
+<p>We can do the same to add the pore volumes from the regional reservoir on the site boundaries by setting in line 14
+‘porvproj’, and to also visualize the results in PNGs figures, we run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1_porvproj.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site
+</pre></div>
+</div>
+<p>Finally, we consider the case where we add injector/producers on the site boundary, and to also visualize the results
+in PNGs figures, we run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1_wells.txt<span class="w"> </span>-o<span class="w"> </span>hello_world<span class="w"> </span>-m<span class="w"> </span>site<span class="w"> </span>-p<span class="w"> </span>yes
 </pre></div>
 </div>
 <p>Below are some of the figures generated inside the postprocessing folder:</p>
@@ -117,7 +122,7 @@ to also visualize the results in PNGs figures, we run the following command:</p>
 </figcaption>
 </figure>
 <figure class="align-default">
-<img alt="_images/maximum_pressure_difference_over_time.png" src="_images/maximum_pressure_difference_over_time.png" />
+<img alt="_images/sensor_pressure_over_time.png" src="_images/sensor_pressure_over_time.png" />
 </figure>
 <figure class="align-default">
 <img alt="_images/wells_pressure_site_reference.png" src="_images/wells_pressure_site_reference.png" />
@@ -125,7 +130,7 @@ to also visualize the results in PNGs figures, we run the following command:</p>
 <figure class="align-default" id="id2">
 <img alt="_images/distance_from_border.png" src="_images/distance_from_border.png" />
 <figcaption>
-<p><span class="caption-text">Comparison of cell pressures (max abs value) w.r.t the reference pressure (top), well BHPs (middle), and minimum
+<p><span class="caption-text">Comparison of cell pressures on the sensor location (top), well BHPs (middle), and minimum
 distance from the CO2 plume to the site boundaries (bottom).</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
