@@ -6,8 +6,8 @@ Example 1
 ---------
 
 We consider the configuration file 'example1.txt' in the 
-examples folder. If the results are to be saved in a folder called 'hello_world',
-this is achieved by the following command: 
+examples folder (the animation in the `Github home page <https://github.com/daavid00/expreccs>`_ was based on this configuration file). 
+If the results are to be saved in a folder called 'hello_world', this is achieved by the following command: 
 
 .. code-block:: bash
 
@@ -18,14 +18,21 @@ Then we can change in line 14 the BC projections from the regional simulations f
 
 .. code-block:: bash
 
-    expreccs -i example1.txt -o hello_world -m site
+    expreccs -i example1_pres.txt -o hello_world -m site
 
-We can do the same to set pore volume multipliers by adding 'porv 1e2' in line 14, and
-to also visualize the results in PNGs figures, we run the following command:
+We can do the same to add the pore volumes from the regional reservoir on the site boundaries by setting in line 14
+'porvproj', and to also visualize the results in PNGs figures, we run the following command:
 
 .. code-block:: bash
 
-    expreccs -i example1.txt -o hello_world -m site -p yes
+    expreccs -i example1_porvproj.txt -o hello_world -m site
+
+Finally, we consider the case where we add injector/producers on the site boundary, and to also visualize the results 
+in PNGs figures, we run the following command:
+
+.. code-block:: bash
+
+    expreccs -i example1_wells.txt -o hello_world -m site -p yes
 
 Below are some of the figures generated inside the postprocessing folder:
 
@@ -39,11 +46,11 @@ Below are some of the figures generated inside the postprocessing folder:
     Final water flux (sm3/day) in the x direction for (top) the reference, (middle) regional, and 
     (bottom) site (with fluxes as BC). 
 
-.. figure:: figs/maximum_pressure_difference_over_time.png
+.. figure:: figs/sensor_pressure_over_time.png
 .. figure:: figs/wells_pressure_site_reference.png
 .. figure:: figs/distance_from_border.png
     
-    Comparison of cell pressures (max abs value) w.r.t the reference pressure (top), well BHPs (middle), and minimum
+    Comparison of cell pressures on the sensor location (top), well BHPs (middle), and minimum
     distance from the CO2 plume to the site boundaries (bottom). 
 
 

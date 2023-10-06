@@ -4,7 +4,7 @@ Configuration file
 We consider the configuration file (`input.txt <https://github.com/daavid00/expreccs/blob/main/examples/input.txt>`_) available in the 
 examples folder. The parameters are chosen to show the functionality and capabilities of the **expreccs** framework regarding generation
 of corner-point grids (cpg), heterogeinities (e.g., different rock properties, faults), adding wells, and defining schedules for the
-operations. See the (`example1.txt <https://github.com/daavid00/expreccs/blob/main/examples/input.txt>`_) for a simpler configuration
+operations. See the `example1.txt <https://github.com/daavid00/expreccs/blob/main/examples/example1.txt>`_ for a simpler configuration
 file. 
 
 The first input parameter in the configuration file is:
@@ -42,22 +42,24 @@ The following input lines are:
     25,25,25                    #Variable array of y-refinment (Reference)
     6,5,5,5,3,3,3,3,3           #Variable array of z-refinment (Reference)
     18000 5000 27000 10000      #Site xi, yi, xf, and yf box positions [m]
-    free                        #Use free/closed/porv for the Regional aquifer (if porv, enter the value after a space (e.g, porv 1e5))
-    free                        #Use free/closed/porv/flux/pres for the BC site (if porv, enter the value after a space (e.g, porv 1e3))
-    9000 11000 0.01 10 22.5     #Regional fault x and y positions [m], x and y multipliers for the trans, and height of the jump on the fault interface [m]
+    free                        #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
+    free                        #Use free/closed/porv/porvproj/flux/pres/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1))
+    10000 11000 0.01 10 22.5    #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
     21583 5710 24081 8233 0.0 0.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
-    9,9,9,9,9,9,9,9,9           #Thicknes of the layers (Reference) 
-    2E7 60 50                   #Pressure on the reservoir top [Pa], and top and bottom temperature [C]
+    9,9,9,9,9,9,9,9,9           #Thicknes of the layers 
+    2E7 60 50 6.11423e-10       #Pressure on the reservoir top [Pa], top and bottom temperatures [C], and rock compressibility [1/Pa]
+    20000 8000 0                #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
     (20-20*mt.sin((2*mt.pi*(x+y)/10000))) #The function for the reservoir surface
 
 Here we first set the dimensions of the regional model and the grid size for the discretization,
 where the origen is located in the left bottom corner. Then the site model is defined by giving the coordinates
 of the box. On lines 13 and 14 we define the BC for the regional and site models, where flux/press in the site model 
-projects the fluxes/pressures from the regional simulations. The following line defines a fault along the z-direction in 
+projects the fluxes/pressures from the regional simulations, porvproj adds copmputed pore volumes from the regional
+reservoir, and wells add 4 injectors and 4 producers on the middle points on the site boundaries. The following line defines a fault along the z-direction in 
 the regional model. Similarly it is possible to define a fault in the site model, which extends from the given initial 
 location and continues in zig-zag until the given final location. Finally, we set the thicknes of the layers along the z direction, 
-which allows to consider different rock and saturation function properties, as well as the reservoir conditions (pressure and temperature), 
-and the z position of the tops cells as a function of the (x,y) location.
+which allows to consider different rock and saturation function properties, as well as the reservoir conditions (pressure, temperature, and rock compressibility), 
+the location of a point of interest to compare results, and the z position of the tops cells as a function of the (x,y) location.
 
 .. figure:: figs/grids.png
 
@@ -73,7 +75,7 @@ The following entries define the rock related parameters:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 21
+    :lineno-start: 22
 
     """Set the saturation functions"""
     krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
@@ -85,7 +87,7 @@ In this example we consider properties for the sands number 1 to 5 as described 
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 26
+    :lineno-start: 27
 
     """Properties sat functions"""
     """swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
@@ -103,7 +105,7 @@ Simillarly for the rock properties:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 38
+    :lineno-start: 39
 
     """Properties rock"""
     """Kxy [mD], Kz [mD], phi [-]"""
@@ -133,7 +135,7 @@ Now we proceed to define the location of the wells:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 50
+    :lineno-start: 51
 
     """Wells position"""
     """x, y, zi, and zf positions [m]"""
@@ -155,16 +157,18 @@ The injection rates are given in the following entries:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 59
+    :lineno-start: 60
 
-    """Define the injection values 'inj[]'""" 
-    """injection time [d], time step size to write results [d], maximum time step [d], fluid (0 wetting, 1 non-wetting), injection rates [kg/day], fluid ..., injection, ..."""
+    """Define the injection values""" 
+    """injection time [d], time step size to write results [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
     365. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1 5e6 0 1e7 
     365. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1   0 0 1e7
 
 Since we defined six wells (three of them inside the site model), then each row of the schedule has 15 entries, corresponding to
 the first three defining the injection time, number of restart files in the solution, and maximum solver time step, and 2*6 additional 
-entries to define injected fluid (0 water, 1 CO2) and the injection rates from well 0 to well 5 respectively. 
+entries to define injected fluid (0 water, 1 CO2) and the injection rates from well 0 to well 5 respectively. If in line 14 the wells
+option is activated, then at the end of each row we add the values from the wells (BHP control) on the boundaries in the order of bottom, right, top,
+and left with two values respectively (0 for producers and 1 for injectors, and the BHP in Pascals, see `example1_wells.txt <https://github.com/daavid00/expreccs/blob/main/examples/example1_wells.txt>`_). 
 
 .. warning::
     Keep the linebreak between the sections in the whole configuration file and do not add linebreaks inside the sections

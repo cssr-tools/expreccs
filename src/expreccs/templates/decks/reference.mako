@@ -45,49 +45,12 @@ BCCON
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------
-BOX
-1 1 1 ${dic['reference_noCells'][0]} 1* 1* / 
-MULTPV
-% for _ in range(dic['reference_noCells'][2]):
-% for i in range(dic['reference_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["reference_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-1 ${dic['reference_noCells'][0]} 1 1 1* 1* / 
-MULTPV
-% for _ in range(dic['reference_noCells'][2]):
-% for i in range(dic['reference_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["reference_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-${dic['reference_noCells'][1]} ${dic['reference_noCells'][1]} 1 ${dic['reference_noCells'][0]} 1* 1* / 
-MULTPV
-% for _ in range(dic['reference_noCells'][2]):
-% for i in range(dic['reference_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["reference_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
-
-BOX
-1 ${dic['reference_noCells'][0]} ${dic['reference_noCells'][1]} ${dic['reference_noCells'][1]} 1* 1* / 
-MULTPV
-% for _ in range(dic['reference_noCells'][2]):
-% for i in range(dic['reference_noCells'][0]):
-${'\t\t{0:.15e}'.format(dic["reference_porv"]) }\
-% endfor
-${'/\n' if loop.last else ' '}\
-% endfor
-ENDBOX
+OPERATE
+	PORV 1 ${dic['reference_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["reference_porv"][0]/(dic['reference_noCells'][0]*dic['reference_noCells'][2])}/
+	PORV ${dic['reference_noCells'][1]} ${dic['reference_noCells'][1]} 1 ${dic['reference_noCells'][0]} 1* 1* ADDX PORV ${dic["reference_porv"][1]/(dic['reference_noCells'][1]*dic['reference_noCells'][2])} /
+	PORV 1 ${dic['reference_noCells'][0]} ${dic['reference_noCells'][1]} ${dic['reference_noCells'][1]} 1* 1* ADDX PORV ${dic["reference_porv"][2]/(dic['reference_noCells'][0]*dic['reference_noCells'][2])} /
+	PORV 1 1 1 ${dic['reference_noCells'][1]} 1* 1* ADDX PORV ${dic["reference_porv"][3]/(dic['reference_noCells'][1]*dic['reference_noCells'][2])} /
+ / 
 % endif
 ----------------------------------------------------------------------------
 PROPS
@@ -146,7 +109,7 @@ WELSPECS
 /
 COMPDAT
 % for i in range(len(dic['reference_wellijk'])):
-	'INJ${i}'	${dic['reference_wellijk'][i][0]}	${dic['reference_wellijk'][i][1]}	${dic['reference_wellijk'][i][2]}	${dic['reference_wellijk'][i][3]}	'OPEN'	1*	1*	0.5 /
+	'INJ${i}'	${dic['reference_wellijk'][i][0]}	${dic['reference_wellijk'][i][1]}	${dic['reference_wellijk'][i][2]}	${dic['reference_wellijk'][i][3]}	'OPEN'	1*	1*	0.2 /
 % endfor
 /
 % for j in range(len(dic['inj'])):

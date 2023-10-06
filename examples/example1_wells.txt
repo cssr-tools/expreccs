@@ -11,7 +11,7 @@ flow --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
 1                           #Variable array of z-refinment (Reference)
 5000 5000 10000 10000       #Site xi, yi, xf, and yf box positions [m]
 free                        #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
-flux                        #Use free/closed/porv/porvproj/flux/pres/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1))
+wells                       #Use free/closed/porv/porvproj/flux/pres/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1))
 11000 11000 1 1 0           #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
 6565 7777 7979 8383 1.0 1.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
 5                           #Thicknes of the layers 
@@ -41,13 +41,13 @@ PERMXY5 1013.25 PERMZ5 1013.25 PORO5 0.25
 
 """Define the injection values""" 
 """injection time [d], time step size to write results [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6
+73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7
