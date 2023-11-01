@@ -8,18 +8,18 @@ Utiliy script for mapping to the site boundaries
 import math as mt
 import numpy as np
 import pandas as pd
-from scipy.interpolate import RegularGridInterpolator
+from scipy.interpolate import RegularGridInterpolator, interp1d
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 try:
-    from opm.io.ecl import EclFile as OpmFile
     from opm.io.ecl import EGrid as OpmGrid
+    from opm.io.ecl import EclFile as OpmFile
 except ImportError:
-    print("The opm Python package was not found, using ecl")
+    print("The Python package opm was not found, using ecl")
 try:
-    from ecl.eclfile import EclFile
     from ecl.grid import EclGrid
+    from ecl.eclfile import EclFile
 except ImportError:
     print("The ecl Python package was not found, using opm")
 
@@ -217,14 +217,14 @@ def aquaflux_ecl(dic):
         "FLOOILI+",
         "FLOOILJ+",
         "PRESSURE",
-        "AQUFLUX_bottom",
-        "AQUFLUX_top",
-        "AQUFLUX_right",
-        "AQUFLUX_left",
-        "PRESSURE_bottom",
-        "PRESSURE_top",
-        "PRESSURE_right",
-        "PRESSURE_left",
+        "R_AQUFLUX_bottom",
+        "R_AQUFLUX_top",
+        "R_AQUFLUX_right",
+        "R_AQUFLUX_left",
+        "R_PRESSURE_bottom",
+        "R_PRESSURE_top",
+        "R_PRESSURE_right",
+        "R_PRESSURE_left",
     ]:
         dic[keyword] = [[] for _ in range(dic["rst"].num_report_steps())]
     for i in range(dic["rst"].num_report_steps()):
@@ -232,7 +232,7 @@ def aquaflux_ecl(dic):
             dic[keyword][i].append(np.array(dic["rst"].iget_kw(keyword)[i]))
         if dic["site_bctype"] == "flux":
             n_xy = dic["regional_noCells"][0] * dic["regional_noCells"][1]
-            dic["AQUFLUX_bottom"][i].append(
+            dic["R_AQUFLUX_bottom"][i].append(
                 [
                     np.array(dic["FLOOILJ+"][i][0][j])
                     / (
@@ -242,7 +242,7 @@ def aquaflux_ecl(dic):
                     for j in dic["cells_bottom"]
                 ]
             )
-            dic["AQUFLUX_top"][i].append(
+            dic["R_AQUFLUX_top"][i].append(
                 [
                     -np.array(dic["FLOOILJ+"][i][0][j])
                     / (
@@ -252,7 +252,7 @@ def aquaflux_ecl(dic):
                     for j in dic["cells_top"]
                 ]
             )
-            dic["AQUFLUX_right"][i].append(
+            dic["R_AQUFLUX_right"][i].append(
                 [
                     -np.array(dic["FLOOILI+"][i][0][j])
                     / (
@@ -264,7 +264,7 @@ def aquaflux_ecl(dic):
                     for j in dic["cells_right"]
                 ]
             )
-            dic["AQUFLUX_left"][i].append(
+            dic["R_AQUFLUX_left"][i].append(
                 [
                     np.array(dic["FLOOILI+"][i][0][j])
                     / (
@@ -276,7 +276,7 @@ def aquaflux_ecl(dic):
                     for j in dic["cells_left"]
                 ]
             )
-            dic["PRESSURE_bottom"][i].append(
+            dic["R_PRESSURE_bottom"][i].append(
                 [
                     0.5
                     * (
@@ -286,8 +286,10 @@ def aquaflux_ecl(dic):
                     for j in dic["cells_bottom"]
                 ]
             )
-        else:
+        elif dic["site_bctype"] == "pres":
             dic = handle_stencil_ecl(dic, i)
+        elif dic["site_bctype"] == "pres2p":
+            dic = handle_stencil_2p(dic, i)
     return dic
 
 
@@ -385,22 +387,22 @@ def aquaflux_opm(dic):
         "FLOOILI+",
         "FLOOILJ+",
         "PRESSURE",
-        "AQUFLUX_bottom",
-        "AQUFLUX_top",
-        "AQUFLUX_right",
-        "AQUFLUX_left",
-        "PRESSURE_bottom",
-        "PRESSURE_top",
-        "PRESSURE_right",
-        "PRESSURE_left",
+        "R_AQUFLUX_bottom",
+        "R_AQUFLUX_top",
+        "R_AQUFLUX_right",
+        "R_AQUFLUX_left",
+        "R_PRESSURE_bottom",
+        "R_PRESSURE_top",
+        "R_PRESSURE_right",
+        "R_PRESSURE_left",
     ]:
-        dic[keyword] = [[] for _ in range(len(dic["inj"]) + 1)]
-    for i in range(len(dic["inj"]) + 1):
+        dic[keyword] = [[] for _ in range(len(dic["schedule_r"]))]
+    for i in range(len(dic["schedule_r"])):
         for keyword in ["FLOOILI+", "FLOOILJ+", "PRESSURE"]:
             dic[keyword][i].append(np.array(dic["rst"][keyword, i]))
         if dic["site_bctype"] == "flux":
             n_xy = dic["regional_noCells"][0] * dic["regional_noCells"][1]
-            dic["AQUFLUX_bottom"][i].append(
+            dic["R_AQUFLUX_bottom"][i].append(
                 [
                     np.array(dic["FLOOILJ+"][i][0][j])
                     / (
@@ -410,7 +412,7 @@ def aquaflux_opm(dic):
                     for j in dic["cells_bottom"]
                 ]
             )
-            dic["AQUFLUX_top"][i].append(
+            dic["R_AQUFLUX_top"][i].append(
                 [
                     -np.array(dic["FLOOILJ+"][i][0][j])
                     / (
@@ -420,7 +422,7 @@ def aquaflux_opm(dic):
                     for j in dic["cells_top"]
                 ]
             )
-            dic["AQUFLUX_right"][i].append(
+            dic["R_AQUFLUX_right"][i].append(
                 [
                     -np.array(dic["FLOOILI+"][i][0][j])
                     / (
@@ -432,7 +434,7 @@ def aquaflux_opm(dic):
                     for j in dic["cells_right"]
                 ]
             )
-            dic["AQUFLUX_left"][i].append(
+            dic["R_AQUFLUX_left"][i].append(
                 [
                     np.array(dic["FLOOILI+"][i][0][j])
                     / (
@@ -444,7 +446,7 @@ def aquaflux_opm(dic):
                     for j in dic["cells_left"]
                 ]
             )
-            dic["PRESSURE_bottom"][i].append(
+            dic["R_PRESSURE_bottom"][i].append(
                 [
                     0.5
                     * (
@@ -454,8 +456,10 @@ def aquaflux_opm(dic):
                     for j in dic["cells_bottom"]
                 ]
             )
-        else:
+        elif dic["site_bctype"] == "pres":
             dic = handle_stencil_opm(dic, i)
+        elif dic["site_bctype"] == "pres2p":
+            dic = handle_stencil_2p(dic, i)
     return dic
 
 
@@ -540,7 +544,8 @@ def handle_stencil_ecl(dic, i):
                 dic["xc"], dic["site_location"][1 + 3 * ndir], indexing="ij"
             )
             temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"PRESSURE_{name}"][i].append(temp)
+        dic[f"R_PRESSURE_{name}"][i].append(temp)
+    dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_noCells"][2])
     for ndir, name in enumerate(["left", "right"]):
         temp = np.array([])
         for k in range(dic["regional_noCells"][2]):
@@ -603,7 +608,7 @@ def handle_stencil_ecl(dic, i):
                 dic["yc"], dic["site_location"][3 * ndir], indexing="ij"
             )
             temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"PRESSURE_{name}"][i].append(temp)
+        dic[f"R_PRESSURE_{name}"][i].append(temp)
     return dic
 
 
@@ -717,7 +722,8 @@ def handle_stencil_opm(dic, i):
                 dic["xc"], dic["site_location"][1 + 3 * ndir], indexing="ij"
             )
             temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"PRESSURE_{name}"][i].append(temp)
+        dic[f"R_PRESSURE_{name}"][i].append(temp)
+    dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_noCells"][2])
     for ndir, name in enumerate(["left", "right"]):
         temp = np.array([])
         for k in range(dic["regional_noCells"][2]):
@@ -809,5 +815,96 @@ def handle_stencil_opm(dic, i):
                 dic["yc"], dic["site_location"][3 * ndir], indexing="ij"
             )
             temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"PRESSURE_{name}"][i].append(temp)
+        dic[f"R_PRESSURE_{name}"][i].append(temp)
+    return dic
+
+
+def temporal_interpolation(dic):
+    """
+    Function to interpolate the BC values in time
+    """
+    if dic["site_bctype"] == "pres" or dic["site_bctype"] == "pres2p":
+        keywords = [
+            "PRESSURE_bottom",
+            "PRESSURE_top",
+            "PRESSURE_right",
+            "PRESSURE_left",
+        ]
+    else:
+        keywords = [
+            "AQUFLUX_bottom",
+            "AQUFLUX_top",
+            "AQUFLUX_right",
+            "AQUFLUX_left",
+            "PRESSURE_bottom",
+        ]
+    for keyword in keywords:
+        dic[f"{keyword}"] = [
+            [np.array([0.0 for _ in range(len(dic[f"R_{keyword}"][0][0]))])]
+            for _ in range(len(dic["schedule_s"]))
+        ]
+        for i in range(len(dic[f"R_{keyword}"][0][0])):
+            if dic["time_interp"] == "interp":
+                interp_func = interp1d(
+                    dic["schedule_r"],
+                    [
+                        dic[f"R_{keyword}"][j][0][i]
+                        for j in range(len(dic["schedule_r"]))
+                    ],
+                    fill_value="extrapolate",
+                )
+                for j, time in enumerate(dic["schedule_s"]):
+                    dic[f"{keyword}"][j][0][i] = interp_func(time)
+            else:
+                for j, time in enumerate(dic["schedule_s"]):
+                    dic[f"{keyword}"][j][0][i] = dic[f"R_{keyword}"][
+                        np.searchsorted(dic["schedule_r"], time)
+                    ][0][i]
+    return dic
+
+
+def handle_stencil_2p(dic, i):
+    """
+    Function to project the cell pressures to the cell faces
+
+    Args:
+        dic (dict): Global dictionary with required parameters
+        i (int): Counter for the time in the schedule
+
+    Returns:
+        dic (dict): Global dictionary with new added parameters
+
+    """
+    dic["R_PRESSURE_bottom"][i].append(
+        [
+            0.5
+            * (
+                dic["PRESSURE"][i][0][j]
+                + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
+            )
+            for j in dic["cells_bottom"]
+        ]
+    )
+    dic["R_PRESSURE_top"][i].append(
+        [
+            0.5
+            * (
+                dic["PRESSURE"][i][0][j]
+                + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
+            )
+            for j in dic["cells_top"]
+        ]
+    )
+    dic["R_PRESSURE_left"][i].append(
+        [
+            0.5 * (dic["PRESSURE"][i][0][j] + dic["PRESSURE"][i][0][j + 1])
+            for j in dic["cells_left"]
+        ]
+    )
+    dic["R_PRESSURE_right"][i].append(
+        [
+            0.5 * (dic["PRESSURE"][i][0][j] + dic["PRESSURE"][i][0][j + 1])
+            for j in dic["cells_right"]
+        ]
+    )
     return dic

@@ -43,13 +43,14 @@ The following input lines are:
     6,5,5,5,3,3,3,3,3           #Variable array of z-refinment (Reference)
     18000 5000 27000 10000      #Site xi, yi, xf, and yf box positions [m]
     free                        #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
-    free                        #Use free/closed/porv/porvproj/flux/pres/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1))
+    free                        #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time
     10000 11000 0.01 10 22.5    #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
     21583 5710 24081 8233 0.0 0.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
     9,9,9,9,9,9,9,9,9           #Thicknes of the layers 
     2E7 60 50 6.11423e-10       #Pressure on the reservoir top [Pa], top and bottom temperatures [C], and rock compressibility [1/Pa]
     20000 8000 0                #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
     (20-20*mt.sin((2*mt.pi*(x+y)/10000))) #The function for the reservoir surface
+    1 2.92                      #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
 
 Here we first set the dimensions of the regional model and the grid size for the discretization,
 where the origen is located in the left bottom corner. Then the site model is defined by giving the coordinates
@@ -59,7 +60,8 @@ reservoir, and wells add 4 injectors and 4 producers on the middle points on the
 the regional model. Similarly it is possible to define a fault in the site model, which extends from the given initial 
 location and continues in zig-zag until the given final location. Finally, we set the thicknes of the layers along the z direction, 
 which allows to consider different rock and saturation function properties, as well as the reservoir conditions (pressure, temperature, and rock compressibility), 
-the location of a point of interest to compare results, and the z position of the tops cells as a function of the (x,y) location.
+the location of a point of interest to compare results, and the z position of the tops cells as a function of the (x,y) location. The hysteresis option activates the
+Killough hysteresis model on the gas relative permeability.
 
 .. figure:: figs/grids.png
 
@@ -75,19 +77,19 @@ The following entries define the rock related parameters:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 22
+    :lineno-start: 23
 
     """Set the saturation functions"""
     krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
     krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn      #Non-wetting rel perm saturation function [-]
-    pec * ((sw - swi) / (1.0 - sni - swi)) ** (-(1.0 / npe))  #Capillary pressure saturation function [Pa]  
+    pec * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npe))        #Capillary pressure saturation function [Pa]  
 
 In this example we consider properties for the sands number 1 to 5 as described in the 
 `11th SPE CSP <https://www.spe.org/en/csp/>`_:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 27
+    :lineno-start: 28
 
     """Properties sat functions"""
     """swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
@@ -100,12 +102,25 @@ In this example we consider properties for the sands number 1 to 5 as described 
     SWI3 0.12 SNI3 0.10 KRW3 1. KRN3 1. PRE3 6120.00 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
     SWI2 0.14 SNI2 0.10 KRW2 1. KRN2 1. PRE2 8654.99 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
     SWI3 0.12 SNI3 0.10 KRW3 1. KRN3 1. PRE3 6120.00 NKRW1 2 NKRN1 2 NPE1 2 THRE1 1e-4
+    SWI5 0.12 SNI5 0.30 KRW5 1. KRN5 1. PRE4 3060.00 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI4 0.12 SNI4 0.30 KRW4 1. KRN4 1. PRE4 3870.63 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI5 0.12 SNI5 0.30 KRW5 1. KRN5 1. PRE5 3060.00 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI4 0.12 SNI4 0.30 KRW4 1. KRN4 1. PRE4 3870.63 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI1 0.32 SNI1 0.30 KRW1 1. KRN1 1. PRE1 193531. NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI2 0.14 SNI2 0.30 KRW2 1. KRN2 1. PRE2 8654.99 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI3 0.12 SNI3 0.30 KRW3 1. KRN3 1. PRE3 6120.00 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI2 0.14 SNI2 0.30 KRW2 1. KRN2 1. PRE2 8654.99 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+    SWI3 0.12 SNI3 0.30 KRW3 1. KRN3 1. PRE3 6120.00 NKRW1 2 NKRN1 4 NPE1 2 THRE1 1e-4
+
+.. note::
+    Since hysteresis is activated (line 21), then we add the values for the imbibition curves (lines 39 to 47),
+    where in this example the residual saturations are changed to 0.3 and the exponent to 4.
 
 Simillarly for the rock properties:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 39
+    :lineno-start: 49
 
     """Properties rock"""
     """Kxy [mD], Kz [mD], phi [-]"""
@@ -124,7 +139,7 @@ towards rock No. 5.
 
 .. note::
     The names for the saturation functions and rock properties are not used in the framework (they are used to
-    ease the visualization of the parameter values in the configuration file, i.e., writing PERMABC in line 40 has 
+    ease the visualization of the parameter values in the configuration file, i.e., writing PERMABC in line 51 has 
     no impact, so far the name has at least one character since this is used in the reading of the values).
 
 ***********************
@@ -135,7 +150,7 @@ Now we proceed to define the location of the wells:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 51
+    :lineno-start: 61
 
     """Wells position"""
     """x, y, zi, and zf positions [m]"""
@@ -157,15 +172,15 @@ The injection rates are given in the following entries:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 60
+    :lineno-start: 70
 
     """Define the injection values""" 
-    """injection time [d], time step size to write results [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
-    365. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1 5e6 0 1e7 
-    365. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1   0 0 1e7
+    """injection time [d], time step size to write results regional [d], time step size to write results site/reference [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
+    365. 73. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1 5e6 0 1e7 
+    365. 73. 73. 73. 1 3e5 1 3e5 1 3e5 1 5e6 1   0 0 1e7
 
-Since we defined six wells (three of them inside the site model), then each row of the schedule has 15 entries, corresponding to
-the first three defining the injection time, number of restart files in the solution, and maximum solver time step, and 2*6 additional 
+Since we defined six wells (three of them inside the site model), then each row of the schedule has 16 entries, corresponding to
+the first three defining the injection time, number of restart files in the solution for the regional, number of restart files in the solution for the site/reference, and maximum solver time step, and 2*6 additional 
 entries to define injected fluid (0 water, 1 CO2) and the injection rates from well 0 to well 5 respectively. If in line 14 the wells
 option is activated, then at the end of each row we add the values from the wells (BHP control) on the boundaries in the order of bottom, right, top,
 and left with two values respectively (0 for producers and 1 for injectors, and the BHP in Pascals, see `example1_wells.txt <https://github.com/daavid00/expreccs/blob/main/examples/example1_wells.txt>`_). 

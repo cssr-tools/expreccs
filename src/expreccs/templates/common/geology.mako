@@ -93,7 +93,7 @@ n = 0
 % for i in range(dic['reference_noCells'][0]):
 % if j == dic["reference_fault"][1] and i > dic["reference_fault"][0]:
 ${dic["fault_mult"][1]}
-% elif i == dic["reference_site_fault"][0][0] + n and j == dic["reference_site_fault"][0][1] + n and i <= dic["reference_site_fault"][1][0] and j <= dic["reference_site_fault"][1][1]:
+% elif i == dic["reference_site_fault"][0][0] + n and j == dic["reference_site_fault"][0][1] + n - 1 and i <= dic["reference_site_fault"][1][0] and j <= dic["reference_site_fault"][1][1]:
 ${dic["fault_site_mult"][0]}
 <%
 n += 1
@@ -134,7 +134,7 @@ n = 0
 %>
 % for j in range(dic['site_noCells'][1]):
 % for i in range(dic['site_noCells'][0]):
-% if j == dic["site_fault"][0][1] + n and i == dic["site_fault"][0][0] + n and i <= dic["site_fault"][1][0] and j <= dic["site_fault"][1][1]:
+% if j == dic["site_fault"][0][1] + n - 1 and i == dic["site_fault"][0][0] + n and i <= dic["site_fault"][1][0] and j <= dic["site_fault"][1][1]:
 ${dic["fault_site_mult"][1]}
 <%
 n += 1

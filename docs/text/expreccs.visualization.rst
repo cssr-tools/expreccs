@@ -9,6 +9,7 @@ Submodules
 
    expreccs.visualization.maps2d
    expreccs.visualization.plotting
+   expreccs.visualization.reading
 
 Module contents
 ---------------

@@ -6,6 +6,7 @@ Utiliy functions for necessary files and variables to run OPM Flow.
 """
 
 import os
+import csv
 import subprocess
 import numpy as np
 from mako.template import Template
@@ -91,12 +92,20 @@ def write_properties(dic):
         dic (dict): Global dictionary with required parameters
 
     """
-    schedule = [0]
+    dic["schedule_r"] = [0]
+    dic["schedule_s"] = [0]
     for nrst in dic["inj"]:
         for _ in range(round(nrst[0] / nrst[1])):
-            schedule.append(schedule[-1] + nrst[1] * 86400.0)
+            dic["schedule_r"].append(dic["schedule_r"][-1] + nrst[1] * 86400.0)
+        for _ in range(round(nrst[0] / nrst[2])):
+            dic["schedule_s"].append(dic["schedule_s"][-1] + nrst[2] * 86400.0)
+    np.save(f"{dic['exe']}/{dic['fol']}/output/regional/schedule", dic["schedule_r"])
+    np.save(f"{dic['exe']}/{dic['fol']}/output/reference/schedule", dic["schedule_s"])
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/schedule",
+        dic["schedule_s"],
+    )
     for fil in ["reference", "regional", f"site_{dic['site_bctype']}"]:
-        np.save(f"{dic['exe']}/{dic['fol']}/output/{fil}/schedule", schedule)
         if fil == f"site_{dic['site_bctype']}":
             np.save(
                 f"{dic['exe']}/{dic['fol']}/output/{fil}/nowells",
@@ -110,6 +119,32 @@ def write_properties(dic):
             f"{dic['exe']}/{dic['fol']}/output/{fil}/nowells_site",
             len(dic["site_wellijk"]),
         )
+
+
+def set_gridmako(dic, f_xy):
+    """
+    Method to erase the mainfold function
+
+    Args:
+        dic (dict): Global dictionary with required parameters
+        f_xy: The function for the reservoir surface
+
+    """
+    lol = []
+    with open(f"{dic['pat']}/templates/common/grid.mako", "r", encoding="utf8") as file:
+        for i, row in enumerate(csv.reader(file, delimiter="#")):
+            if i == 3:
+                lol.append(f"    z = {f_xy}")
+            elif len(row) == 0:
+                lol.append("")
+            else:
+                lol.append(row[0])
+    with open(
+        f"{dic['pat']}/templates/common/grid.mako",
+        "w",
+        encoding="utf8",
+    ) as file:
+        file.write("\n".join(lol))
 
 
 def write_folders(dic):

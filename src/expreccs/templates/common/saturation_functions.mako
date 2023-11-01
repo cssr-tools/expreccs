@@ -54,7 +54,7 @@ def safu_evaluation():
     ) as file:
         file.write("SGOF\n")
         for _, para in enumerate(safu):
-            snatc = np.linspace(para[1], 1-para[0], 10000)
+            snatc = np.linspace(para[1], 1-para[0], 100000)
             if para[1] > 0:
                 file.write(
                     f"{0:.6f}"
@@ -73,14 +73,23 @@ def safu_evaluation():
                 else:
                     file.write(
                         f"{value:.6f}"
-                        f" {krne(1-value,para[0], para[1] , para[2], para[6]) :.6f}"
+                        f" {krne(1-value,para[0], para[1] , para[3], para[6]) :.6f}"
                         f" {krwe(1-value,para[0], para[1] , para[2], para[5]) :.6f}"
                         f" {pcwce(1-value+para[8],para[0], para[1], para[4], para[7]):E} \n"
                     )
             file.write("/\n")
+
+        % if dic["hysteresis"] ==1:
+        file.write("EHYSTR\n")
+        file.write("1* 2/\n")
+        % endif
+        % if dic["salinity"] >0.:
+        file.write("SALINITY\n")
+        file.write("${dic["salinity"]} /\n")
+        % endif
         %if dic["rock_comp"] > 0:
         file.write("ROCK\n")
-        file.write("277.0 ${dic["rock_comp"]} /")
+        file.write("276.0 ${dic["rock_comp"]} /")
         % endif
 
 

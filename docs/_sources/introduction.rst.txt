@@ -33,7 +33,7 @@ where
 - \-m, \-mode: Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
 - \-c, \-compare: Generate metric plots for the current outputed folders ('compare') (' ' by default).
 - \-p, \-plot: Create nice figures in the postprocessing folder ('no' by default).
-- \-r, \-reading: Using the 'opm' or 'ecl' python package ('ecl' by default).
+- \-r, \-reading: Using the 'opm' or 'ecl' python package ('opm' by default).
 
 In the **configuration file** the geological model is defined by generation
 of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults), wells, and defining schedules for the

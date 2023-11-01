@@ -11,18 +11,19 @@ flow --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
 1                           #Variable array of z-refinment (Reference)
 5000 5000 10000 10000       #Site xi, yi, xf, and yf box positions [m]
 free                        #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
-wells                       #Use free/closed/porv/porvproj/flux/pres/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1))
+wells                       #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time
 11000 11000 1 1 0           #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
 6565 7777 7979 8383 1.0 1.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
 5                           #Thicknes of the layers 
 2E7 40 40 0                 #Pressure on the reservoir top [Pa], top and bottom temperatures [C], and rock compressibility [1/Pa]
 7000 7000 0                 #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
 0                           #The function for the reservoir surface
+0 0                         #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
 
 """Set the saturation functions"""
 krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
 krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn      #Non-wetting rel perm saturation function [-]
-pec * ((sw - swi) / (1.0 - sni - swi)) ** (-(1.0 / npe))  #Capillary pressure saturation function [Pa]
+pec * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npe))        #Capillary pressure saturation function [Pa]
 
 """Properties sat functions"""
 """swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
@@ -40,14 +41,14 @@ PERMXY5 1013.25 PERMZ5 1013.25 PORO5 0.25
 11200  4800 0 5  #Well 3
 
 """Define the injection values""" 
-"""injection time [d], time step size to write results [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
-73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7
+"""injection time [d], time step size to write results regional [d], time step size to write results site/reference [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
+73. 73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 1 5e6 0 0 0 2e7 1 2.15e7 1 2.15e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7 
+73. 73. 73. 73. 1 3e5 1 3e5 0 0 1 5e6 1 2.15e7 1 2.15e7 0 2e7 0 2e7
