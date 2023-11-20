@@ -12,16 +12,22 @@ EQLDIMS
 /
 
 TABDIMS
-${dic['satnum']} 1* 10000 /
+${(dic["hysteresis"]+1)*dic['satnum']} 1* 100000 /
 
 OIL
 GAS
+DISGAS
 CO2STORE
 
 METRIC
 
 START
 1 'JAN' 2025 /
+
+% if dic["hysteresis"] ==1:
+SATOPTS
+HYSTER  /
+% endif
 
 WELLDIMS
 ${len(dic['regional_wellijk'])} ${dic['regional_noCells'][2]} ${len(dic['regional_wellijk'])} ${len(dic['regional_wellijk'])} /
@@ -47,7 +53,7 @@ EDIT
 ----------------------------------------------------------------------------
 OPERATE
 	PORV 1 ${dic['regional_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["regional_porv"][0]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])}/
-	PORV ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1 ${dic['regional_noCells'][0]} 1* 1* ADDX PORV ${dic["regional_porv"][1]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
+	PORV ${dic['regional_noCells'][0]} ${dic['regional_noCells'][0]} 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][1]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
 	PORV 1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][2]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])} /
 	PORV 1 1 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][3]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
  / 
@@ -71,6 +77,10 @@ EQUIL
 RTEMPVD
 0   ${dic['temp_top']}
 ${dic[f'{reservoir}_zmz'][-1]} ${dic['temp_bottom']} /
+
+RSVD
+0   0
+${dic[f'{reservoir}_zmz'][-1]} 0 /
 
 RPTRST 
  'BASIC=2' FLOWS FLORES DEN/
@@ -114,17 +124,17 @@ COMPDAT
 /
 % for j in range(len(dic['inj'])):
 TUNING
-${min(1, dic['inj'][j][2])} ${dic['inj'][j][2]} 1e-10 2* 1e-12/
+${min(1, dic['inj'][j][3])} ${dic['inj'][j][3]} 1e-10 2* 1e-12/
 /
 /
 WCONINJE
 % for i in range(len(dic['regional_wellijk'])):
-% if dic['inj'][j][3+2*i] > 0:
-'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)] / 1.86843 : E}"}  1* 400/
+% if dic['inj'][j][4+2*i] > 0:
+'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 400/
 % else:
-'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)] / 998.108 : E}"}  1* 400/
+'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 400/
 %endif
 % endfor
 /
@@ -137,6 +147,6 @@ BCPROP
 /
 % endif
 TSTEP
-${mt.floor(dic['inj'][j][0]/dic['inj'][j][1])}*${dic['inj'][j][1]}
+${round(dic['inj'][j][0]/dic['inj'][j][1])}*${dic['inj'][j][1]}
 /
 % endfor

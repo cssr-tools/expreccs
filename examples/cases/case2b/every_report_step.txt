@@ -1,0 +1,60 @@
+"""Set the full path to the flow executable and flags"""
+flow --enable-opm-rst-file=true --linear-solver=cprw --enable-tuning=true
+
+"""Set the model parameters"""
+45000 60000 9               #Reginonal aquifer length, width, and depth [m]
+45                          #Variable array of x-refinment (Regional)
+60                          #Variable array of y-refinment (Regional)
+1,1,1                       #Variable array of z-refinment (Regional)
+225                         #Variable array of x-refinment (Reference)
+300                         #Variable array of y-refinment (Reference)
+3,2,1                       #Variable array of z-refinment (Reference)
+12000 12000 30000 30000     #Site xi, yi, xf, and yf box positions [m]
+porv 3e10 3e10 3e10 3e10    #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
+pres                        #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time
+33000 40000 1E5 0 4.5       #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
+19998 21225 22655 24350 0.0 0.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
+3,3,3                       #Thicknes of the layers 
+3E7 105 105 4.934e-10       #Pressure on the reservoir top [Pa], top and bottom temperatures [C], and rock compressibility [1/Pa]
+23685 24290 0               #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
+(20-20*mt.cos((2*mt.pi*(x+y)/45000))) #The function for the reservoir surface
+1 2.92                      #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
+
+"""Set the saturation functions"""
+krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
+krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn      #Non-wetting rel perm saturation function [-]
+pec * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npe))        #Capillary pressure saturation function [Pa]
+
+"""Properties sat functions"""
+"""swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
+SWI5 0.478 SNI5 0. KRW5 1. KRN5 .3 PRE4 61237. NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0. KRW5 1. KRN5 .3 PRE4 5E4 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0. KRW5 1. KRN5 .3 PRE4 49029 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0.312 KRW5 1. KRN5 .3 PRE4 61237. NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0.312 KRW5 1. KRN5 .3 PRE4 5E4 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0.312 KRW5 1. KRN5 .3 PRE4 49029 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+
+"""Properties rock"""
+"""Kxy [mD], Kz [mD], phi [-]"""
+PERMXY5 500 PERMZ5 50 PORO5 0.15
+PERMXY5 1000 PERMZ5 100 PORO5 0.20
+PERMXY5 1300 PERMZ5 130 PORO5 0.25
+
+"""Wells position"""
+"""x, y, zi, and zf positions [m]""" 
+21540   20540 0 9  #Well 0 
+23910   22910 0 9  #Well 1
+20000   24000 0 9  #Well 2
+33900   40900 0 9  #Well 3 
+37000    9000 0 9  #Well 4
+16000   40000 0 9  #Well 5
+8500    52500 0 9  #Well 6
+7000     7000 0 9  #Well 7
+22250   50000 0 9  #Well 8
+
+"""Define the injection values""" 
+"""injection time [d], time step size to write results regional [d], time step size to write results site/reference [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
+300.   300.  300. 30. 1 1378677.1284 1 1378677.1284 1 1378677.1284 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852
+3000. 3000. 3000. 30. 1 1378677.1284 1 1378677.1284 1 1378677.1284 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852
+5700. 5700. 5700. 30. 1 1378677.1284 1 1378677.1284 1 1378677.1284 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852 1 4136031.3852
+9000. 9000. 9000. 30. 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0

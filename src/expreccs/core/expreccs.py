@@ -7,7 +7,12 @@ import time
 import argparse
 from expreccs.utils.inputvalues import process_input
 from expreccs.utils.runs import simulations, plotting
-from expreccs.utils.writefile import write_folders, write_files, write_properties
+from expreccs.utils.writefile import (
+    set_gridmako,
+    write_folders,
+    write_files,
+    write_properties,
+)
 from expreccs.utils.mapproperties import mapping_properties
 from expreccs.visualization.plotting import plot_results
 from expreccs.utils.mapboundaries import (
@@ -15,6 +20,7 @@ from expreccs.utils.mapboundaries import (
     aquaflux_opm,
     porv_projections,
     porv_regional_segmentation,
+    temporal_interpolation,
 )
 
 
@@ -59,8 +65,8 @@ def expreccs():
     parser.add_argument(
         "-r",
         "--reading",
-        default="ecl",
-        help="Using the 'opm' or 'ecl' python package (ecl by default).",
+        default="opm",
+        help="Using the 'opm' or 'ecl' python package (opm by default).",
     )
     cmdargs = vars(parser.parse_known_args()[0])
     file = cmdargs["input"]  # Name of the input file
@@ -89,6 +95,7 @@ def expreccs():
     write_properties(dic)
 
     # Run the models
+    set_gridmako(dic, dic["z_xy"])
     if dic["mode"] in ["all", "reference"]:
         write_files(dic, "reference")
         simulations(dic, "reference")
@@ -97,17 +104,19 @@ def expreccs():
         write_files(dic, "regional")
         simulations(dic, "regional")
     if dic["mode"] in ["all", "site", "noreference"]:
-        if dic["site_bctype"] in ["flux", "pres"]:
+        if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
             if dic["reading"] == "ecl":
                 dic = aquaflux_ecl(dic)
             else:
                 dic = aquaflux_opm(dic)
+            dic = temporal_interpolation(dic)
         elif dic["site_bctype"] == "porvproj":
             dic = porv_projections(dic)
         write_files(dic, f"site_{dic['site_bctype']}")
         simulations(dic, f"site_{dic['site_bctype']}")
 
     # Generate some useful plots after the studies
+    set_gridmako(dic, "0")
     if dic["plot"] == "yes":
         plotting(dic, time.monotonic() - start_time)
 

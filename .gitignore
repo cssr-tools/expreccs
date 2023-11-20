@@ -144,13 +144,12 @@ opm-models/
 opm-simulators/
 
 # Extra folders
-tests/configs/output
 tests/configs/compare
-gift
-vexpreccs
+tests/configs/output
 examples/output
 developing
-workshop
 debugging
-cssr
+vexpreccs
+workshop
 results
+cssr

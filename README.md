@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/daavid00/expreccs/actions/workflows/CI.yml/badge.svg)](https://github.com/daavid00/expreccs/actions/workflows/CI.yml)
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/619946083.svg)](https://zenodo.org/badge/latestdoi/619946083)
@@ -8,8 +8,7 @@
 
 <img src="docs/text/figs/expreccs.gif" width="830" height="500">
 
-This repository contains scripts to set up a workflow to run site and regional reservoirs
-for CO2 storage using the [_OPM-Flow_](https://opm-project.org/?page_id=19) simulator.
+This repository contains scripts to set up a workflow to run site and regional reservoirs for CO2 storage using the [_OPM-Flow_](https://opm-project.org/?page_id=19) simulator.
 
 ## Installation
 You will first need to install
@@ -34,30 +33,21 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-For now you need to build OPM from source using the master branch (this since there have been updates for
-the boundary conditions (BC) keywords, which will be available in the next OPM stable release 2023.10). 
 To build dune and the corresponding OPM master branches from source (e.g., you are a macOS user), you can run the script
-`./build_dune_and_opm-flow.bash`, which in turn should build flow in the folder 
-./build/opm-simulators/bin/flow (for macOS users the dependecies such as boost can be installed using macports).
+`./build_dune_and_opm-flow.bash`, which in turn should build flow in the folder ./build/opm-simulators/bin/flow (for macOS users the dependecies such as boost can be installed using macports).
 If you are a Linux user (including the windows subsystem for Linux), then you could try to build Flow with mpi support,
 by running the script `./build_opm-flow_mpi.bash` instead of `./build_dune_and_opm-flow.bash`.
 
-For macOS users with the latest chips (M1/M2), the ecl package is not available via pip install. Then
-before installation, remove ecl from the requierements.txt, then proceed with the Python requirements installation, and 
-once inside the vexpreccs Python environment, add the flag `-DPYTHON_EXECUTABLE=/Users/dmar/expreccs/vexpreccs/bin/python`
-(by typing `which  python` in the terminal you get your path) to the cmake (lines 24 in the bash scripts), build flow by
-running the bash script, and finally, add to the python path the folder where you have built it, e.g., by running in the terminal
-`export PYTHONPATH=$PYTHONPATH:/Users/dmar/expreccs/build/opm-common/build/python`.
+For macOS users with the latest chips (M1/M2, guessing also M3?), the ecl and opm packages are not available via pip install. Then before installation, remove ecl and opm from the requierements.txt, then proceed with the Python requirements installation, and  once inside the vexpreccs Python environment, add the flag `-DPYTHON_EXECUTABLE=/Users/dmar/expreccs/vexpreccs/bin/python` (by typing `which  python` in the terminal you get your path) to the cmake (lines 24 in the bash scripts), build flow by running the bash script, and finally, add to the python path the folder where you have built it, e.g., by opening in an editor the vexpreccs/bin/activate script, pasting the following line (edited with the path where you built opm with Python) 
+`export PYTHONPATH=$PYTHONPATH:/Users/dmar/expreccs/build/opm-common/build/python` at the end of the script, and deactivating and activating the virtual environment.
 
 ## Running expreccs
 You can run _expreccs_ as a single command line:
 ```
 expreccs -i some_input.txt -o some_output_folder
 ```
-Run `expreccs --help` to see all possible command line 
-argument options. Inside the `some_input.txt` file you provide the path to the
-flow executable and simulation parameters. See the .txt files in the examples
-folders.
+Run `expreccs --help` to see all possible command line argument options. Inside the `some_input.txt` file you provide the path to the
+flow executable and simulation parameters. See the .txt files in the examples and tests/configs folders.
 
 ## Getting started
 See the [_documentation_](https://daavid00.github.io/expreccs/introduction.html). 

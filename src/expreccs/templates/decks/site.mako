@@ -13,10 +13,11 @@ EQLDIMS
 /
 
 TABDIMS
-${dic['satnum']} 1* 10000 /
+${(dic["hysteresis"]+1)*dic['satnum']} 1* 100000 /
 
 OIL
 GAS
+DISGAS
 CO2STORE
 
 METRIC
@@ -24,8 +25,13 @@ METRIC
 START
 1 'JAN' 2025 /
 
+% if dic["hysteresis"] ==1:
+SATOPTS
+HYSTER  /
+% endif
+
 WELLDIMS
-${len(dic['site_wellijk'])+8} ${dic['site_noCells'][2]} ${len(dic['site_wellijk'])} ${len(dic['site_wellijk'])+8} /
+${len(dic['site_wellijk'])+8} ${dic['site_noCells'][2]} ${2*len(dic['site_wellijk'])} ${len(dic['site_wellijk'])+8} /
 
 UNIFIN
 UNIFOUT
@@ -45,7 +51,7 @@ INCLUDE
 BCCON
 ${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} 1 1 1 1 1 1 J- /
 /
-%elif dic['site_bctype'] == 'pres':
+%elif dic['site_bctype'] == 'pres' or dic['site_bctype'] == 'pres2p':
 BCCON
 % for k in range(dic['regional_noCells'][2]):
 % for i in range(dic["site_noCells"][1]):
@@ -115,6 +121,10 @@ EQUIL
 RTEMPVD
 0   ${dic['temp_top']}
 ${dic[f'{reservoir}_zmz'][-1]} ${dic['temp_bottom']} /
+
+RSVD
+0   0
+${dic[f'{reservoir}_zmz'][-1]} 0 /
 
 RPTRST 
  'BASIC=2' FLOWS FLORES DEN/
@@ -218,19 +228,23 @@ COMPDAT
 'BCPRO3' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
 % endif
 /
+<%
+n = 0
+%>
 % for j in range(len(dic['inj'])):
+% for k in range(round(dic['inj'][j][0]/dic['inj'][j][2])):
 TUNING
-${min(1, dic['inj'][j][2])} ${dic['inj'][j][2]} 1e-10 2* 1e-12/
+${min(1, dic['inj'][j][3])} ${dic['inj'][j][3]} 1e-10 2* 1e-12/
 /
 /
 WCONINJE
 % for i in range(len(dic['site_wellijk'])):
-% if dic['inj'][j][3+2*i] > 0:
-'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)] / 1.86843 : E}"}  1* 400/
+% if dic['inj'][j][4+2*i] > 0:
+'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 400/
 % else:
-'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)] / 998.108 : E}"}  1* 400/
+'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 400/
 %endif
 % endfor
 % if dic['site_bctype'] == "wells":
@@ -243,41 +257,41 @@ WCONINJE
 %if dic['site_bctype'] == 'flux':
 AQUFLUX
 % for i in range(len(dic['AQUFLUX_left'][0][0])):
-${i+1} ${dic['AQUFLUX_left'][j+1][0][i]} /
+${i+1} ${dic['AQUFLUX_left'][n+k+1][0][i]} /
 % endfor
 % for i in range(len(dic['AQUFLUX_right'][0][0])):
-${i+1+len(dic['AQUFLUX_left'][0][0])} ${dic['AQUFLUX_right'][j+1][0][i]} / 
+${i+1+len(dic['AQUFLUX_left'][0][0])} ${dic['AQUFLUX_right'][n+k+1][0][i]} / 
 % endfor
 % for i in range(len(dic['AQUFLUX_bottom'][0][0])):
 % if ((i%dic["bottom_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"]) != 1 and 1+(i%dic["bottom_noCells"])*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])!=dic['site_noCells'][0]) and dic["bottom_noCells"]>2:
-${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])} ${dic['AQUFLUX_bottom'][j+1][0][i]} /
+${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])} ${dic['AQUFLUX_bottom'][n+k+1][0][i]} /
 % endif
 % endfor
 % for i in range(len(dic['AQUFLUX_top'][0][0])):
 % if ((i%dic["top_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["top_noCells"]) != 1 and 1+(i%dic["top_noCells"])*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])!=dic['site_noCells'][0]) and dic["top_noCells"]>2:
-${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])} ${dic['AQUFLUX_top'][j+1][0][i]} /
+${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])} ${dic['AQUFLUX_top'][n+k+1][0][i]} /
 % endif
 % endfor
 /
-BCPROP
-${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][j+1][0][0]} /
-/
-%elif dic['site_bctype']== 'pres':
+--BCPROP
+--${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][n+k+1][0][0]} /
+--/
+%elif dic['site_bctype']== 'pres' or dic['site_bctype'] == 'pres2p':
 BCPROP
 % for i in range(len(dic['PRESSURE_left'][0][0])):
-${i+1} DIRICHLET OIL 1* ${dic['PRESSURE_left'][j+1][0][i]} /
+${i+1} DIRICHLET OIL 1* ${dic['PRESSURE_left'][n+k+1][0][i]} /
 % endfor
 % for i in range(len(dic['PRESSURE_right'][0][0])):
-${i+1+len(dic['PRESSURE_left'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_right'][j+1][0][i]} / 
+${i+1+len(dic['PRESSURE_left'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_right'][n+k+1][0][i]} / 
 % endfor
 % for i in range(len(dic['PRESSURE_bottom'][0][0])):
 % if ((i%dic["bottom_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"]) != 1 and 1+(i%dic["bottom_noCells"])*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])!=dic['site_noCells'][0]) and dic["bottom_noCells"]>2:
-${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][j+1][0][i]} /
+${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][n+k+1][0][i]} /
 % endif
 % endfor
 % for i in range(len(dic['PRESSURE_top'][0][0])):
 % if ((i%dic["top_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["top_noCells"]) != 1 and 1+(i%dic["top_noCells"])*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])!=dic['site_noCells'][0]) and dic["top_noCells"]>2:
-${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])+len(dic['PRESSURE_bottom'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_top'][j+1][0][i]} /
+${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])+len(dic['PRESSURE_bottom'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_top'][n+k+1][0][i]} /
 % endif
 % endfor
 /
@@ -297,6 +311,10 @@ WCONPROD
 /
 %endif
 TSTEP
-${mt.floor(dic['inj'][j][0]/dic['inj'][j][1])}*${dic['inj'][j][1]}
+${dic['inj'][j][2]}
 /
+% endfor
+<%
+n += round(dic['inj'][j][0]/dic['inj'][j][2])
+%>
 % endfor

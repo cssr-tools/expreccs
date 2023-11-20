@@ -26,35 +26,7 @@ def process_input(dic, in_file):
         for row in csv.reader(file, delimiter="#"):
             lol.append(row)
     dic = readthefirstpart(lol, dic)
-    set_xy_grid_function(dic)
     return dic
-
-
-def set_xy_grid_function(dic):
-    """
-    Function to set the xy function for the grid z coordinates
-
-    Args:
-        dic (dict): Global dictionary with required parameters
-
-    """
-    lol = []
-    with open(
-        f"{dic['pat']}/templates/common/gridmako.mako", "r", encoding="utf8"
-    ) as file:
-        for i, row in enumerate(csv.reader(file, delimiter="#")):
-            if i == 3:
-                lol.append(f"    z = {dic['z_xy']}")
-            elif len(row) == 0:
-                lol.append("")
-            else:
-                lol.append(row[0])
-    with open(
-        f"{dic['pat']}/templates/common/grid.mako",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.write("\n".join(lol))
 
 
 def readthefirstpart(lol, dic):
@@ -108,6 +80,10 @@ def readthefirstpart(lol, dic):
         dic["site_porv"] = [
             float((lol[13][0].strip()).split()[j + 1]) for j in range(4)
         ]
+    elif dic["site_bctype"] in ["flux", "pres", "pres2p"]:
+        dic["time_interp"] = ""
+        if len(list((lol[13][0].strip()).split())) > 1:
+            dic["time_interp"] = (lol[13][0].strip()).split()[1]
     dic["fault_location"] = [float((lol[14][0].strip()).split()[j]) for j in [0, 1]]
     dic["fault_location"].append(0)
     dic["fault_mult"] = [float((lol[14][0].strip()).split()[j]) for j in [2, 3]]
@@ -128,7 +104,9 @@ def readthefirstpart(lol, dic):
     dic["rock_comp"] = float((lol[17][0].strip()).split()[3]) * 1.0e5  # To 1/bar
     dic["sensor_location"] = [float((lol[18][0].strip()).split()[j]) for j in range(3)]
     dic["z_xy"] = str(lol[19][0])  # The function for the reservoir surface
-    index = 22  # Increase this if more rows are added to the model parameters part
+    dic["hysteresis"] = int((lol[20][0].strip()).split()[0])
+    dic["salinity"] = float((lol[20][0].strip()).split()[1])
+    index = 23  # Increase this if more rows are added to the model parameters part
     dic = readthesecondpart(lol, dic, index)
     return dic
 
@@ -151,7 +129,11 @@ def readthesecondpart(lol, dic, index):
     index += 6
     for name in ["rock", "safu"]:
         dic[name] = []
-    for i in range(dic["satnum"]):  # Saturation function values
+    if dic["hysteresis"] == 1:
+        dic["imbnum"] = 2
+    else:
+        dic["imbnum"] = 1
+    for i in range(dic["imbnum"] * dic["satnum"]):  # Saturation function values
         row = list((lol[index + i][0].strip()).split())
         dic["safu"].append(
             [
@@ -166,7 +148,7 @@ def readthesecondpart(lol, dic, index):
                 float(row[17]),
             ]
         )  # Convert the pressure to bars
-    index += 3 + dic["satnum"]
+    index += 3 + dic["imbnum"] * dic["satnum"]
     for i in range(dic["satnum"]):  # Rock values
         row = list((lol[index + i][0].strip()).split())
         dic["rock"].append(
@@ -199,13 +181,13 @@ def readthesecondpart(lol, dic, index):
         if not lol[index + i]:
             break
         row = list((lol[index + i][0].strip()).split())
-        column.append([float(row[j]) for j in range(3 + 2 * len(dic["wellCoord"]))])
+        column.append([float(row[j]) for j in range(4 + 2 * len(dic["wellCoord"]))])
         if dic["site_bctype"] == "wells":
             dic["bc_wells"].append(
                 [
                     float(row[j]) / 1e5
                     for j in range(
-                        3 + 2 * len(dic["wellCoord"]), 3 + 2 * len(dic["wellCoord"]) + 8
+                        4 + 2 * len(dic["wellCoord"]), 4 + 2 * len(dic["wellCoord"]) + 8
                     )
                 ]
             )

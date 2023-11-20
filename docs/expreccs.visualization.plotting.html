@@ -20,7 +20,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Output folder" href="output_folder.html" />
+    <link rel="next" title="expreccs.visualization.reading module" href="expreccs.visualization.reading.html" />
     <link rel="prev" title="expreccs.visualization.maps2d module" href="expreccs.visualization.maps2d.html" /> 
 </head>
 
@@ -88,7 +88,7 @@ Script to plot the top surface for the reference, regional, and site reservoirs.
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.fpr_site">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">fpr_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndeck</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opmn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.fpr_site" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the fiel average pressure</p>
+<dd><p>Function to plot the field average pressure</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
 </dd>
@@ -119,19 +119,6 @@ nfol (int): Indice for the color
 res (str): Name of the reservoir
 fol (str): Name of the output folder
 j (int): Indice for the reservoir</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_smsp_time">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_smsp_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_smsp_time" title="Link to this definition"></a></dt>
-<dd><p>Function to chandle the times in the summary files</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-str (study): Name of the folder containing the results</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
@@ -215,30 +202,6 @@ nrst (int): Indice for the schedule</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.visualization.plotting.reading_ecl">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">reading_ecl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.reading_ecl" title="Link to this definition"></a></dt>
-<dd><p>Function to read the deck quantities using ecl</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="expreccs.visualization.plotting.reading_opm">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">reading_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.reading_opm" title="Link to this definition"></a></dt>
-<dd><p>Function to read the deck quantities using opm</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.well_well_well">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">well_well_well</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.well_well_well" title="Link to this definition"></a></dt>
 <dd><p>Function to plot the injection rates and BHP</p>
@@ -267,7 +230,7 @@ quantity (str): Name of the quantity</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="expreccs.visualization.maps2d.html" class="btn btn-neutral float-left" title="expreccs.visualization.maps2d module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="output_folder.html" class="btn btn-neutral float-right" title="Output folder" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="expreccs.visualization.reading.html" class="btn btn-neutral float-right" title="expreccs.visualization.reading module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
