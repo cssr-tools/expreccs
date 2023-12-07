@@ -293,7 +293,7 @@ def aquaflux_resdata(dic):
     return dic
 
 
-def aquaflux_opm(dic):
+def aquaflux_opm(dic, iteration=""):
     """
     Function to read the fluxes and pressures from the regional
 
@@ -304,7 +304,7 @@ def aquaflux_opm(dic):
         dic (dict): Global dictionary with new added parameters
 
     """
-    case = f"{dic['exe']}/{dic['fol']}/output/regional/REGIONAL"
+    case = f"{dic['exe']}/{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     dic["rst"], dic["grid"] = OpmFile(rst), OpmGrid(grid)

@@ -39,6 +39,7 @@ GRID
 ----------------------------------------------------------------------------
 INCLUDE
 'GEOLOGY_${reservoir.upper()}.INC' /
+
 % if dic['reference_bctype'] == 'free':
 BCCON 
 1 1 ${dic[f'{reservoir}_noCells'][0]} 1 1 1* 1* Y- /
