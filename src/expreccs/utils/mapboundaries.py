@@ -18,8 +18,8 @@ try:
 except ImportError:
     print("The Python package opm was not found, using ecl")
 try:
-    from ecl.grid import EclGrid
-    from ecl.eclfile import EclFile
+    from resdata.grid import Grid
+    from resdata.resfile import ResdataFile
 except ImportError:
     print("The ecl Python package was not found, using opm")
 
@@ -128,7 +128,7 @@ def porv_projections(dic):
     """
     case = f"{dic['exe']}/{dic['fol']}/output/regional/REGIONAL"
     if dic["reading"] == "ecl":
-        ini = EclFile(case + ".INIT")
+        ini = ResdataFile(case + ".INIT")
         porv = np.array(ini.iget_kw("PORV")[0])
         fipnum = np.array(ini.iget_kw("FIPNUM")[0])
     else:
@@ -172,7 +172,7 @@ def aquaflux_ecl(dic):
     case = f"{dic['exe']}/{dic['fol']}/output/regional/REGIONAL"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
-    dic["rst"], dic["grid"] = EclFile(rst), EclGrid(grid)
+    dic["rst"], dic["grid"] = ResdataFile(rst), Grid(grid)
     dic["cells_bottom"] = list(
         range(
             dic["grid"].get_active_index(dic["site_corners"][0])

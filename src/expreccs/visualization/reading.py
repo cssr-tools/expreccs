@@ -18,9 +18,9 @@ try:
 except ImportError:
     print("The opm Python package was not found, using ecl")
 try:
-    from ecl.summary import EclSum
-    from ecl.eclfile import EclFile
-    from ecl.grid import EclGrid
+    from resdata.summary import Summary
+    from resdata.grid import Grid
+    from resdata.resfile import ResdataFile
 except ImportError:
     print("The ecl Python package was not found, using opm")
 
@@ -66,10 +66,10 @@ def reading_ecl(dic):
             dic[f"{fol}/{res}_nowells_site"] = np.load(
                 dic["exe"] + "/" + fol + f"/output/{res}/nowells_site.npy"
             )
-            dic[f"{fol}/{res}_rst"] = EclFile(case + ".UNRST")
-            dic[f"{fol}/{res}_ini"] = EclFile(case + ".INIT")
-            dic[f"{fol}/{res}_grid"] = EclGrid(case + ".EGRID")
-            dic[f"{fol}/{res}_smsp"] = EclSum(case + ".SMSPEC")
+            dic[f"{fol}/{res}_rst"] = ResdataFile(case + ".UNRST")
+            dic[f"{fol}/{res}_ini"] = ResdataFile(case + ".INIT")
+            dic[f"{fol}/{res}_grid"] = Grid(case + ".EGRID")
+            dic[f"{fol}/{res}_smsp"] = Summary(case + ".SMSPEC")
             dic[f"{fol}/{res}_num_rst"] = dic[f"{fol}/{res}_rst"].num_report_steps()
             dic[f"{fol}/{res}_dates"] = dic[f"{fol}/{res}_rst"].dates
             dic[f"{fol}/{res}_smsp_dates"] = dic[f"{fol}/{res}_smsp"].dates
