@@ -18,7 +18,7 @@ def final_time_maps(dic):
         dic (dict): Global dictionary with required parameters
 
     """
-    for fol in dic["folders"]:
+    for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
             name = "site" if "site" in res else res
             for j, quantity in enumerate(dic["quantity"]):
@@ -41,26 +41,41 @@ def final_time_maps(dic):
                 minp = dic[f"{fol}/{res}_{quantity}_plot"].min()
                 if quantity == "pressure":
                     imag = axis.pcolormesh(
-                        dic[f"{fol}/{res}_xcor"],
-                        dic[f"{fol}/{res}_ycor"],
+                        dic[f"{fol}/{res}_xcor"] / 1000.0,
+                        dic[f"{fol}/{res}_ycor"] / 1000.0,
                         dic[f"{fol}/{res}_{quantity}_plot"],
                         shading="flat",
                         cmap=dic["cmaps"][j],
                     )
                 else:
                     imag = axis.pcolormesh(
-                        dic[f"{fol}/{res}_xcor"],
-                        dic[f"{fol}/{res}_ycor"],
+                        dic[f"{fol}/{res}_xcor"] / 1000.0,
+                        dic[f"{fol}/{res}_ycor"] / 1000.0,
                         dic[f"{fol}/{res}_{quantity}_plot"],
                         shading="flat",
                         cmap=dic["cmaps"][j],
                     )
-                axis.set_title(f"{res} {dic['names'][j]} [{dic['units'][j]}] ({fol})")
+                axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
                 axis.axis("scaled")
-                axis.set_xlabel("[m]")
-                axis.set_ylabel("[m]")
-                divider = make_axes_locatable(axis)
-                cax = divider.append_axes("right", size="5%", pad=0.05)
+                axis.set_xlabel("Easting [km]")
+                axis.set_ylabel("Northing [km]")
+                axis.set_xticks(
+                    np.linspace(
+                        dic[f"{fol}/{res}_xcor"].min() / 1000.0,
+                        dic[f"{fol}/{res}_xcor"].max() / 1000.0,
+                        6,
+                    )
+                )
+                axis.set_yticks(
+                    np.linspace(
+                        dic[f"{fol}/{res}_ycor"].min() / 1000.0,
+                        dic[f"{fol}/{res}_ycor"].max() / 1000.0,
+                        6,
+                    )
+                )
+                cax = (make_axes_locatable(axis)).append_axes(
+                    "right", size="5%", pad=0.05
+                )
                 vect = np.linspace(
                     minp,
                     maxp,
@@ -72,14 +87,13 @@ def final_time_maps(dic):
                     cax=cax,
                     orientation="vertical",
                     ticks=vect,
+                    label=dic["units"][j],
                     format=lambda x, _: f"{x:.2f}",
                 )
                 imag.set_clim(
                     minp,
                     maxp,
                 )
-                # axis.set_xticks(dic[f"{fol}/{name}_xmx"][::40])
-                # axis.set_yticks(dic[f"{fol}/{name}_ymy"][::40])
                 fig.savefig(
                     f"{dic['where']}/{res}_{dic['names'][j]}.png", bbox_inches="tight"
                 )
@@ -133,27 +147,41 @@ def final_time_maps_difference(dic):
                     ]
                 fig, axis = plt.subplots()
                 imag = axis.pcolormesh(
-                    dic[f"{fol}/{res}_xcor"],
-                    dic[f"{fol}/{res}_ycor"],
+                    dic[f"{fol}/{res}_xcor"] / 1000.0,
+                    dic[f"{fol}/{res}_ycor"] / 1000.0,
                     dic[f"{fol}/{res}_difference_{quantity}_plot"],
                     shading="flat",
                     cmap=dic["cmaps"][j],
                 )
                 axis.axis(
                     [
-                        dic[f"{fol}/{res}_xcor"].min(),
-                        dic[f"{fol}/{res}_xcor"].max(),
-                        dic[f"{fol}/{res}_ycor"].min(),
-                        dic[f"{fol}/{res}_ycor"].max(),
+                        dic[f"{fol}/{res}_xcor"].min() / 1000.0,
+                        dic[f"{fol}/{res}_xcor"].max() / 1000.0,
+                        dic[f"{fol}/{res}_ycor"].min() / 1000.0,
+                        dic[f"{fol}/{res}_ycor"].max() / 1000.0,
                     ]
                 )
                 axis.axis("scaled")
-                axis.set_xlabel("[m]")
-                axis.set_ylabel("[m]")
+                axis.set_xticks(
+                    np.linspace(
+                        dic[f"{fol}/{res}_xcor"].min() / 1000.0,
+                        dic[f"{fol}/{res}_xcor"].max() / 1000.0,
+                        6,
+                    )
+                )
+                axis.set_yticks(
+                    np.linspace(
+                        dic[f"{fol}/{res}_ycor"].min() / 1000.0,
+                        dic[f"{fol}/{res}_ycor"].max() / 1000.0,
+                        6,
+                    )
+                )
+                axis.set_xlabel("Easting [km]")
+                axis.set_ylabel("Northing [km]")
                 axis.set_title(
-                    f"{dic['names'][j]} sum abs(ref-{res})"
-                    + f"={abs(dic[f'{fol}/{res}_difference_{quantity}_plot']).sum():.2E}"
-                    + f" [{dic['units'][j]}]"
+                    r"$\sum$|REF-"
+                    + f"{dic[f'l{res}']}"
+                    + f"|={abs(dic[f'{fol}/{res}_difference_{quantity}_plot']).sum():.2E}"
                 )
                 divider = make_axes_locatable(axis)
                 cax = divider.append_axes("right", size="5%", pad=1e-3)
@@ -168,6 +196,7 @@ def final_time_maps_difference(dic):
                     cax=cax,
                     orientation="vertical",
                     ticks=vect,
+                    label=dic["units"][j],
                     format=lambda x, _: f"{x:.3f}",
                 )
                 imag.set_clim(
@@ -191,7 +220,7 @@ def geological_maps(dic):
         dic (dict): Global dictionary with required parameters
 
     """
-    for fol in dic["folders"]:
+    for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
             j = 0
             name = "site" if "site" in res else res
@@ -209,22 +238,22 @@ def geological_maps(dic):
                 ]
             fig, axis = plt.subplots()
             axis.pcolormesh(
-                dic[f"{fol}/{res}_xcor"],
-                dic[f"{fol}/{res}_ycor"],
+                dic[f"{fol}/{res}_xcor"] / 1000.0,
+                dic[f"{fol}/{res}_ycor"] / 1000.0,
                 dic[f"{fol}/{res}_fipn_plot"],
                 shading="flat",
                 cmap=dic["cmaps"][j],
             )
-            axis.set_title(f"{res} ({fol})")
+            axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
             axis.axis("scaled")
             axis.set_xlabel(
-                f"L = {dic[f'{fol}/{name}_xmx'][-1] - dic[f'{fol}/{name}_xmx'][0]} [m]"
+                f"L = {dic[f'{fol}/{name}_xmx'][-1]/1000. - dic[f'{fol}/{name}_xmx'][0]/1000.} [km]"
             )
             axis.set_ylabel(
-                f"W = {dic[f'{fol}/{name}_ymy'][-1] - dic[f'{fol}/{name}_ymy'][0]} [m]"
+                f"W = {dic[f'{fol}/{name}_ymy'][-1]/1000. - dic[f'{fol}/{name}_ymy'][0]/1000.} [km]"
             )
-            axis.set_xticks(dic[f"{fol}/{res}_xcor"][0])
-            axis.set_yticks(dic[f"{fol}/{name}_ymy"])
+            axis.set_xticks(dic[f"{fol}/{res}_xcor"][0] / 1000.0)
+            axis.set_yticks(dic[f"{fol}/{name}_ymy"] / 1000.0)
             axis.grid(True, color="k", lw=1)
             plt.setp(axis.get_xticklabels(), visible=False)
             plt.setp(axis.get_yticklabels(), visible=False)

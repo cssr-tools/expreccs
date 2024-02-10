@@ -16,7 +16,7 @@ from expreccs.utils.writefile import (
 from expreccs.utils.mapproperties import mapping_properties
 from expreccs.visualization.plotting import plot_results
 from expreccs.utils.mapboundaries import (
-    aquaflux_ecl,
+    aquaflux_resdata,
     aquaflux_opm,
     porv_projections,
     porv_regional_segmentation,
@@ -66,7 +66,7 @@ def expreccs():
         "-r",
         "--reading",
         default="opm",
-        help="Using the 'opm' or 'ecl' python package (opm by default).",
+        help="Using the 'opm' or 'resdata' python package (opm by default).",
     )
     cmdargs = vars(parser.parse_known_args()[0])
     file = cmdargs["input"]  # Name of the input file
@@ -75,7 +75,7 @@ def expreccs():
     dic["exe"] = os.getcwd()  # Path to the folder of the input.txt file
     dic["mode"] = cmdargs["mode"]  # Parts of the workflow to run
     dic["plot"] = cmdargs["plot"]  # Generate some nice plots
-    dic["reading"] = cmdargs["reading"]  # Ecl or opm python package
+    dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
     dic["compare"] = cmdargs[
         "compare"
     ]  # If not empty, then the folder 'compare' is created.
@@ -105,8 +105,8 @@ def expreccs():
         simulations(dic, "regional")
     if dic["mode"] in ["all", "site", "noreference"]:
         if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
-            if dic["reading"] == "ecl":
-                dic = aquaflux_ecl(dic)
+            if dic["reading"] == "resdata":
+                dic = aquaflux_resdata(dic)
             else:
                 dic = aquaflux_opm(dic)
             dic = temporal_interpolation(dic)
