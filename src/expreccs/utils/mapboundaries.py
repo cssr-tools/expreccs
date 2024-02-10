@@ -16,12 +16,12 @@ try:
     from opm.io.ecl import EGrid as OpmGrid
     from opm.io.ecl import EclFile as OpmFile
 except ImportError:
-    print("The Python package opm was not found, using ecl")
+    print("The Python package opm was not found, using resdata")
 try:
     from resdata.grid import Grid
     from resdata.resfile import ResdataFile
 except ImportError:
-    print("The ecl Python package was not found, using opm")
+    print("The resdata Python package was not found, using opm")
 
 
 def porv_regional_segmentation(dic):
@@ -127,7 +127,7 @@ def porv_projections(dic):
 
     """
     case = f"{dic['exe']}/{dic['fol']}/output/regional/REGIONAL"
-    if dic["reading"] == "ecl":
+    if dic["reading"] == "resdata":
         ini = ResdataFile(case + ".INIT")
         porv = np.array(ini.iget_kw("PORV")[0])
         fipnum = np.array(ini.iget_kw("FIPNUM")[0])
@@ -158,7 +158,7 @@ def porv_projections(dic):
     return dic
 
 
-def aquaflux_ecl(dic):
+def aquaflux_resdata(dic):
     """
     Function to read the fluxes and pressures from the regional
 
@@ -287,7 +287,7 @@ def aquaflux_ecl(dic):
                 ]
             )
         elif dic["site_bctype"] == "pres":
-            dic = handle_stencil_ecl(dic, i)
+            dic = handle_stencil_resdata(dic, i)
         elif dic["site_bctype"] == "pres2p":
             dic = handle_stencil_2p(dic, i)
     return dic
@@ -463,7 +463,7 @@ def aquaflux_opm(dic):
     return dic
 
 
-def handle_stencil_ecl(dic, i):
+def handle_stencil_resdata(dic, i):
     """
     Function to project the cell pressures to the cell faces
 

@@ -47,11 +47,7 @@ GRID
 INCLUDE
 'GEOLOGY_${reservoir.upper()}.INC' /
 
-%if dic['site_bctype'] == 'flux':
-BCCON
-${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} 1 1 1 1 1 1 J- /
-/
-%elif dic['site_bctype'] == 'pres' or dic['site_bctype'] == 'pres2p':
+% if dic['site_bctype'] == 'pres' or dic['site_bctype'] == 'pres2p':
 BCCON
 % for k in range(dic['regional_noCells'][2]):
 % for i in range(dic["site_noCells"][1]):
@@ -127,7 +123,7 @@ RSVD
 ${dic[f'{reservoir}_zmz'][-1]} 0 /
 
 RPTRST 
- 'BASIC=2' FLOWS FLORES DEN/
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
 
 %if dic['site_bctype'] == 'flux': 
 AQUANCON
@@ -178,6 +174,9 @@ FGIP
 FOIP
 FGIR
 FGIT
+FGIP
+FGIPL
+FGIPG
 WGIR
 /
 WOIR
@@ -188,15 +187,29 @@ WBHP
 /
 RPR
 /
-ROIP
-/
 RGIP
+/
+RGIPL
+/
+RGIPG
+/
+BPR
+${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
+/
+BGIP
+${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
+/
+BGIPG
+${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
+/
+BGIPL
+${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
 /
 ----------------------------------------------------------------------------
 SCHEDULE
 ----------------------------------------------------------------------------
 RPTRST
- 'BASIC=2' FLOWS FLORES DEN /
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
 
 WELSPECS
 % for i in range(len(dic['site_wellijk'])):
@@ -241,10 +254,11 @@ WCONINJE
 % for i in range(len(dic['site_wellijk'])):
 % if dic['inj'][j][4+2*i] > 0:
 'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 400/
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 427/
 % else:
 'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 400/
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 427/
+/
 %endif
 % endfor
 % if dic['site_bctype'] == "wells":
@@ -273,9 +287,6 @@ ${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQ
 % endif
 % endfor
 /
---BCPROP
---${1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_top'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][n+k+1][0][0]} /
---/
 %elif dic['site_bctype']== 'pres' or dic['site_bctype'] == 'pres2p':
 BCPROP
 % for i in range(len(dic['PRESSURE_left'][0][0])):

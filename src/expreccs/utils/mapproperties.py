@@ -150,8 +150,8 @@ def positions_regional(dic):
         ).argmin()
     sensor_ind = (
         dic["regional_sensor"][0]
-        + (dic["regional_sensor"][1]) * dic["regional_noCells"][0]
-        + (dic["regional_sensor"][2])
+        + dic["regional_sensor"][1] * dic["regional_noCells"][0]
+        + dic["regional_sensor"][2]
         * dic["regional_noCells"][0]
         * dic["regional_noCells"][1]
     )
@@ -162,6 +162,10 @@ def positions_regional(dic):
     np.save(
         f"{dic['exe']}/{dic['fol']}/output/regional/sensor_location",
         dic["sensor_location"],
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/regional/sensorijk",
+        dic["regional_sensor"],
     )
     return dic
 
@@ -210,8 +214,8 @@ def positions_site(dic):
         ).argmin()
     sensor_ind = (
         dic["site_sensor"][0]
-        + (dic["site_sensor"][1]) * dic["site_noCells"][0]
-        + (dic["site_sensor"][2]) * dic["site_noCells"][0] * dic["site_noCells"][1]
+        + dic["site_sensor"][1] * dic["site_noCells"][0]
+        + dic["site_sensor"][2] * dic["site_noCells"][0] * dic["site_noCells"][1]
     )
     np.save(
         f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor",
@@ -220,6 +224,10 @@ def positions_site(dic):
     np.save(
         f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor_location",
         dic["sensor_location"],
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensorijk",
+        dic["site_sensor"],
     )
     return dic
 
@@ -277,8 +285,8 @@ def positions_reference(dic):
         ).argmin()
     sensor_ind = (
         dic["reference_sensor"][0]
-        + (dic["reference_sensor"][1]) * dic["reference_noCells"][0]
-        + (dic["reference_sensor"][2])
+        + dic["reference_sensor"][1] * dic["reference_noCells"][0]
+        + dic["reference_sensor"][2]
         * dic["reference_noCells"][0]
         * dic["reference_noCells"][1]
     )
@@ -289,5 +297,9 @@ def positions_reference(dic):
     np.save(
         f"{dic['exe']}/{dic['fol']}/output/reference/sensor_location",
         dic["sensor_location"],
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/reference/sensorijk",
+        dic["reference_sensor"],
     )
     return dic

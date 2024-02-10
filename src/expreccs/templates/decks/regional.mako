@@ -83,7 +83,7 @@ RSVD
 ${dic[f'{reservoir}_zmz'][-1]} 0 /
 
 RPTRST 
- 'BASIC=2' FLOWS FLORES DEN/
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
 ----------------------------------------------------------------------------
 SUMMARY
 ----------------------------------------------------------------------------
@@ -92,6 +92,9 @@ FGIP
 FOIP
 FGIR
 FGIT
+FGIP
+FGIPL
+FGIPG
 WGIR
 /
 WOIR
@@ -102,15 +105,29 @@ WBHP
 /
 RPR
 /
-ROIP
-/
 RGIP
+/
+RGIPL
+/
+RGIPG
+/
+BPR
+${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
+/
+BGIP
+${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
+/
+BGIPG
+${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
+/
+BGIPL
+${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
 /
 ----------------------------------------------------------------------------
 SCHEDULE
 ----------------------------------------------------------------------------
 RPTRST
- 'BASIC=2' FLOWS FLORES DEN /
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
 
 WELSPECS
 % for i in range(len(dic['regional_wellijk'])):
@@ -131,10 +148,10 @@ WCONINJE
 % for i in range(len(dic['regional_wellijk'])):
 % if dic['inj'][j][4+2*i] > 0:
 'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 400/
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 427/
 % else:
 'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 400/
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 427/
 %endif
 % endfor
 /
