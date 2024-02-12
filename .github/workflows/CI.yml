@@ -7,8 +7,8 @@ on:
  pull_request:
    
 jobs:
-  run-pyff-local:
-    timeout-minutes: 30
+  run-expreccs-local:
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -30,12 +30,14 @@ jobs:
     - name: Install Flow Simulator
       run: |
         sudo apt-get update
-        sudo apt-get install software-properties-common
-        sudo apt-add-repository ppa:opm/ppa
-        sudo apt-get update
-        sudo apt-get install mpi-default-bin
-        sudo apt-get install libopm-simulators-bin
         sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super
+        sudo apt-get install software-properties-common
+        sudo apt-get install -y build-essential gfortran pkg-config cmake
+        sudo apt-get install -y mpi-default-dev
+        sudo apt-get install -y libblas-dev libboost-all-dev libsuitesparse-dev libtrilinos-zoltan-dev
+        sudo apt-get install libdune-common-dev libdune-geometry-dev libdune-istl-dev libdune-grid-dev
+        chmod u+x build_opm-flow_mpi.bash
+        ./build_opm-flow_mpi.bash
         
     - name: Install test dependecies
       run: |

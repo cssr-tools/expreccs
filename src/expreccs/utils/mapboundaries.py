@@ -214,8 +214,8 @@ def aquaflux_resdata(dic):
                     + (k + 1) * dic["regional_noCells"][0] * dic["regional_noCells"][1]
                 )
     for keyword in [
-        "FLOOILI+",
-        "FLOOILJ+",
+        f"FLO{dic['liq']}I+",
+        f"FLO{dic['liq']}J+",
         "PRESSURE",
         "R_AQUFLUX_bottom",
         "R_AQUFLUX_top",
@@ -228,13 +228,13 @@ def aquaflux_resdata(dic):
     ]:
         dic[keyword] = [[] for _ in range(dic["rst"].num_report_steps())]
     for i in range(dic["rst"].num_report_steps()):
-        for keyword in ["FLOOILI+", "FLOOILJ+", "PRESSURE"]:
+        for keyword in [f"FLO{dic['liq']}I+", f"FLO{dic['liq']}J+", "PRESSURE"]:
             dic[keyword][i].append(np.array(dic["rst"].iget_kw(keyword)[i]))
         if dic["site_bctype"] == "flux":
             n_xy = dic["regional_noCells"][0] * dic["regional_noCells"][1]
             dic["R_AQUFLUX_bottom"][i].append(
                 [
-                    np.array(dic["FLOOILJ+"][i][0][j])
+                    np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
                     / (
                         dic["regional_xmx_dsize"][j % dic["regional_noCells"][0]]
                         * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
@@ -244,7 +244,7 @@ def aquaflux_resdata(dic):
             )
             dic["R_AQUFLUX_top"][i].append(
                 [
-                    -np.array(dic["FLOOILJ+"][i][0][j])
+                    -np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
                     / (
                         dic["regional_xmx_dsize"][j % dic["regional_noCells"][0]]
                         * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
@@ -254,7 +254,7 @@ def aquaflux_resdata(dic):
             )
             dic["R_AQUFLUX_right"][i].append(
                 [
-                    -np.array(dic["FLOOILI+"][i][0][j])
+                    -np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
                     / (
                         dic["regional_ymy_dsize"][
                             mt.floor((j % n_xy) / dic["regional_noCells"][0])
@@ -266,7 +266,7 @@ def aquaflux_resdata(dic):
             )
             dic["R_AQUFLUX_left"][i].append(
                 [
-                    np.array(dic["FLOOILI+"][i][0][j])
+                    np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
                     / (
                         dic["regional_ymy_dsize"][
                             mt.floor((j % n_xy) / dic["regional_noCells"][0])
@@ -274,16 +274,6 @@ def aquaflux_resdata(dic):
                         * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
                     )
                     for j in dic["cells_left"]
-                ]
-            )
-            dic["R_PRESSURE_bottom"][i].append(
-                [
-                    0.5
-                    * (
-                        dic["PRESSURE"][i][0][j]
-                        + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
-                    )
-                    for j in dic["cells_bottom"]
                 ]
             )
         elif dic["site_bctype"] == "pres":
@@ -384,8 +374,8 @@ def aquaflux_opm(dic, iteration=""):
                     + (k + 1) * dic["regional_noCells"][0] * dic["regional_noCells"][1]
                 )
     for keyword in [
-        "FLOOILI+",
-        "FLOOILJ+",
+        f"FLO{dic['liq']}I+",
+        f"FLO{dic['liq']}J+",
         "PRESSURE",
         "R_AQUFLUX_bottom",
         "R_AQUFLUX_top",
@@ -398,13 +388,13 @@ def aquaflux_opm(dic, iteration=""):
     ]:
         dic[keyword] = [[] for _ in range(len(dic["schedule_r"]))]
     for i in range(len(dic["schedule_r"])):
-        for keyword in ["FLOOILI+", "FLOOILJ+", "PRESSURE"]:
+        for keyword in [f"FLO{dic['liq']}I+", f"FLO{dic['liq']}J+", "PRESSURE"]:
             dic[keyword][i].append(np.array(dic["rst"][keyword, i]))
         if dic["site_bctype"] == "flux":
             n_xy = dic["regional_noCells"][0] * dic["regional_noCells"][1]
             dic["R_AQUFLUX_bottom"][i].append(
                 [
-                    np.array(dic["FLOOILJ+"][i][0][j])
+                    np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
                     / (
                         dic["regional_xmx_dsize"][j % dic["regional_noCells"][0]]
                         * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
@@ -414,7 +404,7 @@ def aquaflux_opm(dic, iteration=""):
             )
             dic["R_AQUFLUX_top"][i].append(
                 [
-                    -np.array(dic["FLOOILJ+"][i][0][j])
+                    -np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
                     / (
                         dic["regional_xmx_dsize"][j % dic["regional_noCells"][0]]
                         * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
@@ -424,7 +414,7 @@ def aquaflux_opm(dic, iteration=""):
             )
             dic["R_AQUFLUX_right"][i].append(
                 [
-                    -np.array(dic["FLOOILI+"][i][0][j])
+                    -np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
                     / (
                         dic["regional_ymy_dsize"][
                             mt.floor((j % n_xy) / dic["regional_noCells"][0])
@@ -436,7 +426,7 @@ def aquaflux_opm(dic, iteration=""):
             )
             dic["R_AQUFLUX_left"][i].append(
                 [
-                    np.array(dic["FLOOILI+"][i][0][j])
+                    np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
                     / (
                         dic["regional_ymy_dsize"][
                             mt.floor((j % n_xy) / dic["regional_noCells"][0])
@@ -444,16 +434,6 @@ def aquaflux_opm(dic, iteration=""):
                         * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
                     )
                     for j in dic["cells_left"]
-                ]
-            )
-            dic["R_PRESSURE_bottom"][i].append(
-                [
-                    0.5
-                    * (
-                        dic["PRESSURE"][i][0][j]
-                        + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
-                    )
-                    for j in dic["cells_bottom"]
                 ]
             )
         elif dic["site_bctype"] == "pres":
@@ -836,7 +816,6 @@ def temporal_interpolation(dic):
             "AQUFLUX_top",
             "AQUFLUX_right",
             "AQUFLUX_left",
-            "PRESSURE_bottom",
         ]
     for keyword in keywords:
         dic[f"{keyword}"] = [

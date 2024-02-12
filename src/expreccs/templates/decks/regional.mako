@@ -12,12 +12,17 @@ EQLDIMS
 /
 
 TABDIMS
-${(dic["hysteresis"]+1)*dic['satnum']} 1* 100000 /
+${(dic["hysteresis"]+1)*dic['satnum']} 1* 1000 /
 
-OIL
-GAS
-DISGAS
 CO2STORE
+GAS
+% if dic["co2store"] == "gaswater":
+WATER
+DISGASW
+% else:
+OIL
+DISGAS
+% endif
 
 METRIC
 
@@ -67,12 +72,12 @@ BCCON
 EDIT
 ----------------------------------------------------------------------------
 OPERATE
-	PORV 1 ${dic['regional_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["regional_porv"][0]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])}/
-	PORV ${dic['regional_noCells'][0]} ${dic['regional_noCells'][0]} 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][1]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
-	PORV 1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][2]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])} /
-	PORV 1 1 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][3]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
- / 
- % endif
+PORV 1 ${dic['regional_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["regional_porv"][0]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])}/
+PORV ${dic['regional_noCells'][0]} ${dic['regional_noCells'][0]} 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][1]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
+PORV 1 ${dic['regional_noCells'][0]} ${dic['regional_noCells'][1]} ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][2]/(dic['regional_noCells'][0]*dic['regional_noCells'][2])} /
+PORV 1 1 1 ${dic['regional_noCells'][1]} 1* 1* ADDX PORV ${dic["regional_porv"][3]/(dic['regional_noCells'][1]*dic['regional_noCells'][2])} /
+/ 
+% endif
 ----------------------------------------------------------------------------
 PROPS
 ----------------------------------------------------------------------------
@@ -87,24 +92,26 @@ INCLUDE
 SOLUTION
 ---------------------------------------------------------------------------
 EQUIL
- 0 ${dic['pressure']} 1000 0 0 0 1 1 0 /
+0 ${dic['pressure']} ${1000 if dic["co2store"] == "gasoil" else 0} 0 0 0 1 1 0 /
 
 RTEMPVD
 0   ${dic['temp_top']}
 ${dic[f'{reservoir}_zmz'][-1]} ${dic['temp_bottom']} /
 
+% if dic["co2store"] == "gasoil":
 RSVD
 0   0
-${dic[f'{reservoir}_zmz'][-1]} 0 /
+${dic[f'{reservoir}_zmz'][-1]}  0 /
+% endif
 
 RPTRST 
-'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN ${'PCOG' if dic["co2store"] == "gasoil" else 'PCGW'} /
 ----------------------------------------------------------------------------
 SUMMARY
 ----------------------------------------------------------------------------
 FPR
 FGIP
-FOIP
+F${dic["l"]}IP
 FGIR
 FGIT
 FGIP
@@ -112,7 +119,7 @@ FGIPL
 FGIPG
 WGIR
 /
-WOIR
+W${dic["l"]}IR
 /
 WGIT
 /
@@ -138,20 +145,28 @@ ${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_se
 BGIPL
 ${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
 /
+% if dic["co2store"] == "gaswater":
+BFLOWI
+${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
+/
+BFLOWJ
+${dic["regional_sensor"][0]+1} ${dic["regional_sensor"][1]+1} ${dic["regional_sensor"][2]+1} /
+/
+% endif
 ----------------------------------------------------------------------------
 SCHEDULE
 ----------------------------------------------------------------------------
 RPTRST
-'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN ${'PCOG' if dic["co2store"] == "gasoil" else 'PCGW'} /
 
 WELSPECS
 % for i in range(len(dic['regional_wellijk'])):
-	'INJ${i}'	'G1'	${dic['regional_wellijk'][i][0]}	${dic['regional_wellijk'][i][1]}	1*	'GAS' /
+'INJ${i}' 'G1' ${dic['regional_wellijk'][i][0]}	${dic['regional_wellijk'][i][1]} 1*	'GAS' /
 % endfor
 /
 COMPDAT
 % for i in range(len(dic['regional_wellijk'])):
-	'INJ${i}'	${dic['regional_wellijk'][i][0]}	${dic['regional_wellijk'][i][1]}	${dic['regional_wellijk'][i][2]}	${dic['regional_wellijk'][i][3]}	'OPEN'	1*	1*	0.2 /
+'INJ${i}' ${dic['regional_wellijk'][i][0]} ${dic['regional_wellijk'][i][1]}	${dic['regional_wellijk'][i][2]} ${dic['regional_wellijk'][i][3]} 'OPEN' 1*	1* 0.2 /
 % endfor
 /
 % for j in range(len(dic['inj'])):
@@ -163,10 +178,10 @@ WCONINJE
 % for i in range(len(dic['regional_wellijk'])):
 % if dic['inj'][j][4+2*i] > 0:
 'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 427/
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 480/
 % else:
-'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 427/
+'INJ${i}' ${dic["liq"]} ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 480/
 %endif
 % endfor
 /

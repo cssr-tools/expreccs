@@ -26,6 +26,14 @@ def process_input(dic, in_file):
         for row in csv.reader(file, delimiter="#"):
             lol.append(row)
     dic = readthefirstpart(lol, dic)
+    if dic["co2store"] == "gasoil":
+        dic["liq"] = "OIL"
+        dic["lin"] = "OIL"
+        dic["l"] = "O"
+    else:
+        dic["liq"] = "WAT"
+        dic["lin"] = "WATER"
+        dic["l"] = "W"
     return dic
 
 

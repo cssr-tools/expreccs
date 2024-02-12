@@ -1,5 +1,5 @@
 """Set the full path to the flow executable and flags"""
-flow --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
+/home/runner/work/expreccs/expreccs/build/opm-simulators/bin/flow_gaswater_dissolution --tolerance-mb=1e-7 --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
 
 """Set the model parameters"""
 15000 15000 27              #Reginonal aquifer length, width, and depth [m]
@@ -19,7 +19,7 @@ pres interp                 #Use free/closed/porv/porvproj/flux/pres/wells for t
 7000 7000 0                 #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
 (10-10*mt.cos((2*mt.pi*(x+y)/15000))) #The function for the reservoir surface
 1 2.92                      #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
-0                           #Number of interations for back-coupling.
+0                           #Number of interations for back-coupling
 
 """Set the saturation functions"""
 krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]

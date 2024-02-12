@@ -1,5 +1,5 @@
 """Set the full path to the flow executable and flags"""
-~/workspace/opm/opm-simulators/build/bin/flow_gasoildiffuse --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
+flow --tolerance-mb=1e-7 --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
 
 """Set the model parameters"""
 15000 15000 5               #Reginonal aquifer length, width, and depth [m]
@@ -19,7 +19,7 @@ pres                        #Use free/closed/porv/porvproj/flux/pres/pres2p/well
 7000 7000 0                 #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
 0                           #The function for the reservoir surface
 0 0                         #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
-3                           #Number of interations for back-coupling.
+3                           #Number of interations for back-coupling
 
 """Set the saturation functions"""
 krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
