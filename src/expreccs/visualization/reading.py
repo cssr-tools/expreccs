@@ -190,7 +190,7 @@ def handle_smsp_time(dic, fol, res):
     return dic
 
 
-def reading_opm(dic):
+def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
     """
     Function to read the deck quantities using opm
 
@@ -215,53 +215,69 @@ def reading_opm(dic):
         else:
             dic[f"{fol}_decks"] = ["reference", "regional"] + dic[f"{fol}_sites"]
         for res in dic[f"{fol}_decks"]:
-            dic[f"{fol}/{res}_rst_seconds"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/schedule.npy"
-            )
-            dic[f"{fol}/{res}_nowells"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/nowells.npy"
-            )
-            dic[f"{fol}/{res}_nowells_site"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/nowells_site.npy"
-            )
-            dic[f"{fol}/{res}_sensor"] = int(
-                np.load(dic["exe"] + "/" + fol + f"/output/{res}/sensor.npy")
-            )
-            dic[f"{fol}/{res}_sensor_location"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/sensor_location.npy"
-            )
+            if res[-3].isdigit():
+                name = res[:-4]
+            if res[-2].isdigit():
+                name = res[:-3]
+            if res[-1].isdigit():
+                name = res[:-2]
+            else:
+                name = res
+
+            if loadnpy:
+                dic[f"{fol}/{res}_rst_seconds"] = np.load(
+                    dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
+                )
+                dic[f"{fol}/{res}_nowells"] = np.load(
+                    dic["exe"] + "/" + fol + f"/output/{name}/nowells.npy"
+                )
+                dic[f"{fol}/{res}_nowells_site"] = np.load(
+                    dic["exe"] + "/" + fol + f"/output/{name}/nowells_site.npy"
+                )
+                dic[f"{fol}/{res}_sensor"] = int(
+                    np.load(dic["exe"] + "/" + fol + f"/output/{name}/sensor.npy")
+                )
+                dic[f"{fol}/{res}_sensor_location"] = np.load(
+                    dic["exe"] + "/" + fol + f"/output/{name}/sensor_location.npy"
+                )
             case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
             dic[f"{fol}/{res}_rst"] = OpmRst(case + ".UNRST")
             dic[f"{fol}/{res}_ini"] = OpmFile(case + ".INIT")
             dic[f"{fol}/{res}_grid"] = OpmGrid(case + ".EGRID")
             dic[f"{fol}/{res}_smsp"] = OpmSmry(case + ".SMSPEC")
             dic[f"{fol}/{res}_num_rst"] = len(dic[f"{fol}/{res}_rst"].report_steps)
-            dic[f"{fol}/{res}_dates"] = [
-                dic[f"{fol}/{res}_smsp"].start_date
-                + datetime.timedelta(seconds=seconds)
-                for seconds in dic[f"{fol}/{res}_rst_seconds"]
-            ]
-            dic[f"{fol}/{res}_smsp_seconds"] = 86400 * dic[f"{fol}/{res}_smsp"]["TIME"]
-            dic[f"{fol}/{res}_smsp_dates"] = 86400 * dic[f"{fol}/{res}_smsp"]["TIME"]
-            dic[f"{fol}/{res}_smsp_dates"] = [
-                dic[f"{fol}/{res}_smsp"].start_date
-                + datetime.timedelta(seconds=seconds)
-                for seconds in dic[f"{fol}/{res}_smsp_dates"]
-            ]
-            dic[f"{fol}/{res}_smsp_rst"] = [
-                pd.Series(abs(dic[f"{fol}/{res}_smsp_seconds"] - time)).argmin()
-                for time in dic[f"{fol}/{res}_rst_seconds"]
-            ]
+            if loadnpy:
+                dic[f"{fol}/{res}_dates"] = [
+                    dic[f"{fol}/{res}_smsp"].start_date
+                    + datetime.timedelta(seconds=seconds)
+                    for seconds in dic[f"{fol}/{res}_rst_seconds"]
+                ]
+                dic[f"{fol}/{res}_smsp_seconds"] = (
+                    86400 * dic[f"{fol}/{res}_smsp"]["TIME"]
+                )
+                dic[f"{fol}/{res}_smsp_dates"] = (
+                    86400 * dic[f"{fol}/{res}_smsp"]["TIME"]
+                )
+                dic[f"{fol}/{res}_smsp_dates"] = [
+                    dic[f"{fol}/{res}_smsp"].start_date
+                    + datetime.timedelta(seconds=seconds)
+                    for seconds in dic[f"{fol}/{res}_smsp_dates"]
+                ]
+                dic[f"{fol}/{res}_smsp_rst"] = [
+                    pd.Series(abs(dic[f"{fol}/{res}_smsp_seconds"] - time)).argmin()
+                    for time in dic[f"{fol}/{res}_rst_seconds"]
+                ]
+
             dic[f"{fol}/{res}_phiv"] = np.array(dic[f"{fol}/{res}_ini"]["PORV"])
             dic[f"{fol}/{res}_fipn"] = np.array(dic[f"{fol}/{res}_ini"]["FIPNUM"])
             dic[f"{fol}/{res}_indicator_array"] = []
             for quantity in dic["quantity"]:
                 dic[f"{fol}/{res}_{quantity}_array"] = []
-            dic = opm_arrays(dic, fol, res)
+            dic = opm_arrays(dic, fol, res, loadnpy)
     return dic
 
 
-def opm_arrays(dic, fol, res):
+def opm_arrays(dic, fol, res, loadnpy):
     """From simulaion data to arrays"""
     phiva = np.array([porv for porv in dic[f"{fol}/{res}_phiv"] if porv > 0])
     for i in range(dic[f"{fol}/{res}_num_rst"]):
@@ -311,13 +327,14 @@ def opm_arrays(dic, fol, res):
         )[i][-1]
         for i in range(3)
     ]
-    dic[f"{fol}/{name}_xmx"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{res}/{name}_xmx.npy"
-    )
-    dic[f"{fol}/{name}_ymy"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{res}/{name}_ymy.npy"
-    )
-    dic[f"{fol}/{res}_xcor"], dic[f"{fol}/{res}_ycor"] = np.meshgrid(
-        dic[f"{fol}/{name}_xmx"], dic[f"{fol}/{name}_ymy"][::-1]
-    )
+    if loadnpy:
+        dic[f"{fol}/{name}_xmx"] = np.load(
+            dic["exe"] + "/" + fol + f"/output/{res}/{name}_xmx.npy"
+        )
+        dic[f"{fol}/{name}_ymy"] = np.load(
+            dic["exe"] + "/" + fol + f"/output/{res}/{name}_ymy.npy"
+        )
+        dic[f"{fol}/{res}_xcor"], dic[f"{fol}/{res}_ycor"] = np.meshgrid(
+            dic[f"{fol}/{name}_xmx"], dic[f"{fol}/{name}_ymy"][::-1]
+        )
     return dic

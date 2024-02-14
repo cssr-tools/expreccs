@@ -29,7 +29,7 @@ def process_input(dic, in_file):
     return dic
 
 
-def readthefirstpart(lol, dic):
+def readthefirstpart(lol, dic):  # pylint: disable=R0915
     """
     Function to process the lines in the configuration file.
 
@@ -106,7 +106,8 @@ def readthefirstpart(lol, dic):
     dic["z_xy"] = str(lol[19][0])  # The function for the reservoir surface
     dic["hysteresis"] = int((lol[20][0].strip()).split()[0])
     dic["salinity"] = float((lol[20][0].strip()).split()[1])
-    index = 23  # Increase this if more rows are added to the model parameters part
+    dic["iterations"] = int((lol[21][0].strip()).split()[0])
+    index = 24  # Increase this if more rows are added to the model parameters part
     dic = readthesecondpart(lol, dic, index)
     return dic
 

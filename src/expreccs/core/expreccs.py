@@ -22,6 +22,10 @@ from expreccs.utils.mapboundaries import (
     porv_regional_segmentation,
     temporal_interpolation,
 )
+from expreccs.utils.backcoupling import (
+    init_multipliers,
+    backcoupling,
+)
 
 
 def expreccs():
@@ -94,6 +98,9 @@ def expreccs():
     dic = mapping_properties(dic)
     write_properties(dic)
 
+    #
+    init_multipliers(dic)
+
     # Run the models
     set_gridmako(dic, dic["z_xy"])
     if dic["mode"] in ["all", "reference"]:
@@ -114,6 +121,8 @@ def expreccs():
             dic = porv_projections(dic)
         write_files(dic, f"site_{dic['site_bctype']}")
         simulations(dic, f"site_{dic['site_bctype']}")
+
+    backcoupling(dic)
 
     # Generate some useful plots after the studies
     set_gridmako(dic, "0")

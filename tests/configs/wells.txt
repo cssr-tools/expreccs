@@ -19,6 +19,7 @@ wells                       #Use free/closed/porv/porvproj/flux/pres/wells for t
 7000 7000 0                 #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
 (10-10*mt.cos((2*mt.pi*(x+y)/15000))) #The function for the reservoir surface
 1 2.92                      #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
+0                           #Number of interations for back-coupling.
 
 """Set the saturation functions"""
 krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]

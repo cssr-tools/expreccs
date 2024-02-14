@@ -22,6 +22,7 @@ def write_files(dic, reservoir):
 
     """
     name = "site" if "site" in reservoir else reservoir
+    name = "regional" if "regional" in name else name
     mytemplate = Template(filename=f"{dic['pat']}/templates/decks/{name}.mako")
     var = {"dic": dic, "reservoir": name}
     filledtemplate = mytemplate.render(**var)
@@ -40,6 +41,44 @@ def write_files(dic, reservoir):
         for fipnum in dic[f"{name}_fipnum"]:
             file.write(f"{fipnum} \n")
         file.write("/\n")
+    if name == "regional":
+        with open(
+            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTX_{name.upper()}.INC",
+            "w",
+            encoding="utf8",
+        ) as file:
+            file.write("MULTX\n")
+            for multx in dic[f"{name}_multx"]:
+                file.write(f"{multx} \n")
+            file.write("/\n")
+        with open(
+            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTY_{name.upper()}.INC",
+            "w",
+            encoding="utf8",
+        ) as file:
+            file.write("MULTY\n")
+            for multy in dic[f"{name}_multy"]:
+                file.write(f"{multy} \n")
+            file.write("/\n")
+        with open(
+            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTX-_{name.upper()}.INC",
+            "w",
+            encoding="utf8",
+        ) as file:
+            file.write("MULTX-\n")
+            for multx in dic[f"{name}_multx-"]:
+                file.write(f"{multx} \n")
+            file.write("/\n")
+        with open(
+            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTY-_{name.upper()}.INC",
+            "w",
+            encoding="utf8",
+        ) as file:
+            file.write("MULTY-\n")
+            for multy in dic[f"{name}_multy-"]:
+                file.write(f"{multy} \n")
+            file.write("/\n")
+
     mytemplate = Template(
         filename=f"{dic['pat']}/templates/common/saturation_functions.mako"
     )

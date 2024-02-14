@@ -39,6 +39,19 @@ GRID
 ----------------------------------------------------------------------------
 INCLUDE
 'GEOLOGY_${reservoir.upper()}.INC' /
+
+INCLUDE
+'MULTX_${reservoir.upper()}.INC' /
+
+INCLUDE
+'MULTY_${reservoir.upper()}.INC' /
+
+INCLUDE
+'MULTX-_${reservoir.upper()}.INC' /
+
+INCLUDE
+'MULTY-_${reservoir.upper()}.INC' /
+
 % if dic['regional_bctype'] == 'free':
 BCCON 
 1 1 ${dic[f'{reservoir}_noCells'][0]} 1 1 1* 1* Y- /
@@ -48,6 +61,8 @@ BCCON
 /
 % endif
 % if dic['regional_bctype'] == 'porv':
+
+
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------

@@ -20,6 +20,7 @@ parser.add_argument(
 CMDARGS = vars(parser.parse_known_args()[0])
 RESERVOIR = CMDARGS["reservoir"].strip()
 NAME = 'site' if 'site' in RESERVOIR else RESERVOIR
+NAME = 'regional' if 'regional' in NAME else NAME
 
 def krwe(sw, swi, sni, krw, nkrw):
     # Wetting relative permeability
