@@ -1,5 +1,5 @@
 """Set the full path to the flow executable and flags"""
-flow --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
+flow --tolerance-mb=1e-7 --enable-opm-rst-file=true  --linear-solver=cprw --newton-min-iterations=1 --enable-tuning=true 
 
 """Set the model parameters"""
 15000 15000 9               #Reginonal aquifer length, width, and depth [m]
@@ -16,9 +16,10 @@ pres                        #Use free/closed/porv/porvproj/flux/pres/pres2p/well
 6666 7075 7885 8450 1 1     #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
 9                           #Thicknes of the layers 
 3E7 105 105 4.934e-10       #Pressure on the reservoir top [Pa], top and bottom temperatures [C], and rock compressibility [1/Pa]
-6700 8100 0                 #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
+6700 8100 4.5               #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
 0                           #The function for the reservoir surface
 1 2.92                      #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
+0                           #Number of interations for back-coupling
 
 """Set the saturation functions"""
 krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
@@ -27,8 +28,8 @@ pec * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npe))        #Capillary pressure sa
 
 """Properties sat functions"""
 """swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
-SWI5 0.478 SNI5 0.    KRW5 1. KRN5 .3 PRE4 5E4 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
-SWI5 0.478 SNI5 0.312 KRW5 1. KRN5 .3 PRE4 5E4 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0.    KRW5 1. KRN5 .3 PRE4 0 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
+SWI5 0.478 SNI5 0.312 KRW5 1. KRN5 .3 PRE4 0 NKRW1 3 NKRN1 3 NPE1 2 THRE1 1e-5
 
 """Properties rock"""
 """Kxy [mD], Kz [mD], phi [-]"""
@@ -38,10 +39,10 @@ PERMXY5 1000 PERMZ5 100 PORO5 0.2
 """x, y, zi, and zf positions [m]"""
 7500   7500 0 9  #Well 0 
 11300 11300 0 9  #Well 1 
-11200  3800 0 9  #Well 2
+11300  3800 0 9  #Well 2
 
 """Define the injection values""" 
 """injection time [d], time step size to write results regional [d], time step size to write results site/reference [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
-360 30 30 30 1 4136031.3852 1 4136031.3852 1 0
-360 30 30 30 1 0 1 0 1 4136031.3852
-360 30 30 30 1 0 1 4136031.3852 1 4136031.3852
+360 30 30 30 1 4106776.18 1 4106776.18 1          0
+360 30 30 30 1          0 1          0 1 4106776.18
+360 30 30 30 1          0 1 4106776.18 1 4106776.18

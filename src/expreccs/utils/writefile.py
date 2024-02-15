@@ -102,12 +102,12 @@ def write_files(dic, reservoir):
     )
     if prosc.returncode != 0:
         raise ValueError(f"Invalid result: { prosc.returncode }")
-    sections = ["geology", "regions", "grid"]
+    sections = ["geology", "regions"]
+    var = {"dic": dic, "reservoir": name}
     for section in sections:
         mytemplate = Template(
             filename=os.path.join(dic["pat"], "templates", "common", f"{section}.mako")
         )
-        var = {"dic": dic, "reservoir": name}
         filledtemplate = mytemplate.render(**var)
         with open(
             os.path.join(
@@ -121,6 +121,19 @@ def write_files(dic, reservoir):
             encoding="utf8",
         ) as file:
             file.write(filledtemplate)
+    filledtemplate = dic["gridtemplate"].render(**var)
+    with open(
+        os.path.join(
+            dic["exe"],
+            dic["fol"],
+            "preprocessing",
+            reservoir,
+            f"GRID_{name.upper()}.INC",
+        ),
+        "w",
+        encoding="utf8",
+    ) as file:
+        file.write(filledtemplate)
 
 
 def write_properties(dic):
@@ -162,7 +175,7 @@ def write_properties(dic):
 
 def set_gridmako(dic, f_xy):
     """
-    Method to erase the mainfold function
+    Method to set the mainfold function
 
     Args:
         dic (dict): Global dictionary with required parameters
@@ -178,12 +191,8 @@ def set_gridmako(dic, f_xy):
                 lol.append("")
             else:
                 lol.append(row[0])
-    with open(
-        f"{dic['pat']}/templates/common/grid.mako",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.write("\n".join(lol))
+    dic["gridtemplate"] = Template(text="\n".join(lol))
+    return dic
 
 
 def write_folders(dic):

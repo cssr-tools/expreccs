@@ -53,9 +53,13 @@ def safu_evaluation():
         "w",
         encoding="utf8",
     ) as file:
+        % if dic["co2store"] == "gaswater":
+        file.write("SGWFN\n")
+        % else:
         file.write("SGOF\n")
+        % endif
         for _, para in enumerate(safu):
-            snatc = np.linspace(para[1], 1-para[0], 100000)
+            snatc = np.linspace(para[1], 1-para[0], 1000)
             if para[1] > 0:
                 file.write(
                     f"{0:.6f}"

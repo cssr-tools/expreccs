@@ -1,7 +1,7 @@
 <%
 import math as mt
 def mainfold(i, j, x, y):
-    z = (20-20*mt.cos((2*mt.pi*(x+y)/45000))) 
+    z = 0
     if reservoir in ["regional", "reference"]:
         if i < dic[f"{reservoir}_fault"][0] or j < dic[f"{reservoir}_fault"][1]:
             z += dic["fault_jump"]

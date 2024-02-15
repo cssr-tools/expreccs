@@ -11,7 +11,7 @@ flow --tolerance-mb=1e-7 --enable-opm-rst-file=true  --linear-solver=cprw --newt
 1                           #Variable array of z-refinment (Reference)
 5000 5000 10000 10000       #Site xi, yi, xf, and yf box positions [m]
 porv 1e9 1e9 1e9 1e9        #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
-pres                        #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time
+flux                        #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time
 11000 11000 1 1 0           #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
 6666 7075 7885 8450 1 1     #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
 9                           #Thicknes of the layers 

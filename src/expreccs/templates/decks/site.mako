@@ -13,12 +13,17 @@ EQLDIMS
 /
 
 TABDIMS
-${(dic["hysteresis"]+1)*dic['satnum']} 1* 100000 /
+${(dic["hysteresis"]+1)*dic['satnum']} 1* 1000 /
 
-OIL
-GAS
-DISGAS
 CO2STORE
+GAS
+% if dic["co2store"] == "gaswater":
+WATER
+DISGASW
+% else:
+OIL
+DISGAS
+% endif
 
 METRIC
 
@@ -36,7 +41,7 @@ ${len(dic['site_wellijk'])+8} ${dic['site_noCells'][2]} ${2*len(dic['site_wellij
 UNIFIN
 UNIFOUT
 
-%if dic['site_bctype'] == 'flux':
+% if dic['site_bctype'] == 'flux':
 AQUDIMS
 -- MXNAQN   MXNAQC   NIFTBL  NRIFTB   NANAQU    NNCAMAX
     1*       1*        5       100      ${len(dic['AQUFLUX_top'][0][0])+len(dic['AQUFLUX_bottom'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_left'][0][0])}         1000 /
@@ -70,34 +75,34 @@ ${i+1+k*dic["site_noCells"][0]+2*dic['regional_noCells'][2]*dic["site_noCells"][
 % endfor
 % endfor
 /
-%elif dic['site_bctype'] == 'free':
+% elif dic['site_bctype'] == 'free':
 BCCON
 1 1 ${dic['site_noCells'][0]} 1 1 1* 1* Y- /
 2 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* Y /
 3 1 1 1 ${dic['site_noCells'][1]} 1* 1* X- /
 4 ${dic['site_noCells'][0]} ${dic['site_noCells'][0]} 1 ${dic['site_noCells'][1]} 1* 1* X /
 /
-%elif dic['site_bctype'] == 'porv':
+% elif dic['site_bctype'] == 'porv':
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------
 OPERATE
-	PORV 1 ${dic['site_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["site_porv"][0]/(dic['site_noCells'][0]*dic['site_noCells'][2])}/
-	PORV ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* ADDX PORV ${dic["site_porv"][1]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
-	PORV 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["site_porv"][2]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
-	PORV 1 1 1 ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["site_porv"][3]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
- / 
-%elif dic['site_bctype'] == 'porvproj':
+PORV 1 ${dic['site_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["site_porv"][0]/(dic['site_noCells'][0]*dic['site_noCells'][2])}/
+PORV ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* ADDX PORV ${dic["site_porv"][1]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+PORV 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["site_porv"][2]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
+PORV 1 1 1 ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["site_porv"][3]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+/ 
+% elif dic['site_bctype'] == 'porvproj':
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------
 OPERATE
-	PORV 1 ${dic['site_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["pv_bottom"]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
-	PORV ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* ADDX PORV ${dic["pv_right"]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
-	PORV 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["pv_top"]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
-	PORV 1 1 1 ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["pv_left"]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
- / 
-%endif
+PORV 1 ${dic['site_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["pv_bottom"]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
+PORV ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][0]} 1* 1* ADDX PORV ${dic["pv_right"]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+PORV 1 ${dic['site_noCells'][0]} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["pv_top"]/(dic['site_noCells'][0]*dic['site_noCells'][2])} /
+PORV 1 1 1 ${dic['site_noCells'][1]} 1* 1* ADDX PORV ${dic["pv_left"]/(dic['site_noCells'][1]*dic['site_noCells'][2])} /
+/ 
+% endif
 ----------------------------------------------------------------------------
 PROPS
 ----------------------------------------------------------------------------
@@ -112,20 +117,22 @@ INCLUDE
 SOLUTION
 ---------------------------------------------------------------------------
 EQUIL
- 0 ${dic['pressure']} 1000 0 0 0 1 1 0 /
+0 ${dic['pressure']} ${1000 if dic["co2store"] == "gasoil" else 0} 0 0 0 1 1 0 /
 
 RTEMPVD
 0   ${dic['temp_top']}
 ${dic[f'{reservoir}_zmz'][-1]} ${dic['temp_bottom']} /
 
+% if dic["co2store"] == "gasoil":
 RSVD
 0   0
-${dic[f'{reservoir}_zmz'][-1]} 0 /
+${dic[f'{reservoir}_zmz'][-1]}  0 /
+% endif
 
 RPTRST 
-'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN ${'PCOG' if dic["co2store"] == "gasoil" else 'PCGW'} /
 
-%if dic['site_bctype'] == 'flux': 
+% if dic['site_bctype'] == 'flux': 
 AQUANCON
 -- Aq#  I1 I2  J1   J2  K1 K2 FACE
 % for k in range(dic['regional_noCells'][2]):
@@ -145,7 +152,7 @@ ${i+1+k*dic["right_noCells"]+len(dic['AQUFLUX_left'][0][0])} ${dic['site_noCells
 ${i+1+k*dic["bottom_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])} ${2} ${(i+1)*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])} 1 1 ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}	'J-'	  1.00      1  /
 % elif i==dic["bottom_noCells"]-1:
 ${i+1+k*dic["bottom_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])} ${1+i*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])} ${dic['site_noCells'][0]-1} 1 1 ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}	'J-'	  1.00      1  /
-%else:
+% else:
 ${i+1+k*dic["bottom_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])} ${1+i*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])} ${(i+1)*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])} 1 1 ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}	'J-'	  1.00      1  /
 % endif
 % endif
@@ -158,20 +165,20 @@ ${i+1+k*dic["bottom_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_ri
 ${i+1+k*dic["top_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])} ${2} ${(i+1)*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}	'J'	  1.00      1  /
 % elif i==dic["top_noCells"]-1:
 ${i+1+k*dic["top_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])} ${1+i*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])} ${dic['site_noCells'][0]-1} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}	'J'	  1.00      1  /
-%else:
+% else:
 ${i+1+k*dic["top_noCells"]+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQUFLUX_bottom'][0][0])} ${1+i*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])} ${(i+1)*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}	'J'	  1.00      1  /
 % endif
 % endif
 % endfor
 % endfor
 /
-%endif
+% endif
 ----------------------------------------------------------------------------
 SUMMARY
 ----------------------------------------------------------------------------
 FPR
 FGIP
-FOIP
+F${dic["l"]}IP
 FGIR
 FGIT
 FGIP
@@ -179,7 +186,7 @@ FGIPL
 FGIPG
 WGIR
 /
-WOIR
+W${dic["l"]}IR
 /
 WGIT
 /
@@ -205,32 +212,40 @@ ${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1}
 BGIPL
 ${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
 /
+% if dic["co2store"] == "gaswater":
+BFLOWI
+${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
+/
+BFLOWJ
+${dic["site_sensor"][0]+1} ${dic["site_sensor"][1]+1} ${dic["site_sensor"][2]+1} /
+/
+% endif
 ----------------------------------------------------------------------------
 SCHEDULE
 ----------------------------------------------------------------------------
 RPTRST
-'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN PCOG /
+'BASIC=2' FLOWS FLORES FLOWS- FLORES- DEN ${'PCOG' if dic["co2store"] == "gasoil" else 'PCGW'} /
 
 WELSPECS
 % for i in range(len(dic['site_wellijk'])):
-'INJ${i}'	'G1'	${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]}	1*	'GAS' /
+'INJ${i}' 'G1' ${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]} 1* 'GAS' /
 % endfor
-%if dic['site_bctype'] == 'wells':
-'BCINJ0' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1* 'OIL' /
-'BCINJ1' 'W' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
-'BCINJ2' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1* 'OIL' /
-'BCINJ3' 'W' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
-'BCPRO0' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1* 'OIL' /
-'BCPRO1' 'W' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
-'BCPRO2' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1* 'OIL' /
-'BCPRO3' 'W' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1* 'OIL' /
+% if dic['site_bctype'] == 'wells':
+'BCINJ0' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1* ${dic["liq"]} /
+'BCINJ1' 'W' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1* ${dic["liq"]} /
+'BCINJ2' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1* ${dic["liq"]} /
+'BCINJ3' 'W' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1* ${dic["liq"]} /
+'BCPRO0' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1* ${dic["liq"]} /
+'BCPRO1' 'W' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1* ${dic["liq"]} /
+'BCPRO2' 'W' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1* ${dic["liq"]} /
+'BCPRO3' 'W' 1 ${mt.ceil(dic['site_noCells'][1]/2)} 1* ${dic["liq"]} /
 % endif
 /
 COMPDAT
 % for i in range(len(dic['site_wellijk'])):
-	'INJ${i}'	${dic['site_wellijk'][i][0]}	${dic['site_wellijk'][i][1]}	${dic['site_wellijk'][i][2]}	${dic['site_wellijk'][i][3]}	'OPEN'	1*	1*	0.2 /
+'INJ${i}' ${dic['site_wellijk'][i][0]} ${dic['site_wellijk'][i][1]}	${dic['site_wellijk'][i][2]} ${dic['site_wellijk'][i][3]} 'OPEN' 1*	1* 0.2 /
 % endfor
-%if dic['site_bctype'] == 'wells':
+% if dic['site_bctype'] == 'wells':
 'BCINJ0' ${mt.ceil(dic['site_noCells'][0]/2)} 1 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
 'BCINJ1' ${dic['site_noCells'][0]} ${mt.ceil(dic['site_noCells'][1]/2)} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
 'BCINJ2' ${mt.ceil(dic['site_noCells'][0]/2)} ${dic['site_noCells'][1]} 1 ${dic['site_noCells'][2]} 'OPEN' 1* 1* 0.2/
@@ -254,18 +269,18 @@ WCONINJE
 % for i in range(len(dic['site_wellijk'])):
 % if dic['inj'][j][4+2*i] > 0:
 'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 427/
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 480/
 % else:
-'INJ${i}' 'OIL' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 427/
+'INJ${i}' ${dic["liq"]} ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 480/
 /
-%endif
+% endif
 % endfor
 % if dic['site_bctype'] == "wells":
-'BCINJ0' 'OIL' ${'OPEN' if dic['bc_wells'][j][0] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][1]}/
-'BCINJ1' 'OIL' ${'OPEN' if dic['bc_wells'][j][2] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][3]}/
-'BCINJ2' 'OIL' ${'OPEN' if dic['bc_wells'][j][4] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][5]}/
-'BCINJ3' 'OIL' ${'OPEN' if dic['bc_wells'][j][6] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][7]}/
+'BCINJ0' ${dic["liq"]} ${'OPEN' if dic['bc_wells'][j][0] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][1]}/
+'BCINJ1' ${dic["liq"]} ${'OPEN' if dic['bc_wells'][j][2] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][3]}/
+'BCINJ2' ${dic["liq"]} ${'OPEN' if dic['bc_wells'][j][4] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][5]}/
+'BCINJ3' ${dic["liq"]} ${'OPEN' if dic['bc_wells'][j][6] > 0 else 'SHUT'} 'BHP' 2* ${dic['bc_wells'][j][7]}/
 % endif
 /
 %if dic['site_bctype'] == 'flux':
@@ -287,22 +302,22 @@ ${i+1+len(dic['AQUFLUX_left'][0][0])+len(dic['AQUFLUX_right'][0][0])+len(dic['AQ
 % endif
 % endfor
 /
-%elif dic['site_bctype']== 'pres' or dic['site_bctype'] == 'pres2p':
+% elif dic['site_bctype']== 'pres' or dic['site_bctype'] == 'pres2p':
 BCPROP
 % for i in range(len(dic['PRESSURE_left'][0][0])):
-${i+1} DIRICHLET OIL 1* ${dic['PRESSURE_left'][n+k+1][0][i]} /
+${i+1} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_left'][n+k+1][0][i]} /
 % endfor
 % for i in range(len(dic['PRESSURE_right'][0][0])):
-${i+1+len(dic['PRESSURE_left'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_right'][n+k+1][0][i]} / 
+${i+1+len(dic['PRESSURE_left'][0][0])} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_right'][n+k+1][0][i]} / 
 % endfor
 % for i in range(len(dic['PRESSURE_bottom'][0][0])):
 % if ((i%dic["bottom_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"]) != 1 and 1+(i%dic["bottom_noCells"])*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])!=dic['site_noCells'][0]) and dic["bottom_noCells"]>2:
-${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_bottom'][n+k+1][0][i]} /
+${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_bottom'][n+k+1][0][i]} /
 % endif
 % endfor
 % for i in range(len(dic['PRESSURE_top'][0][0])):
 % if ((i%dic["top_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["top_noCells"]) != 1 and 1+(i%dic["top_noCells"])*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])!=dic['site_noCells'][0]) and dic["top_noCells"]>2:
-${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])+len(dic['PRESSURE_bottom'][0][0])} DIRICHLET OIL 1* ${dic['PRESSURE_top'][n+k+1][0][i]} /
+${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])+len(dic['PRESSURE_bottom'][0][0])} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_top'][n+k+1][0][i]} /
 % endif
 % endfor
 /
@@ -320,7 +335,7 @@ WCONPROD
 'BCPRO2' ${'OPEN' if dic['bc_wells'][j][4] == 0 else 'SHUT'} 'BHP' 5* ${dic['bc_wells'][j][5]}/
 'BCPRO3' ${'OPEN' if dic['bc_wells'][j][6] == 0 else 'SHUT'} 'BHP' 5* ${dic['bc_wells'][j][7]}/
 /
-%endif
+% endif
 TSTEP
 ${dic['inj'][j][2]}
 /

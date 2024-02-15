@@ -117,10 +117,10 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
     dic["sat_thr"] = 1e-2  # Threshold for the gas saturation
 
     dic["quantity"] = [
-        "flooili+",
-        "flooilj+",
-        "flooili-",
-        "flooilj-",
+        f"FLO{dic['liq']}I+",
+        f"FLO{dic['liq']}J+",
+        f"FLO{dic['liq']}I-",
+        f"FLO{dic['liq']}J-",
     ]
 
     if dic["reading"] == "resdata":
@@ -147,7 +147,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
         for res in dic[f"{fol}_sites"]:
             if "site_pres" in res:
                 for j, quantity in enumerate(dic["quantity"]):
-                    if "flooil" in quantity:
+                    if f"FLO{dic['liq']}" in quantity:
                         regional_fluxes = 0.0
                         local_fluxes = 0.0
                         for k, b in enumerate(dic[f"{fol}/{res}_{quantity}_array"]):
@@ -172,7 +172,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                             + j_reg * nx_reg
                                             + k_reg * nx_reg * ny_reg
                                         )
-                                        if quantity == "flooili+":
+                                        if quantity == f"FLO{dic['liq']}I+":
                                             for j in range(dy):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -185,7 +185,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                                 sum_local_fluxes[ind] += local_fluxes[
                                                     ind_loc
                                                 ]
-                                        elif quantity == "flooili-":
+                                        elif quantity == f"FLO{dic['liq']}I-":
                                             for j in range(dy):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -196,7 +196,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                                 sum_local_fluxes[ind] += local_fluxes[
                                                     ind_loc
                                                 ]
-                                        elif quantity == "flooilj+":
+                                        elif quantity == f"FLO{dic['liq']}J+":
                                             for i in range(dx):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -209,7 +209,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                                 sum_local_fluxes[ind] += local_fluxes[
                                                     ind_loc
                                                 ]
-                                        elif quantity == "flooilj-":
+                                        elif quantity == f"FLO{dic['liq']}J-":
                                             for i in range(dx):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -228,22 +228,22 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                         mult[np.isnan(mult)] = 1
 
                         # use 1 on the boundary
-                        if quantity == "flooili-":
+                        if quantity == f"FLO{dic['liq']}I-":
                             for i in range(1, nx_reg):
                                 for j in range(0, ny_reg):
                                     mult[i + j * nx_reg] = 1
-                        elif quantity == "flooilj-":
+                        elif quantity == f"FLO{dic['liq']}J-":
                             for i in range(0, nx_reg):
                                 for j in range(1, ny_reg):
                                     mult[i + j * nx_reg] = 1
                         ll = 0
 
                         direction = "x"
-                        if quantity == "flooilj+":
+                        if quantity == f"FLO{dic['liq']}J+":
                             direction = "y"
-                        elif quantity == "flooili-":
+                        elif quantity == f"FLO{dic['liq']}I-":
                             direction = "x-"
-                        elif quantity == "flooilj-":
+                        elif quantity == f"FLO{dic['liq']}J-":
                             direction = "y-"
 
                         for l, inside in enumerate(dic[f"{fol}/regional_fipn"] == 1):

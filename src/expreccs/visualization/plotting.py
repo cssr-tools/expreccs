@@ -23,19 +23,21 @@ from expreccs.visualization.reading import (
 
 GAS_DEN_REF = 1.86843  # kg/sm3
 WAT_DEN_REF = 998.108  # kg/sm3
-KG_TO_T = 1e-6
+KG_TO_T = 1e-3
+KG_TO_KT = 1e-6
+KG_TO_MT = 1e-9
 
-font = {"family": "normal", "weight": "normal", "size": 13}
+font = {"family": "normal", "weight": "normal", "size": 16}
 matplotlib.rc("font", **font)
 plt.rcParams.update(
     {
         "text.usetex": True,
         "font.family": "monospace",
         "legend.columnspacing": 0.9,
-        "legend.handlelength": 1.5,
-        "legend.fontsize": 12,
+        "legend.handlelength": 2.2,
+        "legend.fontsize": 14,
         "lines.linewidth": 3,
-        "axes.titlesize": 13,
+        "axes.titlesize": 16,
         "axes.grid": True,
         "figure.figsize": (10, 5),
     }
@@ -95,7 +97,7 @@ def plot_results(dic):
 
     """
     dic["rhog_ref"] = 1.86843  # CO2 reference density
-    dic["mass_thr"] = 1  # Threshold for the plume location [t]
+    dic["sat_thr"] = 0.01  # Threshold for the plume location [-]
     if dic["compare"]:
         dic["where"] = "compare/"
         dic["folders"] = sorted(
@@ -105,9 +107,53 @@ def plot_results(dic):
             os.system(f"mkdir {dic['exe']}/compare")
         else:
             dic["folders"].remove("compare")
+        dic["id"] = "compare" + dic["folders"][0] + "_"
     else:
         dic["where"] = f"{dic['exe']}/{dic['folders'][0]}/postprocessing"
+        dic["id"] = dic["folders"][0] + "_"
     dic["lfolders"] = [name.replace("_", " ") for name in dic["folders"]]
+    dic = plotting_settings(dic)
+    if dic["reading"] == "resdata":
+        dic = reading_resdata(dic)
+    else:
+        dic = reading_opm(dic)
+    if dic["mode"] in ["reference"]:
+        plt.rcParams.update({"axes.grid": False})
+        final_time_maps(dic)
+        return
+    quantites = [
+        "BHP",
+        "WGIR",
+        "WWIR",
+        "PR",
+        "GIP",
+        "GIPL",
+        "GIPG",
+        "BPR",
+        "BGIP",
+        "BGIPL",
+        "BGIPG",
+    ]
+    # quantites += ["BFLOWI" "BFLOWJ"]
+    for i, quantity in enumerate(quantites):
+        summary_plot(dic, i, quantity)
+    over_time_distance(dic)
+    dic["fig"], dic["axis"], dic["figs"], dic["axiss"] = [], [], [], []
+    for nqua, quantity in enumerate(dic["quantity"]):
+        over_time_max_difference(dic, nqua, quantity)
+        over_time_sensor(dic, nqua, quantity)
+    if dic["compare"]:
+        return
+    plt.rcParams.update({"axes.grid": False})
+    geological_maps(dic)
+    final_time_maps(dic)
+    final_time_maps_difference(dic)
+    if dic["time"] > 0:
+        print(f"Execution time: {timedelta(seconds=dic['time'])}")
+
+
+def plotting_settings(dic):
+    """Set the color/line styles and labels"""
     dic["colors"] = [
         "#1f77b4",
         "#ff7f0e",
@@ -146,17 +192,23 @@ def plot_results(dic):
         (0, (3, 5, 1, 5)),
         (0, (3, 1, 1, 1)),
         (0, (3, 5, 1, 5, 1, 5)),
-        (0, (3, 10, 1, 10, 1, 10)),
         (0, (3, 1, 1, 1, 1, 1)),
+        "--",
         (0, ()),
         "-",
     ]
     dic["lreference"] = r"REF"
     dic["lregional"] = r"REG"
+    dic["lregional_1"] = r"REG_1"
+    dic["lregional_2"] = r"REG_2"
     dic["lsite_pres"] = r"SITE$_p$"
+    dic["lsite_pres_1"] = r"SITE$_{1,p}$"
+    dic["lsite_pres_2"] = r"SITE$_{2,p}$"
     dic["lsite_flux"] = r"SITE$_f$"
     dic["lsite_porvproj"] = r"SITE$_{V_p}$"
     dic["lsite_wells"] = r"SITE$_w$"
+    dic["lsite_closed"] = r"SITE$_c$"
+    dic["lsite_free"] = r"SITE$_o$"
     dic["cmaps"] = [
         "jet",
         "seismic",
@@ -171,10 +223,10 @@ def plot_results(dic):
     dic["quantity"] = [
         "saturation",
         "pressure",
-        "flooili+",
-        "flooilj+",
-        "flooili-",
-        "flooilj-",
+        "FLOWATI+",
+        "FLOWATJ+",
+        "FLOWATI-",
+        "FLOWATJ-",
         "mass",
         "diss",
         "gas",
@@ -193,49 +245,15 @@ def plot_results(dic):
     dic["units"] = [
         "Saturation [-]",
         "Pressure [bar]",
-        "Flowati+ [sm$^3$/day]",
-        "Flowatj+ [sm$^3$/day]",
-        "Flowati- [sm$^3$/day]",
-        "Flowatj- [sm$^3$/day]",
+        "Mass flux x+ direction [t m$^{-2}$ day$^{-1}$]",
+        "Mass flux y+ direction [t m$^{-2}$ day$^{-1}$]",
+        "Mass flux x- direction [t m$^{-2}$ day$^{-1}$]",
+        "Mass flux y- direction [t m$^{-2}$ day$^{-1}$]",
+        "CO$_2$ in-place [kt]",
+        "CO$_2$ in-place (liquid phase) [kt]",
+        "CO$_2$ in-place (gas phase) [kt]",
     ]
-    dic["units"] += [
-        "CO$_2$ in-place [t]",
-        "CO$_2$ in-place (liquid phase) [t]",
-        "CO$_2$ in-place (gas phase) [t]",
-    ]
-    if dic["reading"] == "resdata":
-        dic = reading_resdata(dic)
-    else:
-        dic = reading_opm(dic)
-    if dic["mode"] in ["reference"]:
-        plt.rcParams.update({"axes.grid": False})
-        final_time_maps(dic)
-        return
-    quantites = [
-        "BHP",
-        "WGIR",
-        "WOIR",
-        "PR",
-        "GIP",
-        "GIPL",
-        "GIPG",
-    ]
-    for i, quantity in enumerate(quantites):
-        well_well_well(dic, i, quantity)
-    over_time_distance(dic)
-    dic["fig"], dic["axis"] = [], []
-    dic["figs"], dic["axiss"] = [], []
-    for nqua, quantity in enumerate(dic["quantity"]):
-        over_time_max_difference(dic, nqua, quantity)
-        over_time_sensor(dic, nqua, quantity)
-    if dic["compare"]:
-        return
-    plt.rcParams.update({"axes.grid": False})
-    geological_maps(dic)
-    final_time_maps(dic)
-    final_time_maps_difference(dic)
-    if dic["time"] > 0:
-        print(f"Execution time: {timedelta(seconds=dic['time'])}")
+    return dic
 
 
 def wells_site(dic, nquan, nfol, ndeck, nwell):
@@ -248,31 +266,31 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     """
     fol = dic["folders"][nfol]
     res = dic[f"{fol}_decks"][ndeck]
-    opm = ["WBHP", "WGIR", "WOIR"]
+    opm = ["WBHP", "WGIR", f"W{dic[f'{fol}/{res}l']}IR"]
     if dic["reading"] == "resdata":
         yvalues = dic[f"{fol}/{res}_smsp"][f"{opm[nquan]}:INJ{nwell}"].values
     else:
         yvalues = dic[f"{fol}/{res}_smsp"][f"{opm[nquan]}:INJ{nwell}"]
     if opm[nquan] == "WGIR":
-        yvalues = [val * GAS_DEN_REF * KG_TO_T for val in yvalues]
-    if opm[nquan] == "WOIR":
-        yvalues = [val * WAT_DEN_REF * KG_TO_T for val in yvalues]
+        yvalues = [val * GAS_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
+    if opm[nquan] == f"W{dic[f'{fol}/{res}l']}R":
+        yvalues = [val * WAT_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
     # fols = f" ({fol})"
-    if nwell > 0:
-        marker = dic["markers"][nwell]
-    else:
-        marker = ""
-    dic["axis"].step(
-        dic[f"{fol}/{res}_smsp_dates"],
-        yvalues,
-        label=f"INJ{nwell} "
-        + dic[f"l{res}"]
-        + f" {' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
-        color=dic["colors"][-ndeck - 1],
-        linestyle=dic["linestyle"][-ndeck - 1 - nfol * len(dic[f"{fol}_decks"])],
-        marker=marker,
-        lw=2,
-    )
+    # if nwell > 0:
+    #     marker = dic["markers"][nwell]
+    # else:
+    #     marker = ""
+    # dic["axis"].step(
+    #     dic[f"{fol}/{res}_smsp_dates"],
+    #     yvalues,
+    #     label=f"INJ{nwell} "
+    #     + dic[f"l{res}"]
+    #     + f" {' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
+    #     color=dic["colors"][-ndeck - 1],
+    #     linestyle=dic["linestyle"][-ndeck - 1 - nfol * len(dic[f"{fol}_decks"])],
+    #     marker=marker,
+    #     lw=2,
+    # )
     # if ndeck == 0 and nfol == 1 or nwell > 0:
     #     return dic
     # if ndeck == 0:
@@ -302,6 +320,16 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     #     linestyle=dic["linestyle"][-1 + nwell],
     #     lw=3,
     # )
+    if ndeck != 1 or nfol > 0:  # or nwell > 0:
+        return dic
+    dic["axis"].step(
+        dic[f"{fol}/{res}_smsp_dates"],
+        yvalues,
+        label=f"INJ{nwell}",
+        color=dic["colors"][nwell],
+        linestyle=dic["linestyle"][-1 + nwell],
+        lw=3,
+    )
     return dic
 
 
@@ -324,7 +352,17 @@ def summary_site(dic, nfol, ndeck, opmn):
     else:
         yvalues = dic[f"{fol}/{res}_smsp"][f"{opmn}"]
     if opmn[1:4] == "GIP":
-        yvalues = [val * GAS_DEN_REF * KG_TO_T for val in yvalues]
+        yvalues = [val * GAS_DEN_REF * KG_TO_KT for val in yvalues]
+    if opmn[:6] == "BFLOWI":
+        dy = dic[f"{fol}/{res}_dy"][dic[f"{fol}/{res}_sensor"]]
+        dz = dic[f"{fol}/{res}_dz"][dic[f"{fol}/{res}_sensor"]]
+        poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
+        yvalues = [KG_TO_T * WAT_DEN_REF * val / (poro * dy * dz) for val in yvalues]
+    if opmn[:6] == "BFLOWJ":
+        dx = dic[f"{fol}/{res}_dx"][dic[f"{fol}/{res}_sensor"]]
+        dz = dic[f"{fol}/{res}_dz"][dic[f"{fol}/{res}_sensor"]]
+        poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
+        yvalues = [KG_TO_T * WAT_DEN_REF * val / (poro * dx * dz) for val in yvalues]
     if ndeck == 0 and nfol > 0:
         return dic
     if ndeck == 0:
@@ -333,7 +371,7 @@ def summary_site(dic, nfol, ndeck, opmn):
             yvalues,
             label=dic["lreference"],
             color=dic["colors"][-ndeck - 1],
-            lw=2,
+            lw=3,
         )
     else:
         dic["axis"].step(
@@ -341,41 +379,36 @@ def summary_site(dic, nfol, ndeck, opmn):
             yvalues,
             label=dic[f"l{res}"]
             + f"{' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
-            color=dic["colors"][-ndeck - 1],
-            linestyle=dic["linestyle"][-ndeck - 1],
-            lw=2,
+            color=dic["colors"][-ndeck],
+            linestyle=dic["linestyle"][-ndeck],
+            lw=3,
             marker=marker,
             markersize=3,
         )
     return dic
 
 
-def well_well_well(dic, i, quantity):
-    """
-    Function to plot the injection rates and BHP
-
-    Args:
-        dic (dict): Global dictionary with required parameters
-        i (int): Index of the quantity
-        quantity (str): Name of the quantity
-
-    """
-    units = [
-        "W$_{BHP}$ [Bar]",
-        "Rate [t/day]",
-        "Rate [t/day]",
-        "Field average pressure [Bar]",
-        "CO$_2$ in-place [t]",
-        "CO$_2$ in-place (liquid phase) [t]",
-        "CO$_2$ in-place (gas phase) [t]",
-    ]
-    dic["fig"], dic["axis"] = plt.subplots()
+def handle_site_summary(dic, i, quantity):
+    """Routine for the summary qunatities at the site location"""
     for nfol, fol in enumerate(dic["folders"]):
         for ndeck, res in enumerate(dic[f"{fol}_decks"]):
             if res == "regional":
                 continue
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
                 dic = summary_site(dic, nfol, ndeck, f"R{quantity}:1")
+                dic["axis"].set_title(
+                    "SITE "
+                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
+                )
+            elif quantity in ["BPR", "BGIP", "BGIPL", "BGIPG", "BFLOWI", "BFLOWJ"]:
+                dic = summary_site(
+                    dic,
+                    nfol,
+                    ndeck,
+                    f"{quantity}:{dic[f'{fol}/{res}_sensorijk'][0]+1},"
+                    + f"{dic[f'{fol}/{res}_sensorijk'][1]+1},"
+                    + f"{dic[f'{fol}/{res}_sensorijk'][2]+1}",
+                )
                 dic["axis"].set_title(
                     "SITE "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
@@ -387,6 +420,36 @@ def well_well_well(dic, i, quantity):
                     "SITE "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
                 )
+    return dic
+
+
+def summary_plot(dic, i, quantity):
+    """
+    Function to plot the summary qunatities
+
+    Args:
+        dic (dict): Global dictionary with required parameters
+        i (int): Index of the quantity
+        quantity (str): Name of the quantity
+
+    """
+    units = [
+        "W$_{BHP}$ [bar]",
+        "Rate [Mtpa]",
+        "Rate [Mtpa]",
+        "Field average pressure [bar]",
+        "CO$_2$ in-place [kt]",
+        "CO$_2$ in-place (liquid phase) [kt]",
+        "CO$_2$ in-place (gas phase) [kt]",
+        "Pressure at the sensor [bar]",
+        "CO$_2$ at the sensor [kt]",
+        "CO$_2$ at the sensor (liquid phase) [kt]",
+        "CO$_2$ at the sensor (gas phase) [kt]",
+        "Mass flux in the x+ direction [t m$^{-2}$ day$^{-1}$]",
+        "Mass flux in the j+ direction [t m$^{-2}$ day$^{-1}$]",
+    ]
+    dic["fig"], dic["axis"] = plt.subplots()
+    dic = handle_site_summary(dic, i, quantity)
     dic["axis"].set_ylabel(units[i])
     dic["axis"].set_xlabel("Time")
     handles, labels = plt.gca().get_legend_handles_labels()
@@ -394,7 +457,8 @@ def well_well_well(dic, i, quantity):
     dic["axis"].legend([handles[idx] for idx in order], [labels[idx] for idx in order])
     dic["axis"].xaxis.set_tick_params(size=6, rotation=45)
     dic["fig"].savefig(
-        f"{dic['where']}/summary_{quantity}_site_reference.png", bbox_inches="tight"
+        f"{dic['where']}/{dic['id']}summary_{quantity}_site_reference.png",
+        bbox_inches="tight",
     )
     plt.close()
     dic["fig"], dic["axis"] = plt.subplots()
@@ -404,6 +468,19 @@ def well_well_well(dic, i, quantity):
                 continue
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
                 dic = summary_site(dic, nfol, ndeck, f"F{quantity}")
+                dic["axis"].set_title(
+                    "REGION "
+                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
+                )
+            elif quantity in ["BPR", "BGIP", "BGIPL", "BGIPG", "BFLOWI", "BFLOWJ"]:
+                dic = summary_site(
+                    dic,
+                    nfol,
+                    ndeck,
+                    f"{quantity}:{dic[f'{fol}/{res}_sensorijk'][0]+1},"
+                    + f"{dic[f'{fol}/{res}_sensorijk'][1]+1},"
+                    + f"{dic[f'{fol}/{res}_sensorijk'][2]+1}",
+                )
                 dic["axis"].set_title(
                     "REGION "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
@@ -422,7 +499,7 @@ def well_well_well(dic, i, quantity):
     dic["axis"].legend([handles[idx] for idx in order], [labels[idx] for idx in order])
     dic["axis"].xaxis.set_tick_params(size=6, rotation=45)
     dic["fig"].savefig(
-        f"{dic['where']}/summary_{quantity}_regional_reference.png",
+        f"{dic['where']}/{dic['id']}summary_{quantity}_regional_reference.png",
         bbox_inches="tight",
     )
     plt.close()
@@ -489,14 +566,14 @@ def over_time_distance(dic):
         dic["axis"][-1].set_title(
             "Minimum "
             + r"CO$_2$"
-            + f' distance to the borders (mass thr={dic["mass_thr"]} [t])'
+            + f' distance to the borders (saturation thr={dic["sat_thr"]} [-])'
         )
         dic["axis"][-1].set_ylabel("Distance [km]")
         dic["axis"][-1].set_xlabel("Time")
         dic["axis"][-1].legend()
         dic["axis"][-1].xaxis.set_tick_params(rotation=45)
         dic["fig"][-1].savefig(
-            f"{dic['where']}/distance_from_border.png", bbox_inches="tight"
+            f"{dic['where']}/{dic['id']}distance_from_border.png", bbox_inches="tight"
         )
         plt.close()
 
@@ -685,12 +762,16 @@ def handle_labels_distance(dic, nfol, res, fol, j):
             )
             dic["nmarker"] += 1
     else:
+        if j == 0:
+            j_j = 0
+        else:
+            j_j = j
         label = dic[f"l{res}"]
         dic["axis"][-1].step(
             dic[f"{fol}/{res}_dates"],
             dic[f"{fol}/{res}_indicator_plot"],
-            color=dic["colors"][-1 - j],
-            linestyle=dic["linestyle"][-1 - j],
+            color=dic["colors"][-1 - j_j],
+            linestyle=dic["linestyle"][-1 - j_j],
             label=label,
         )
     return dic
@@ -719,16 +800,22 @@ def over_time_max_difference(dic, nqua, quantity):
                     ]
                     - dic[f"{fol}/{res}_{quantity}_array"][nrst]
                 )
-                if quantity == "flooili+":
+                if quantity == f"FLO{dic[f'{fol}/{res}liq']}I+":
                     for k in range(len(dic[f"{fol}/site_ymy"]) - 1):
                         quant[(k + 1) * (len(dic[f"{fol}/site_xmx"]) - 1) - 1] = 0
-                if quantity == "flooilj+":
+                if quantity == f"FLO{dic[f'{fol}/{res}liq']}I-":
+                    for k in range(len(dic[f"{fol}/site_ymy"]) - 1):
+                        quant[k * (len(dic[f"{fol}/site_xmx"]) - 1)] = 0
+                if quantity == f"FLO{dic[f'{fol}/{res}liq']}J+":
                     for k in range(len(dic[f"{fol}/site_xmx"]) - 1):
                         quant[
                             (len(dic[f"{fol}/site_ymy"]) - 2)
                             * (len(dic[f"{fol}/site_xmx"]) - 1)
                             + k
                         ] = 0
+                if quantity == f"FLO{dic[f'{fol}/{res}liq']}J-":
+                    for k in range(len(dic[f"{fol}/site_xmx"]) - 1):
+                        quant[k] = 0
                 dic[f"{fol}/{res}_difference_{quantity}"].append(max(quant))
                 dic[f"{fol}/{res}_maximum_{quantity}"].append(
                     max(dic[f"{fol}/{res}_{quantity}_array"][nrst])
@@ -751,7 +838,7 @@ def over_time_max_difference(dic, nqua, quantity):
     dic["axis"][nqua].legend()
     dic["axis"][nqua].xaxis.set_tick_params(rotation=45)
     dic["fig"][nqua].savefig(
-        f"{dic['where']}/maximum_{dic['names'][nqua]}_difference_over_time.png",
+        f"{dic['where']}/{dic['id']}maximum_{dic['names'][nqua]}_difference_over_time.png",
         bbox_inches="tight",
     )
     plt.close()
@@ -786,8 +873,9 @@ def over_time_sensor(dic, nqua, quantity):
                         dic[f"{fol}/{res}_sensor_{quantity}"],
                         color=dic["colors"][-1],
                         linestyle=dic["linestyle"][-1],
-                        label=label,
+                        label=label,  # +" (Grid 0 50m)"
                     )
+                    # referror = np.array(dic[f"{fol}/{res}_sensor_{quantity}"])
                 if res != "reference":
                     label = dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})"
                     dic["axiss"][nqua].step(
@@ -798,6 +886,10 @@ def over_time_sensor(dic, nqua, quantity):
                         label=label,
                     )
                     dic["nmarker"] += 1
+                    # quanti = np.array(dic[f"{fol}/{res}_sensor_{quantity}"])
+                    # error = np.max(np.abs(referror - quanti))
+                    # if quantity == "pressure":
+                    #     print(fol, res, quantity, f"{error:.2f}")
             else:
                 dic["axiss"][nqua].step(
                     dic[f"{fol}/{res}_dates"],
@@ -812,10 +904,11 @@ def over_time_sensor(dic, nqua, quantity):
     dic["axiss"][nqua].set_title(f"Sensor location {location} [km]")
     dic["axiss"][nqua].set_ylabel(f"{dic['units'][nqua]}")
     dic["axiss"][nqua].set_xlabel("Time")
+    # if quantity != "pressure":
     dic["axiss"][nqua].legend()
     dic["axiss"][nqua].xaxis.set_tick_params(rotation=45)
     dic["figs"][nqua].savefig(
-        f"{dic['where']}/sensor_{dic['names'][nqua]}_over_time.png",
+        f"{dic['where']}/{dic['id']}sensor_{dic['names'][nqua]}_over_time.png",
         bbox_inches="tight",
     )
     plt.close()

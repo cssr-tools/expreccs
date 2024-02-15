@@ -26,7 +26,8 @@ except ImportError:
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
-KG_TO_T = 1e-6
+KG_TO_T = 1e-3
+KG_TO_KT = 1e-6
 
 
 def reading_resdata(dic):
@@ -67,6 +68,9 @@ def reading_resdata(dic):
             dic[f"{fol}/{res}_nowells_site"] = np.load(
                 dic["exe"] + "/" + fol + f"/output/{res}/nowells_site.npy"
             )
+            dic[f"{fol}/{res}_sensorijk"] = np.load(
+                dic["exe"] + "/" + fol + f"/output/{res}/sensorijk.npy"
+            )
             dic[f"{fol}/{res}_rst"] = ResdataFile(case + ".UNRST")
             dic[f"{fol}/{res}_ini"] = ResdataFile(case + ".INIT")
             dic[f"{fol}/{res}_grid"] = Grid(case + ".EGRID")
@@ -75,10 +79,22 @@ def reading_resdata(dic):
             dic[f"{fol}/{res}_dates"] = dic[f"{fol}/{res}_rst"].dates
             dic[f"{fol}/{res}_smsp_dates"] = dic[f"{fol}/{res}_smsp"].dates
             dic[f"{fol}/{res}_phiv"] = dic[f"{fol}/{res}_ini"].iget_kw("PORV")[0]
+            dic[f"{fol}/{res}_poro"] = dic[f"{fol}/{res}_ini"].iget_kw("PORO")[0]
             dic[f"{fol}/{res}_fipn"] = np.array(
                 dic[f"{fol}/{res}_ini"].iget_kw("FIPNUM")
             )[0]
+            dic[f"{fol}/{res}_dx"] = np.array(dic[f"{fol}/{res}_ini"].iget_kw("DX")[0])
+            dic[f"{fol}/{res}_dy"] = np.array(dic[f"{fol}/{res}_ini"].iget_kw("DY")[0])
+            dic[f"{fol}/{res}_dz"] = np.array(dic[f"{fol}/{res}_ini"].iget_kw("DZ")[0])
             dic = handle_smsp_time(dic, fol, res)
+            if dic[f"{fol}/{res}_rst"].has_kw("SWAT"):
+                dic[f"{fol}/{res}liq"] = "WAT"
+                dic[f"{fol}/{res}l"] = "W"
+                dic[f"{fol}/{res}s"] = "W"
+            else:
+                dic[f"{fol}/{res}liq"] = "OIL"
+                dic[f"{fol}/{res}l"] = "O"
+                dic[f"{fol}/{res}s"] = ""
             dic[f"{fol}/{res}_indicator_array"] = []
             for quantity in dic["quantity"]:
                 dic[f"{fol}/{res}_{quantity}_array"] = []
@@ -92,29 +108,56 @@ def resdata_arrays(dic, fol, res):
     for i in range(dic[f"{fol}/{res}_num_rst"]):
         sgas = np.array(dic[f"{fol}/{res}_rst"]["SGAS"][i])
         rhog = np.array(dic[f"{fol}/{res}_rst"]["GAS_DEN"][i])
-        rhow = np.array(dic[f"{fol}/{res}_rst"]["OIL_DEN"][i])
-        rss = np.array(dic[f"{fol}/{res}_rst"]["RS"][i])
+        rhow = np.array(dic[f"{fol}/{res}_rst"][f"{dic[f'{fol}/{res}liq']}_DEN"][i])
+        rss = np.array(dic[f"{fol}/{res}_rst"][f"RS{dic[f'{fol}/{res}s']}"][i])
         co2_g = sgas * rhog * phiva
         co2_d = rss * rhow * (1.0 - sgas) * phiva * GAS_DEN_REF / WAT_DEN_REF
         for quantity in dic["quantity"]:
             if quantity == "saturation":
-                dic[f"{fol}/{res}_{quantity}_array"].append(
-                    np.array(dic[f"{fol}/{res}_rst"]["SGAS"][i])
-                )
-            elif quantity == "pressure":
-                dic[f"{fol}/{res}_{quantity}_array"].append(
-                    np.array(dic[f"{fol}/{res}_rst"]["PRESSURE"][i])
-                    + np.array(dic[f"{fol}/{res}_rst"]["PCOG"][i])
-                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(sgas)
+                dic[f"{fol}/{res}_indicator_array"].append(sgas > dic["sat_thr"])
             elif quantity == "mass":
-                dic[f"{fol}/{res}_{quantity}_array"].append((co2_g + co2_d) * KG_TO_T)
-                dic[f"{fol}/{res}_indicator_array"].append(
-                    (co2_g + co2_d) * KG_TO_T > dic["mass_thr"]
-                )
+                dic[f"{fol}/{res}_{quantity}_array"].append((co2_g + co2_d) * KG_TO_KT)
             elif quantity == "diss":
-                dic[f"{fol}/{res}_{quantity}_array"].append(co2_d * KG_TO_T)
+                dic[f"{fol}/{res}_{quantity}_array"].append(co2_d * KG_TO_KT)
             elif quantity == "gas":
-                dic[f"{fol}/{res}_{quantity}_array"].append(co2_g * KG_TO_T)
+                dic[f"{fol}/{res}_{quantity}_array"].append(co2_g * KG_TO_KT)
+            elif quantity in ["FLOWATI+", "FLOWATI-"]:
+                flow = (
+                    KG_TO_T
+                    * WAT_DEN_REF
+                    * np.array(
+                        dic[f"{fol}/{res}_rst"][
+                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}"
+                        ][i]
+                    )
+                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dy"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
+                    )
+                )
+            elif quantity in ["FLOWATJ+", "FLOWATJ-"]:
+                flow = (
+                    KG_TO_T
+                    * WAT_DEN_REF
+                    * np.array(
+                        dic[f"{fol}/{res}_rst"][
+                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}"
+                        ][i]
+                    )
+                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dx"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
+                    )
+                )
             else:
                 if dic[f"{fol}/{res}_rst"].has_kw(quantity.upper()):
                     dic[f"{fol}/{res}_{quantity}_array"].append(
@@ -240,6 +283,9 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
                 dic[f"{fol}/{res}_sensor_location"] = np.load(
                     dic["exe"] + "/" + fol + f"/output/{name}/sensor_location.npy"
                 )
+                dic[f"{fol}/{res}_sensorijk"] = np.load(
+                    dic["exe"] + "/" + fol + f"/output/{name}/sensorijk.npy"
+                )
             case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
             dic[f"{fol}/{res}_rst"] = OpmRst(case + ".UNRST")
             dic[f"{fol}/{res}_ini"] = OpmFile(case + ".INIT")
@@ -269,10 +315,22 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
                 ]
 
             dic[f"{fol}/{res}_phiv"] = np.array(dic[f"{fol}/{res}_ini"]["PORV"])
+            dic[f"{fol}/{res}_poro"] = np.array(dic[f"{fol}/{res}_ini"]["PORO"])
             dic[f"{fol}/{res}_fipn"] = np.array(dic[f"{fol}/{res}_ini"]["FIPNUM"])
-            dic[f"{fol}/{res}_indicator_array"] = []
+            dic[f"{fol}/{res}_dx"] = np.array(dic[f"{fol}/{res}_ini"]["DX"])
+            dic[f"{fol}/{res}_dy"] = np.array(dic[f"{fol}/{res}_ini"]["DY"])
+            dic[f"{fol}/{res}_dz"] = np.array(dic[f"{fol}/{res}_ini"]["DZ"])
+            if dic[f"{fol}/{res}_rst"].count("SWAT", 0):
+                dic[f"{fol}/{res}liq"] = "WAT"
+                dic[f"{fol}/{res}l"] = "W"
+                dic[f"{fol}/{res}s"] = "W"
+            else:
+                dic[f"{fol}/{res}liq"] = "OIL"
+                dic[f"{fol}/{res}l"] = "O"
+                dic[f"{fol}/{res}s"] = ""
             for quantity in dic["quantity"]:
                 dic[f"{fol}/{res}_{quantity}_array"] = []
+            dic[f"{fol}/{res}_indicator_array"] = []
             dic = opm_arrays(dic, fol, res, loadnpy)
     return dic
 
@@ -283,29 +341,56 @@ def opm_arrays(dic, fol, res, loadnpy):
     for i in range(dic[f"{fol}/{res}_num_rst"]):
         sgas = np.array(dic[f"{fol}/{res}_rst"]["SGAS", i])
         rhog = np.array(dic[f"{fol}/{res}_rst"]["GAS_DEN", i])
-        rhow = np.array(dic[f"{fol}/{res}_rst"]["OIL_DEN", i])
-        rss = np.array(dic[f"{fol}/{res}_rst"]["RS", i])
+        rhow = np.array(dic[f"{fol}/{res}_rst"][f"{dic[f'{fol}/{res}liq']}_DEN", i])
+        rss = np.array(dic[f"{fol}/{res}_rst"][f"RS{dic[f'{fol}/{res}s']}", i])
         co2_g = sgas * rhog * phiva
         co2_d = rss * rhow * (1.0 - sgas) * phiva * GAS_DEN_REF / WAT_DEN_REF
         for quantity in dic["quantity"]:
             if quantity == "saturation":
-                dic[f"{fol}/{res}_{quantity}_array"].append(
-                    np.array(dic[f"{fol}/{res}_rst"]["SGAS", i])
-                )
-            elif quantity == "pressure":
-                dic[f"{fol}/{res}_{quantity}_array"].append(
-                    np.array(dic[f"{fol}/{res}_rst"]["PRESSURE", i])
-                    + np.array(dic[f"{fol}/{res}_rst"]["PCOG", i])
-                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(sgas)
+                dic[f"{fol}/{res}_indicator_array"].append(sgas > dic["sat_thr"])
             elif quantity == "mass":
-                dic[f"{fol}/{res}_{quantity}_array"].append((co2_g + co2_d) * KG_TO_T)
-                dic[f"{fol}/{res}_indicator_array"].append(
-                    (co2_g + co2_d) * KG_TO_T > dic["mass_thr"]
-                )
+                dic[f"{fol}/{res}_{quantity}_array"].append((co2_g + co2_d) * KG_TO_KT)
             elif quantity == "diss":
-                dic[f"{fol}/{res}_{quantity}_array"].append(co2_d * KG_TO_T)
+                dic[f"{fol}/{res}_{quantity}_array"].append(co2_d * KG_TO_KT)
             elif quantity == "gas":
-                dic[f"{fol}/{res}_{quantity}_array"].append(co2_g * KG_TO_T)
+                dic[f"{fol}/{res}_{quantity}_array"].append(co2_g * KG_TO_KT)
+            elif quantity in ["FLOWATI+", "FLOWATI-"]:
+                flow = (
+                    KG_TO_T
+                    * WAT_DEN_REF
+                    * np.array(
+                        dic[f"{fol}/{res}_rst"][
+                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}", i
+                        ]
+                    )
+                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dy"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
+                    )
+                )
+            elif quantity in ["FLOWATJ+", "FLOWATJ-"]:
+                flow = (
+                    KG_TO_T
+                    * WAT_DEN_REF
+                    * np.array(
+                        dic[f"{fol}/{res}_rst"][
+                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}", i
+                        ]
+                    )
+                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dx"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
+                    )
+                )
             else:
                 if dic[f"{fol}/{res}_rst"].count(quantity.upper(), 0):
                     dic[f"{fol}/{res}_{quantity}_array"].append(
@@ -315,11 +400,12 @@ def opm_arrays(dic, fol, res, loadnpy):
                     dic[f"{fol}/{res}_{quantity}_array"].append(
                         0.0 * np.array(dic[f"{fol}/{res}_rst"]["SGAS", 0])
                     )
-    name = "site" if "site" in res else res
-    dic[f"{fol}/{name}_boxi"] = [
+
+    dic = manage_names(dic, res)
+    dic[f"{fol}/{dic['namel']}_boxi"] = [
         dic[f"{fol}/{res}_grid"].xyz_from_ijk(0, 0, 0)[i][0] for i in range(3)
     ]
-    dic[f"{fol}/{name}_boxf"] = [
+    dic[f"{fol}/{dic['namel']}_boxf"] = [
         dic[f"{fol}/{res}_grid"].xyz_from_ijk(
             dic[f"{fol}/{res}_grid"].dimension[0] - 1,
             dic[f"{fol}/{res}_grid"].dimension[1] - 1,
@@ -328,13 +414,29 @@ def opm_arrays(dic, fol, res, loadnpy):
         for i in range(3)
     ]
     if loadnpy:
-        dic[f"{fol}/{name}_xmx"] = np.load(
-            dic["exe"] + "/" + fol + f"/output/{res}/{name}_xmx.npy"
+        dic[f"{fol}/{dic['namel']}_xmx"] = np.load(
+            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_xmx.npy"
         )
-        dic[f"{fol}/{name}_ymy"] = np.load(
-            dic["exe"] + "/" + fol + f"/output/{res}/{name}_ymy.npy"
+        dic[f"{fol}/{dic['namel']}_ymy"] = np.load(
+            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
         )
-        dic[f"{fol}/{res}_xcor"], dic[f"{fol}/{res}_ycor"] = np.meshgrid(
-            dic[f"{fol}/{name}_xmx"], dic[f"{fol}/{name}_ymy"][::-1]
+        dic[f"{fol}/{dic['namel']}_xcor"], dic[f"{fol}/{dic['namel']}_ycor"] = (
+            np.meshgrid(
+                dic[f"{fol}/{dic['namel']}_xmx"], dic[f"{fol}/{dic['namel']}_ymy"][::-1]
+            )
         )
+    return dic
+
+
+def manage_names(dic, res):
+    """Figure out the folder names (needs to be fixed)"""
+    if res[-3].isdigit():
+        dic["namef"] = res[:-4]
+    if res[-2].isdigit():
+        dic["namef"] = res[:-3]
+    if res[-1].isdigit():
+        dic["namef"] = res[:-2]
+    else:
+        dic["namef"] = res
+    dic["namel"] = "site" if "site" in res else dic["namef"]
     return dic

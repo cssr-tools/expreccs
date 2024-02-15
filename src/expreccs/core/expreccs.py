@@ -70,7 +70,14 @@ def expreccs():
         "-r",
         "--reading",
         default="opm",
-        help="Using the 'opm' or 'resdata' python package (opm by default).",
+        help="Using the 'opm' or 'resdata' python package ('opm' by default).",
+    )
+    parser.add_argument(
+        "-u",
+        "--use",
+        default="gaswater",
+        help="Using 'gasoil' or 'gaswater' co2store implementation ('gasoil' by "
+        + "default).",
     )
     cmdargs = vars(parser.parse_known_args()[0])
     file = cmdargs["input"]  # Name of the input file
@@ -79,6 +86,7 @@ def expreccs():
     dic["exe"] = os.getcwd()  # Path to the folder of the input.txt file
     dic["mode"] = cmdargs["mode"]  # Parts of the workflow to run
     dic["plot"] = cmdargs["plot"]  # Generate some nice plots
+    dic["co2store"] = cmdargs["use"]  # Implementation of co2store
     dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
     dic["compare"] = cmdargs[
         "compare"
@@ -97,12 +105,10 @@ def expreccs():
     # Get the location of wells and faults in the reservoirs
     dic = mapping_properties(dic)
     write_properties(dic)
-
-    #
     init_multipliers(dic)
 
     # Run the models
-    set_gridmako(dic, dic["z_xy"])
+    dic = set_gridmako(dic, dic["z_xy"])
     if dic["mode"] in ["all", "reference"]:
         write_files(dic, "reference")
         simulations(dic, "reference")
@@ -122,10 +128,10 @@ def expreccs():
         write_files(dic, f"site_{dic['site_bctype']}")
         simulations(dic, f"site_{dic['site_bctype']}")
 
-    backcoupling(dic)
+    if dic["mode"] in ["all"]:
+        backcoupling(dic)
 
     # Generate some useful plots after the studies
-    set_gridmako(dic, "0")
     if dic["plot"] == "yes":
         plotting(dic, time.monotonic() - start_time)
 
