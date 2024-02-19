@@ -42,7 +42,7 @@ operations (see the :doc:`configuration file <./configuration_file>` section).
 Installation
 ------------
 
-See the `Github page <https://github.com/daavid00/expreccs>`_.
+See the `Github page <https://github.com/cssr-tools/expreccs>`_.
 
 .. tip::
-    Check the `CI.yml <https://github.com/daavid00/expreccs/blob/main/.github/workflows/CI.yml>`_ file.
+    Check the `CI.yml <https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml>`_ file.

@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/daavid00/expreccs/actions/workflows/CI.yml/badge.svg)](https://github.com/daavid00/expreccs/actions/workflows/CI.yml)
+[![Build Status](https://github.com/cssr-tools/expreccs/actions/workflows/CI.yml/badge.svg)](https://github.com/cssr-tools/expreccs/actions/workflows/CI.yml)
 <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20|%203.9%20|%203.10%20|%203.11-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -12,13 +12,13 @@ This repository contains scripts to set up a workflow to run site and regional r
 
 ## Installation
 You will first need to install
-* Flow (https://opm-project.org)
+* Flow (https://opm-project.org) (current master branches)
 
 You can install the Python requirements in a virtual environment with the following commands:
 
 ```bash
 # Clone the repo
-git clone https://github.com/daavid00/expreccs.git
+git clone https://github.com/cssr-tools/expreccs.git
 # Get inside the folder
 cd expreccs
 # Create the virtual environment
@@ -33,13 +33,9 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-To build dune and the corresponding OPM master branches from source (e.g., you are a macOS user), you can run the script
-`./build_dune_and_opm-flow.bash`, which in turn should build flow in the folder ./build/opm-simulators/bin/flow (for macOS users the dependecies such as boost can be installed using macports).
-If you are a Linux user (including the windows subsystem for Linux), then you could try to build Flow with mpi support,
-by running the script `./build_opm-flow_mpi.bash` instead of `./build_dune_and_opm-flow.bash`.
+If you are a Linux user (including the Windows subsystem for Linux), then you could try to build Flow from the master branches with mpi support, by running the script `./build_opm-flow_mpi.bash` (See the [_CI.yml_](https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml)), which in turn should build the executable in ./build/opm-simulators/bin/flow_gaswater_dissolution. 
 
-For macOS users with the latest chips (M1/M2, guessing also M3?), the ecl and opm packages are not available via pip install. Then before installation, remove ecl and opm from the requierements.txt, then proceed with the Python requirements installation, and  once inside the vexpreccs Python environment, add the flag `-DPYTHON_EXECUTABLE=/Users/dmar/expreccs/vexpreccs/bin/python` (by typing `which  python` in the terminal you get your path) to the cmake (lines 24 in the bash scripts), build flow by running the bash script, and finally, add to the python path the folder where you have built it, e.g., by opening in an editor the vexpreccs/bin/activate script, pasting the following line (edited with the path where you built opm with Python) 
-`export PYTHONPATH=$PYTHONPATH:/Users/dmar/expreccs/build/opm-common/build/python` at the end of the script, and deactivating and activating the virtual environment.
+For macOS users with the latest chips (M1/M2, guessing also M3?), the opm Python package is not available via pip install, while resdata might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10). If you face this issue, then before installation, remove resdata and opm from the `requirements.txt`, then proceed with the Python requirements installation, install the OPM Flow dependencies (using macports or brew), and once inside the vexpreccs Python environment, run the `./build_opm-flow_macOS.bash`, and deactivate and activate the virtual environment (this script builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH).
 
 ## Running expreccs
 You can run _expreccs_ as a single command line:
@@ -50,7 +46,7 @@ Run `expreccs --help` to see all possible command line argument options. Inside 
 flow executable and simulation parameters. See the .txt files in the examples and tests/configs folders.
 
 ## Getting started
-See the [_documentation_](https://daavid00.github.io/expreccs/introduction.html). 
+See the [_documentation_](https://cssr-tools.github.io/expreccs/introduction.html). 
 
 ## About expreccs
 The expreccs package is funded by Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 336294].

@@ -6,7 +6,7 @@ Example 1
 ---------
 
 We consider the configuration file 'example1.txt' in the 
-examples folder (the animation in the `Github home page <https://github.com/daavid00/expreccs>`_ was based on this configuration file). 
+examples folder (the animation in the `Github home page <https://github.com/cssr-tools/expreccs>`_ was based on this configuration file). 
 If the results are to be saved in a folder called 'hello_world', this is achieved by the following command: 
 
 .. code-block:: bash

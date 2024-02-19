@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>expreccs.utils package &mdash; expreccs  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -20,7 +22,7 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="expreccs.utils.inputvalues module" href="expreccs.utils.inputvalues.html" />
+    <link rel="next" title="expreccs.utils.backcoupling module" href="expreccs.utils.backcoupling.html" />
     <link rel="prev" title="expreccs.core.expreccs module" href="expreccs.core.expreccs.html" /> 
 </head>
 
@@ -86,6 +88,13 @@
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="expreccs.utils.backcoupling.html">expreccs.utils.backcoupling module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.backcoupling.html#expreccs.utils.backcoupling.backcoupling"><code class="docutils literal notranslate"><span class="pre">backcoupling()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.backcoupling.html#expreccs.utils.backcoupling.compute_multipliers"><code class="docutils literal notranslate"><span class="pre">compute_multipliers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.backcoupling.html#expreccs.utils.backcoupling.init_multipliers"><code class="docutils literal notranslate"><span class="pre">init_multipliers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.backcoupling.html#expreccs.utils.backcoupling.write_folder_iter"><code class="docutils literal notranslate"><span class="pre">write_folder_iter()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.inputvalues.html">expreccs.utils.inputvalues module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.inputvalues.html#expreccs.utils.inputvalues.process_input"><code class="docutils literal notranslate"><span class="pre">process_input()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.inputvalues.html#expreccs.utils.inputvalues.readthefirstpart"><code class="docutils literal notranslate"><span class="pre">readthefirstpart()</span></code></a></li>
@@ -93,11 +102,11 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.mapboundaries.html">expreccs.utils.mapboundaries module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.aquaflux_ecl"><code class="docutils literal notranslate"><span class="pre">aquaflux_ecl()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.aquaflux_opm"><code class="docutils literal notranslate"><span class="pre">aquaflux_opm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.aquaflux_resdata"><code class="docutils literal notranslate"><span class="pre">aquaflux_resdata()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_stencil_2p"><code class="docutils literal notranslate"><span class="pre">handle_stencil_2p()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_stencil_ecl"><code class="docutils literal notranslate"><span class="pre">handle_stencil_ecl()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_stencil_opm"><code class="docutils literal notranslate"><span class="pre">handle_stencil_opm()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_stencil_resdata"><code class="docutils literal notranslate"><span class="pre">handle_stencil_resdata()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.porv_projections"><code class="docutils literal notranslate"><span class="pre">porv_projections()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.porv_regional_segmentation"><code class="docutils literal notranslate"><span class="pre">porv_regional_segmentation()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.temporal_interpolation"><code class="docutils literal notranslate"><span class="pre">temporal_interpolation()</span></code></a></li>
@@ -135,7 +144,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="expreccs.core.expreccs.html" class="btn btn-neutral float-left" title="expreccs.core.expreccs module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="expreccs.utils.inputvalues.html" class="btn btn-neutral float-right" title="expreccs.utils.inputvalues module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="expreccs.utils.backcoupling.html" class="btn btn-neutral float-right" title="expreccs.utils.backcoupling module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

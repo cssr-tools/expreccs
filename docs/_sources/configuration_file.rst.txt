@@ -1,10 +1,10 @@
 ==================
 Configuration file
 ==================
-We consider the configuration file (`input.txt <https://github.com/daavid00/expreccs/blob/main/examples/input.txt>`_) available in the 
+We consider the configuration file (`input.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/input.txt>`_) available in the 
 examples folder. The parameters are chosen to show the functionality and capabilities of the **expreccs** framework regarding generation
 of corner-point grids (cpg), heterogeinities (e.g., different rock properties, faults), adding wells, and defining schedules for the
-operations. See the `example1.txt <https://github.com/daavid00/expreccs/blob/main/examples/example1.txt>`_ for a simpler configuration
+operations. See the `example1.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt>`_ for a simpler configuration
 file. 
 
 The first input parameter in the configuration file is:
@@ -183,7 +183,7 @@ Since we defined six wells (three of them inside the site model), then each row 
 the first three defining the injection time, number of restart files in the solution for the regional, number of restart files in the solution for the site/reference, and maximum solver time step, and 2*6 additional 
 entries to define injected fluid (0 water, 1 CO2) and the injection rates from well 0 to well 5 respectively. If in line 14 the wells
 option is activated, then at the end of each row we add the values from the wells (BHP control) on the boundaries in the order of bottom, right, top,
-and left with two values respectively (0 for producers and 1 for injectors, and the BHP in Pascals, see `example1_wells.txt <https://github.com/daavid00/expreccs/blob/main/examples/example1_wells.txt>`_). 
+and left with two values respectively (0 for producers and 1 for injectors, and the BHP in Pascals, see `example1_wells.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_wells.txt>`_). 
 
 .. warning::
     Keep the linebreak between the sections in the whole configuration file and do not add linebreaks inside the sections

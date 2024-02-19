@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>expreccs.utils.inputvalues module &mdash; expreccs  documentation</title>
+  <title>expreccs.utils.backcoupling module &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -22,8 +22,8 @@
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="expreccs.utils.mapboundaries module" href="expreccs.utils.mapboundaries.html" />
-    <link rel="prev" title="expreccs.utils.backcoupling module" href="expreccs.utils.backcoupling.html" /> 
+    <link rel="next" title="expreccs.utils.inputvalues module" href="expreccs.utils.inputvalues.html" />
+    <link rel="prev" title="expreccs.utils package" href="expreccs.utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -73,9 +73,9 @@
           <li class="breadcrumb-item"><a href="api.html">expreccs Python API</a></li>
           <li class="breadcrumb-item"><a href="expreccs.html">expreccs package</a></li>
           <li class="breadcrumb-item"><a href="expreccs.utils.html">expreccs.utils package</a></li>
-      <li class="breadcrumb-item active">expreccs.utils.inputvalues module</li>
+      <li class="breadcrumb-item active">expreccs.utils.backcoupling module</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="_sources/expreccs.utils.inputvalues.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/expreccs.utils.backcoupling.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -83,45 +83,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-expreccs.utils.inputvalues">
-<span id="expreccs-utils-inputvalues-module"></span><h1>expreccs.utils.inputvalues module<a class="headerlink" href="#module-expreccs.utils.inputvalues" title="Link to this heading"></a></h1>
-<p>Utiliy functions to set the requiried input values by expreccs.</p>
+  <section id="module-expreccs.utils.backcoupling">
+<span id="expreccs-utils-backcoupling-module"></span><h1>expreccs.utils.backcoupling module<a class="headerlink" href="#module-expreccs.utils.backcoupling" title="Link to this heading"></a></h1>
+<p>Utiliy functions to back-couple from site to regional model used by expreccs.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.inputvalues.process_input">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">process_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.process_input" title="Link to this definition"></a></dt>
-<dd><p>Function to process the input file</p>
+<dt class="sig sig-object py" id="expreccs.utils.backcoupling.backcoupling">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">backcoupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.backcoupling" title="Link to this definition"></a></dt>
+<dd><p>Function to update regional model based on the
+site model. A multiplier that compensate for the
+difference in fluxes are computed
+MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
+and added to the regional model. This is done
+iterativly for number of iterations given in the input
+Args:</p>
+<blockquote>
+<div><p>dic (dict): Global dictionary with required parameters</p>
+</div></blockquote>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-in_file (str): Name of the input text file</p>
-</dd>
 <dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.inputvalues.readthefirstpart">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">readthefirstpart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.readthefirstpart" title="Link to this definition"></a></dt>
-<dd><p>Function to process the lines in the configuration file.</p>
+<dt class="sig sig-object py" id="expreccs.utils.backcoupling.compute_multipliers">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">compute_multipliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.compute_multipliers" title="Link to this definition"></a></dt>
+<dd><p>Function to compute multiplier that compensate for the
+difference in fluxes
+MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
+and added to the regional model
+Args:</p>
+<blockquote>
+<div><p>dic (dict): Global dictionary with required parameters
+iteration:       Current iteration number</p>
+</div></blockquote>
 <dl class="simple">
-<dt>Args:</dt><dd><p>lol (list): List of lines read from the input file
-dic (dict): Global dictionary with required parameters</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters
-inc (int): Number of line in the input file before the first injection value</p>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.inputvalues.readthesecondpart">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">readthesecondpart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.readthesecondpart" title="Link to this definition"></a></dt>
-<dd><p>Function to process the remaining lines in the configuration file</p>
+<dt class="sig sig-object py" id="expreccs.utils.backcoupling.init_multipliers">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">init_multipliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.init_multipliers" title="Link to this definition"></a></dt>
+<dd><p>Function initialize input for regional multipliers
+Args:</p>
+<blockquote>
+<div><p>dic (dict): Global dictionary with required parameters</p>
+</div></blockquote>
 <dl class="simple">
-<dt>Args:</dt><dd><p>lol (list): List of lines read from the input file
-dic (dict): Global dictionary with required parameters
-inc (int): Number of line in the input file</p>
+<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.backcoupling.write_folder_iter">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">write_folder_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fil</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.write_folder_iter" title="Link to this definition"></a></dt>
+<dd><p>Write folders for the _{iteration} models
+Args:</p>
+<blockquote>
+<div><p>dic (dict): Global dictionary with required parameters</p>
+</div></blockquote>
+<dl class="simple">
 <dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
 </dd>
 </dl>
@@ -133,8 +157,8 @@ inc (int): Number of line in the input file</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="expreccs.utils.backcoupling.html" class="btn btn-neutral float-left" title="expreccs.utils.backcoupling module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="expreccs.utils.mapboundaries.html" class="btn btn-neutral float-right" title="expreccs.utils.mapboundaries module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="expreccs.utils.html" class="btn btn-neutral float-left" title="expreccs.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="expreccs.utils.inputvalues.html" class="btn btn-neutral float-right" title="expreccs.utils.inputvalues module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
