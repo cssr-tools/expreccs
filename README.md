@@ -33,7 +33,7 @@ pip install -e .
 pip install -r dev-requirements.txt
 ``` 
 
-If you are a Linux user (including the Windows subsystem for Linux), then you could try to build Flow from the master branches with mpi support, by running the script `./build_opm-flow_mpi.bash` (See the [_CI.yml_](https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml)), which in turn should build the executable in ./build/opm-simulators/bin/flow_gaswater_dissolution. 
+If you are a Linux user (including the Windows subsystem for Linux), then you could try to build Flow from the master branches with mpi support, by running the script `./build_opm-flow_mpi.bash` (see the [_CI.yml_](https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml)), which in turn should build the executable in ./build/opm-simulators/bin/flow_gaswater_dissolution. 
 
 For macOS users with the latest chips (M1/M2, guessing also M3?), the opm Python package is not available via pip install, while resdata might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10). If you face this issue, then before installation, remove resdata and opm from the `requirements.txt`, then proceed with the Python requirements installation, install the OPM Flow dependencies (using macports or brew), and once inside the vexpreccs Python environment, run the `./build_opm-flow_macOS.bash`, and deactivate and activate the virtual environment (this script builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH).
 
