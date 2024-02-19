@@ -7,6 +7,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   expreccs.utils.backcoupling
    expreccs.utils.inputvalues
    expreccs.utils.mapboundaries
    expreccs.utils.mapproperties

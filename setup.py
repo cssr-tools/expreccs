@@ -13,7 +13,7 @@ with open("dev-requirements.txt", "r", encoding="utf8") as file:
 
 setup(
     name="expreccs",
-    version="0.2.0",
+    version="2023.10",
     install_requires=install_requires,
     extras_require={"dev": dev_requires},
     setup_requires=["setuptools_scm"],
@@ -21,9 +21,9 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/dmar/expreccs",
-    author="David Landa-Marbán",
-    mantainer="David Landa-Marbán",
-    mantainer_email="dmar@norceresearch.no",
+    author="David Landa-Marbán, Tor Harald Sandve",
+    mantainer="David Landa-Marbán, Tor Harald Sandve",
+    mantainer_email="dmar@norceresearch.no, tosa@norceresearch.no",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
