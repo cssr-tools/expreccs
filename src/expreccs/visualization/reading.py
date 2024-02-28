@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=R0912
 
 """"
 Script to read OPM Flow output files
@@ -26,7 +27,6 @@ except ImportError:
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
-KG_TO_T = 1e-3
 KG_TO_KT = 1e-6
 
 
@@ -123,14 +123,10 @@ def resdata_arrays(dic, fol, res):
             elif quantity == "gas":
                 dic[f"{fol}/{res}_{quantity}_array"].append(co2_g * KG_TO_KT)
             elif quantity in ["FLOWATI+", "FLOWATI-"]:
-                flow = (
-                    KG_TO_T
-                    * WAT_DEN_REF
-                    * np.array(
-                        dic[f"{fol}/{res}_rst"][
-                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}"
-                        ][i]
-                    )
+                flow = np.array(
+                    dic[f"{fol}/{res}_rst"][
+                        f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}"
+                    ][i]
                 )
                 dic[f"{fol}/{res}_{quantity}_array"].append(
                     np.divide(
@@ -141,15 +137,31 @@ def resdata_arrays(dic, fol, res):
                     )
                 )
             elif quantity in ["FLOWATJ+", "FLOWATJ-"]:
-                flow = (
-                    KG_TO_T
-                    * WAT_DEN_REF
-                    * np.array(
-                        dic[f"{fol}/{res}_rst"][
-                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}"
-                        ][i]
+                flow = np.array(
+                    dic[f"{fol}/{res}_rst"][
+                        f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}"
+                    ][i]
+                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dx"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
                     )
                 )
+            elif quantity in ["FLOGASI+", "FLOGASI-"]:
+                flow = np.array(dic[f"{fol}/{res}_rst"][f"FLOGAS{quantity[-2:]}"][i])
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dy"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
+                    )
+                )
+            elif quantity in ["FLOGASJ+", "FLOGASJ-"]:
+                flow = np.array(dic[f"{fol}/{res}_rst"][f"FLOGAS{quantity[-2:]}"][i])
                 dic[f"{fol}/{res}_{quantity}_array"].append(
                     np.divide(
                         flow,
@@ -356,14 +368,10 @@ def opm_arrays(dic, fol, res, loadnpy):
             elif quantity == "gas":
                 dic[f"{fol}/{res}_{quantity}_array"].append(co2_g * KG_TO_KT)
             elif quantity in ["FLOWATI+", "FLOWATI-"]:
-                flow = (
-                    KG_TO_T
-                    * WAT_DEN_REF
-                    * np.array(
-                        dic[f"{fol}/{res}_rst"][
-                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}", i
-                        ]
-                    )
+                flow = np.array(
+                    dic[f"{fol}/{res}_rst"][
+                        f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}", i
+                    ]
                 )
                 dic[f"{fol}/{res}_{quantity}_array"].append(
                     np.divide(
@@ -374,15 +382,31 @@ def opm_arrays(dic, fol, res, loadnpy):
                     )
                 )
             elif quantity in ["FLOWATJ+", "FLOWATJ-"]:
-                flow = (
-                    KG_TO_T
-                    * WAT_DEN_REF
-                    * np.array(
-                        dic[f"{fol}/{res}_rst"][
-                            f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}", i
-                        ]
+                flow = np.array(
+                    dic[f"{fol}/{res}_rst"][
+                        f"FLO{dic[f'{fol}/{res}liq']}{quantity[-2:]}", i
+                    ]
+                )
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dx"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
                     )
                 )
+            elif quantity in ["FLOGASI+", "FLOGASI-"]:
+                flow = np.array(dic[f"{fol}/{res}_rst"][f"FLOGAS{quantity[-2:]}", i])
+                dic[f"{fol}/{res}_{quantity}_array"].append(
+                    np.divide(
+                        flow,
+                        dic[f"{fol}/{res}_dy"]
+                        * dic[f"{fol}/{res}_dz"]
+                        * dic[f"{fol}/{res}_poro"],
+                    )
+                )
+            elif quantity in ["FLOGASJ+", "FLOGASJ-"]:
+                flow = np.array(dic[f"{fol}/{res}_rst"][f"FLOGAS{quantity[-2:]}", i])
                 dic[f"{fol}/{res}_{quantity}_array"].append(
                     np.divide(
                         flow,

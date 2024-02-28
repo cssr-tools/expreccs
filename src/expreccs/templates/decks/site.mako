@@ -311,14 +311,10 @@ ${i+1} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_left'][n+k+1][0][i]} /
 ${i+1+len(dic['PRESSURE_left'][0][0])} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_right'][n+k+1][0][i]} / 
 % endfor
 % for i in range(len(dic['PRESSURE_bottom'][0][0])):
-% if ((i%dic["bottom_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"]) != 1 and 1+(i%dic["bottom_noCells"])*mt.floor(dic['site_noCells'][0]/dic["bottom_noCells"])!=dic['site_noCells'][0]) and dic["bottom_noCells"]>2:
 ${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_bottom'][n+k+1][0][i]} /
-% endif
 % endfor
 % for i in range(len(dic['PRESSURE_top'][0][0])):
-% if ((i%dic["top_noCells"]+1)*mt.floor(dic['site_noCells'][0]/dic["top_noCells"]) != 1 and 1+(i%dic["top_noCells"])*mt.floor(dic['site_noCells'][0]/dic["top_noCells"])!=dic['site_noCells'][0]) and dic["top_noCells"]>2:
 ${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])+len(dic['PRESSURE_bottom'][0][0])} DIRICHLET ${dic["lin"]} 1* ${dic['PRESSURE_top'][n+k+1][0][i]} /
-% endif
 % endfor
 /
 %elif dic['site_bctype'] == "free":

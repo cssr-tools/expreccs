@@ -21,7 +21,7 @@ def final_time_maps(dic):
     for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
             dic = manage_name(dic, res)
-            for j, quantity in enumerate(dic["quantity"]):
+            for j, quantity in enumerate(dic["quantity"][0:2]):
                 dic[f"{fol}/{res}_{quantity}_plot"] = np.zeros(
                     [
                         len(dic[f"{fol}/{dic['name']}_ymy"]) - 1,
@@ -45,9 +45,10 @@ def final_time_maps(dic):
                     cmap=dic["cmaps"][j],
                 )
                 axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
+                # axis.set_title(f"REF (Case 4)")
                 maxp = dic[f"{fol}/{res}_{quantity}_plot"].max()
                 minp = dic[f"{fol}/{res}_{quantity}_plot"].min()
-                # minp, maxp = -0.09, 0.14
+                # minp, maxp = 305, 359
                 axis.axis("scaled")
                 axis.set_xlabel("Easting [km]")
                 axis.set_ylabel("Northing [km]")
@@ -118,23 +119,23 @@ def final_time_maps_difference(dic):
                     ]
                     - dic[f"{fol}/{res}_{quantity}_array"][-1]
                 )
-                if quantity == "FLOWATI+":
+                if quantity in ["FLOWATI+", "FLOGASI+"]:
                     for k in range(len(dic[f"{fol}/site_ymy"]) - 1):
                         dic[f"{fol}/{res}_difference_{quantity}"][
                             (k + 1) * (len(dic[f"{fol}/site_xmx"]) - 1) - 1
                         ] = 0
-                if quantity == "FLOWATJ-":
+                if quantity in ["FLOWATJ-", "FLOGASJ-"]:
                     for k in range(len(dic[f"{fol}/site_xmx"]) - 1):
                         dic[f"{fol}/{res}_difference_{quantity}"][k] = 0
                 dic[f"{fol}/{res}_difference_{quantity}_plot"] = np.zeros(
                     [len(dic[f"{fol}/site_ymy"]) - 1, len(dic[f"{fol}/site_xmx"]) - 1]
                 )
-                if quantity == "FLOWATI-":
+                if quantity in ["FLOWATI-", "FLOGASI-"]:
                     for k in range(len(dic[f"{fol}/site_ymy"]) - 1):
                         dic[f"{fol}/{res}_difference_{quantity}"][
                             k * (len(dic[f"{fol}/site_xmx"]) - 1)
                         ] = 0
-                if quantity == "FLOWATJ+":
+                if quantity in ["FLOWATJ+", "FLOGASJ+"]:
                     for k in range(len(dic[f"{fol}/site_xmx"]) - 1):
                         dic[f"{fol}/{res}_difference_{quantity}"][
                             (len(dic[f"{fol}/site_ymy"]) - 2)
@@ -155,7 +156,7 @@ def final_time_maps_difference(dic):
                     dic[f"{fol}/{dic['name']}_ycor"] / 1000.0,
                     dic[f"{fol}/{res}_difference_{quantity}_plot"],
                     shading="flat",
-                    cmap=dic["cmaps"][j],
+                    cmap="seismic",
                 )
                 axis.axis(
                     [
@@ -183,7 +184,8 @@ def final_time_maps_difference(dic):
                 axis.set_xlabel("Easting [km]")
                 axis.set_ylabel("Northing [km]")
                 axis.set_title(
-                    r"$\sum$|REF-"
+                    "SITE "
+                    + r"$\sum$|REF-"
                     + f"{dic[f'l{res}']}"
                     + f"|={abs(dic[f'{fol}/{res}_difference_{quantity}_plot']).sum():.2E}"
                 )
@@ -192,7 +194,7 @@ def final_time_maps_difference(dic):
                 # axis.tick_params(axis='y', colors='white')
                 maxp = dic[f"{fol}/{res}_difference_{quantity}_plot"].max()
                 minp = dic[f"{fol}/{res}_difference_{quantity}_plot"].min()
-                # minp, maxp = -.016, .016
+                # minp, maxp = -1.53, 1.53
                 divider = make_axes_locatable(axis)
                 cax = divider.append_axes("right", size="5%", pad=1e-3)
                 vect = np.linspace(
@@ -207,7 +209,7 @@ def final_time_maps_difference(dic):
                     orientation="vertical",
                     ticks=vect,
                     label=dic["units"][j],
-                    format=lambda x, _: f"{x:.3f}",
+                    format=lambda x, _: f"{x:.2f}",
                 )
                 imag.set_clim(
                     minp,
@@ -255,19 +257,24 @@ def geological_maps(dic):
                 cmap=dic["cmaps"][j],
             )
             axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
+            # axis.set_title("REG/REF (Case 1)")
             axis.axis("scaled")
             name = dic["name"]
             axis.set_xlabel(
-                f"L = {dic[f'{fol}/{name}_xmx'][-1]/1000. - dic[f'{fol}/{name}_xmx'][0]/1000.} [km]"
+                f"L={(dic[f'{fol}/{name}_xmx'][-1] - dic[f'{fol}/{name}_xmx'][0])/1000.:.0f}"
+                + f" [km], dx={dic[f'{fol}/{name}_xmx'][1]:.0f} [m]"
             )
             axis.set_ylabel(
-                f"W = {dic[f'{fol}/{name}_ymy'][-1]/1000. - dic[f'{fol}/{name}_ymy'][0]/1000.} [km]"
+                f"W={(dic[f'{fol}/{name}_ymy'][-1] - dic[f'{fol}/{name}_ymy'][0])/1000.:.0f}"
+                + f" [km], dy={dic[f'{fol}/{name}_ymy'][1]:.0f} [m]"
             )
-            axis.set_xticks(dic[f"{fol}/{dic['name']}_xcor"][0] / 1000.0)
-            axis.set_yticks(dic[f"{fol}/{dic['name']}_ymy"] / 1000.0)
-            axis.grid(True, color="k", lw=1)
-            plt.setp(axis.get_xticklabels(), visible=False)
-            plt.setp(axis.get_yticklabels(), visible=False)
+            # axis.set_xticks(dic[f"{fol}/{dic['name']}_xcor"][0] / 1000.0)
+            # axis.set_yticks(dic[f"{fol}/{dic['name']}_ymy"] / 1000.0)
+            axis.set_xticks([])
+            axis.set_yticks([])
+            # axis.grid(True, color="k", lw=1)
+            # plt.setp(axis.get_xticklabels(), visible=False)
+            # plt.setp(axis.get_yticklabels(), visible=False)
             fig.savefig(
                 f"{dic['where']}/{dic['id']}{res}_fipnum.png", bbox_inches="tight"
             )
