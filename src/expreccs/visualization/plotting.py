@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=R0914
 
 """"
 Script to plot the top surface for the reference, regional, and site reservoirs.
@@ -23,7 +24,6 @@ from expreccs.visualization.reading import (
 
 GAS_DEN_REF = 1.86843  # kg/sm3
 WAT_DEN_REF = 998.108  # kg/sm3
-KG_TO_T = 1e-3
 KG_TO_KT = 1e-6
 KG_TO_MT = 1e-9
 
@@ -162,8 +162,9 @@ def plotting_settings(dic):
         "#9467bd",
         "#8c564b",
         "#e377c2",
-        "k",
+        "#17becf",
         "#bcbd22",
+        "k",
         "#17becf",
         "r",
     ]
@@ -190,12 +191,13 @@ def plotting_settings(dic):
         (0, (5, 1)),
         (0, (3, 10, 1, 10)),
         (0, (3, 5, 1, 5)),
-        (0, (3, 1, 1, 1)),
         (0, (3, 5, 1, 5, 1, 5)),
-        (0, (3, 1, 1, 1, 1, 1)),
+        ":",
+        "-.",
         "--",
-        (0, ()),
-        "-",
+        (0, (3, 1, 1, 1)),
+        (0, (3, 1, 1, 1, 1, 1)),
+        "solid",
     ]
     dic["lreference"] = r"REF"
     dic["lregional"] = r"REG"
@@ -211,7 +213,11 @@ def plotting_settings(dic):
     dic["lsite_free"] = r"SITE$_o$"
     dic["cmaps"] = [
         "jet",
-        "seismic",
+        "brg",
+        "coolwarm",
+        "coolwarm",
+        "coolwarm",
+        "coolwarm",
         "coolwarm",
         "coolwarm",
         "coolwarm",
@@ -227,6 +233,10 @@ def plotting_settings(dic):
         "FLOWATJ+",
         "FLOWATI-",
         "FLOWATJ-",
+        "FLOGASI+",
+        "FLOGASJ+",
+        "FLOGASI-",
+        "FLOGASJ-",
         "mass",
         "diss",
         "gas",
@@ -238,6 +248,10 @@ def plotting_settings(dic):
         "watfluxj+",
         "watfluxi-",
         "watfluxj-",
+        "gasfluxi+",
+        "gasfluxj+",
+        "gasfluxi-",
+        "gasfluxj-",
         "CO$_2$ total",
         "CO$_2$ dissolved",
         "CO$_2$ gas",
@@ -245,10 +259,14 @@ def plotting_settings(dic):
     dic["units"] = [
         "Saturation [-]",
         "Pressure [bar]",
-        "Mass flux x+ direction [t m$^{-2}$ day$^{-1}$]",
-        "Mass flux y+ direction [t m$^{-2}$ day$^{-1}$]",
-        "Mass flux x- direction [t m$^{-2}$ day$^{-1}$]",
-        "Mass flux y- direction [t m$^{-2}$ day$^{-1}$]",
+        "H$_2$O velocity x+ direction [m day$^{-1}$]",
+        "H$_2$O velocity y+ direction [m day$^{-1}$]",
+        "H$_2$O velocity x- direction [m day$^{-1}$]",
+        "H$_2$O velocity y- direction [m day$^{-1}$]",
+        "CO$_2$ velocity x+ direction [m day$^{-1}$]",
+        "CO$_2$ velocity y+ direction [m day$^{-1}$]",
+        "CO$_2$ velocity x- direction [m day$^{-1}$]",
+        "CO$_2$ velocity y- direction [m day$^{-1}$]",
         "CO$_2$ in-place [kt]",
         "CO$_2$ in-place (liquid phase) [kt]",
         "CO$_2$ in-place (gas phase) [kt]",
@@ -341,10 +359,10 @@ def summary_site(dic, nfol, ndeck, opmn):
         dic (dict): Global dictionary with required parameters
 
     """
-    if dic["compare"]:
-        marker = dic["markers"][nfol]
-    else:
-        marker = ""
+    # if dic["compare"]:
+    #     marker = dic["markers"][nfol]
+    # else:
+    #     marker = ""
     fol = dic["folders"][nfol]
     res = dic[f"{fol}_decks"][ndeck]
     if dic["reading"] == "resdata":
@@ -357,12 +375,12 @@ def summary_site(dic, nfol, ndeck, opmn):
         dy = dic[f"{fol}/{res}_dy"][dic[f"{fol}/{res}_sensor"]]
         dz = dic[f"{fol}/{res}_dz"][dic[f"{fol}/{res}_sensor"]]
         poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
-        yvalues = [KG_TO_T * WAT_DEN_REF * val / (poro * dy * dz) for val in yvalues]
+        yvalues = [val / (poro * dy * dz) for val in yvalues]
     if opmn[:6] == "BFLOWJ":
         dx = dic[f"{fol}/{res}_dx"][dic[f"{fol}/{res}_sensor"]]
         dz = dic[f"{fol}/{res}_dz"][dic[f"{fol}/{res}_sensor"]]
         poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
-        yvalues = [KG_TO_T * WAT_DEN_REF * val / (poro * dx * dz) for val in yvalues]
+        yvalues = [val / (poro * dx * dz) for val in yvalues]
     if ndeck == 0 and nfol > 0:
         return dic
     if ndeck == 0:
@@ -371,7 +389,6 @@ def summary_site(dic, nfol, ndeck, opmn):
             yvalues,
             label=dic["lreference"],
             color=dic["colors"][-ndeck - 1],
-            lw=3,
         )
     else:
         dic["axis"].step(
@@ -379,11 +396,8 @@ def summary_site(dic, nfol, ndeck, opmn):
             yvalues,
             label=dic[f"l{res}"]
             + f"{' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
-            color=dic["colors"][-ndeck],
-            linestyle=dic["linestyle"][-ndeck],
-            lw=3,
-            marker=marker,
-            markersize=3,
+            color=dic["colors"][-ndeck - 1],
+            linestyle=dic["linestyle"][-nfol - 2],
         )
     return dic
 
@@ -570,7 +584,11 @@ def over_time_distance(dic):
         )
         dic["axis"][-1].set_ylabel("Distance [km]")
         dic["axis"][-1].set_xlabel("Time")
-        dic["axis"][-1].legend()
+        handles, labels = plt.gca().get_legend_handles_labels()
+        order = np.argsort(labels)
+        dic["axis"][-1].legend(
+            [handles[idx] for idx in order], [labels[idx] for idx in order]
+        )
         dic["axis"][-1].xaxis.set_tick_params(rotation=45)
         dic["fig"][-1].savefig(
             f"{dic['where']}/{dic['id']}distance_from_border.png", bbox_inches="tight"
@@ -764,14 +782,15 @@ def handle_labels_distance(dic, nfol, res, fol, j):
     else:
         if j == 0:
             j_j = 0
+            nfol = 1
         else:
-            j_j = j
+            j_j = j + 1
         label = dic[f"l{res}"]
         dic["axis"][-1].step(
             dic[f"{fol}/{res}_dates"],
             dic[f"{fol}/{res}_indicator_plot"],
             color=dic["colors"][-1 - j_j],
-            linestyle=dic["linestyle"][-1 - j_j],
+            linestyle=dic["linestyle"][-nfol - 2],
             label=label,
         )
     return dic
@@ -873,7 +892,7 @@ def over_time_sensor(dic, nqua, quantity):
                         dic[f"{fol}/{res}_sensor_{quantity}"],
                         color=dic["colors"][-1],
                         linestyle=dic["linestyle"][-1],
-                        label=label,  # +" (Grid 0 50m)"
+                        label=label,  # +" (Grid 0 40m)"
                     )
                     # referror = np.array(dic[f"{fol}/{res}_sensor_{quantity}"])
                 if res != "reference":
@@ -887,9 +906,10 @@ def over_time_sensor(dic, nqua, quantity):
                     )
                     dic["nmarker"] += 1
                     # quanti = np.array(dic[f"{fol}/{res}_sensor_{quantity}"])
-                    # error = np.max(np.abs(referror - quanti))
-                    # if quantity == "pressure":
-                    #     print(fol, res, quantity, f"{error:.2f}")
+                    # #error = np.max(np.abs(referror - quanti))
+                    # error = np.linalg.norm(referror - quanti)
+                    # #if quantity == "pressure":
+                    # print(fol, res, quantity, f"{error:.2f}")
             else:
                 dic["axiss"][nqua].step(
                     dic[f"{fol}/{res}_dates"],
@@ -901,7 +921,7 @@ def over_time_sensor(dic, nqua, quantity):
             location = f"({dic[f'{fol}/{res}_sensor_location'][0]/1000.}, "
             location += f"{dic[f'{fol}/{res}_sensor_location'][1]/1000.}, "
             location += f"{dic[f'{fol}/{res}_sensor_location'][2]/1000.})"
-    dic["axiss"][nqua].set_title(f"Sensor location {location} [km]")
+    dic["axiss"][nqua].set_title(f"Sensor location {location} [km] (Case 4)")
     dic["axiss"][nqua].set_ylabel(f"{dic['units'][nqua]}")
     dic["axiss"][nqua].set_xlabel("Time")
     # if quantity != "pressure":
@@ -930,7 +950,12 @@ def handle_labels_difference(dic, res, j, nqua, nfol):
     quantity = dic["quantity"][nqua]
     fol = dic["folders"][nfol]
     if dic["compare"]:
-        label = dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})"
+        label = (
+            dic[f"l{res}"]
+            + f" ({dic['lfolders'][nfol]})"
+            + r", $\max$="
+            + f"{np.array(dic[f'{fol}/{res}_maximum_{quantity}']).max():.2E}"
+        )
         dic["axis"][nqua].step(
             dic[f"{fol}/{res}_dates"],
             dic[f"{fol}/{res}_difference_{quantity}"],
