@@ -377,6 +377,7 @@ def aquaflux_opm(dic, iteration=""):
         f"FLO{dic['liq']}I+",
         f"FLO{dic['liq']}J+",
         "PRESSURE",
+        "WAT_DEN",
         "R_AQUFLUX_bottom",
         "R_AQUFLUX_top",
         "R_AQUFLUX_right",
@@ -385,10 +386,23 @@ def aquaflux_opm(dic, iteration=""):
         "R_PRESSURE_top",
         "R_PRESSURE_right",
         "R_PRESSURE_left",
+        "R_WAT_DEN_bottom",
+        "R_WAT_DEN_top",
+        "R_WAT_DEN_right",
+        "R_WAT_DEN_left",
+        "S_PRESSURE_bottom",
+        "S_PRESSURE_top",
+        "S_PRESSURE_right",
+        "S_PRESSURE_left",
     ]:
         dic[keyword] = [[] for _ in range(len(dic["schedule_r"]))]
     for i in range(len(dic["schedule_r"])):
-        for keyword in [f"FLO{dic['liq']}I+", f"FLO{dic['liq']}J+", "PRESSURE"]:
+        for keyword in [
+            f"FLO{dic['liq']}I+",
+            f"FLO{dic['liq']}J+",
+            "PRESSURE",
+            "WAT_DEN",
+        ]:
             dic[keyword][i].append(np.array(dic["rst"][keyword, i]))
         if dic["site_bctype"] == "flux":
             n_xy = dic["regional_noCells"][0] * dic["regional_noCells"][1]
@@ -440,6 +454,47 @@ def aquaflux_opm(dic, iteration=""):
             dic = handle_stencil_opm(dic, i)
         elif dic["site_bctype"] == "pres2p":
             dic = handle_stencil_2p(dic, i)
+    if dic["site_bctype"] == "pres" or dic["site_bctype"] == "pres2p":
+        dic = handle_pressure_correction(dic)
+    return dic
+
+
+def handle_pressure_correction(dic):
+    """Correct for the REG pres to the SITE on the z dir if refinement"""
+    for i in range(len(dic["schedule_r"])):
+        for k, z_p in enumerate(dic["site_zmz_mid"]):
+            for j in range(dic["site_noCells"][0]):
+                for name in ["bottom", "top"]:
+                    corr = (
+                        (z_p - dic["regional_zmz_mid"][dic["site_zmaps"][k]])
+                        * dic[f"R_WAT_DEN_{name}"][i][0][
+                            j + dic["site_zmaps"][k] * dic["site_noCells"][0]
+                        ]
+                        * 9.81
+                        / 1e5
+                    )
+                    dic[f"S_PRESSURE_{name}"][i].append(
+                        dic[f"R_PRESSURE_{name}"][i][0][
+                            j + dic["site_zmaps"][k] * dic["site_noCells"][0]
+                        ]
+                        + corr
+                    )
+            for j in range(dic["site_noCells"][1]):
+                for name in ["left", "right"]:
+                    corr = (
+                        (z_p - dic["regional_zmz_mid"][dic["site_zmaps"][k]])
+                        * dic[f"R_WAT_DEN_{name}"][i][0][
+                            j + dic["site_zmaps"][k] * dic["site_noCells"][1]
+                        ]
+                        * 9.81
+                        / 1e5
+                    )
+                    dic[f"S_PRESSURE_{name}"][i].append(
+                        dic[f"R_PRESSURE_{name}"][i][0][
+                            j + dic["site_zmaps"][k] * dic["site_noCells"][1]
+                        ]
+                        + corr
+                    )
     return dic
 
 
@@ -613,210 +668,241 @@ def handle_stencil_opm(dic, i):
         dic["site_location"][1], dic["site_location"][4], dic["site_noCells"][1] + 1
     )
     dic["yc"] = 0.5 * (dic["yc"][1:] + dic["yc"][:-1])
-    for ndir, name in enumerate(["bottom", "top"]):
-        temp = np.array([])
-        for k in range(dic["regional_noCells"][2]):
-            x_a = [
-                0.5
-                * (
-                    dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
-                    )[0][1]
-                    - dic["grid"].xyz_from_active_index(
+    for quan in ["PRESSURE", "WAT_DEN"]:
+        for ndir, name in enumerate(["bottom", "top"]):
+            temp = np.array([])
+            for k in range(dic["regional_noCells"][2]):
+                x_a = [
+                    0.5
+                    * (
+                        dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        )[0][1]
+                        - dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        )[0][0]
+                    )
+                    + dic["grid"].xyz_from_active_index(
                         dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
                     )[0][0]
-                )
-                + dic["grid"].xyz_from_active_index(
-                    dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
-                )[0][0]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
-                )
-            ]
-            y_a = [
-                0.5
-                * (
-                    dic["grid"].xyz_from_active_index(
+                ]
+                y_a = [
+                    0.5
+                    * (
+                        dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[1][-1]
+                        - dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[1][0]
+                    )
+                    + dic["grid"].xyz_from_active_index(
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    )[1][-1]
-                    - dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    )[1][0]
-                )
-                + dic["grid"].xyz_from_active_index(
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                )[1][0],
-                0.5
-                * (
-                    dic["grid"].xyz_from_active_index(
+                    )[1][0],
+                    0.5
+                    * (
+                        dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_noCells"][0]
+                        )[1][-1]
+                        - dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_noCells"][0]
+                        )[1][0]
+                    )
+                    + dic["grid"].xyz_from_active_index(
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
                         + dic["regional_noCells"][0]
-                    )[1][-1]
-                    - dic["grid"].xyz_from_active_index(
+                    )[1][0],
+                ]
+                z_0 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
+                    )
+                ]
+                z_1 = [
+                    dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        - 1
+                        + j
                         + dic["regional_noCells"][0]
-                    )[1][0]
-                )
-                + dic["grid"].xyz_from_active_index(
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + dic["regional_noCells"][0]
-                )[1][0],
-            ]
-            z_0 = [
-                dic["PRESSURE"][i][0][dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
-                )
-            ]
-            z_1 = [
-                dic["PRESSURE"][i][0][
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    - 1
-                    + j
-                    + dic["regional_noCells"][0]
                 ]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
-                    )
-                    + 2
+                z_a = np.stack(
+                    [np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1
                 )
-            ]
-            z_a = np.stack([np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1)
-            interp = RegularGridInterpolator(
-                (x_a, y_a), z_a, bounds_error=False, fill_value=None
-            )
-            x_p, y_p = np.meshgrid(
-                dic["xc"], dic["site_location"][1 + 3 * ndir], indexing="ij"
-            )
-            temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"R_PRESSURE_{name}"][i].append(temp)
-    dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_noCells"][2])
-    for ndir, name in enumerate(["left", "right"]):
-        temp = np.array([])
-        for k in range(dic["regional_noCells"][2]):
-            x_a = [
-                0.5
-                * (
-                    dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        + dic["regional_noCells"][0] * (-1 + j)
-                    )[1][-1]
-                    - dic["grid"].xyz_from_active_index(
+                interp = RegularGridInterpolator(
+                    (x_a, y_a), z_a, bounds_error=False, fill_value=None
+                )
+                x_p, y_p = np.meshgrid(
+                    dic["xc"], dic["site_location"][1 + 3 * ndir], indexing="ij"
+                )
+                temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
+            dic[f"R_{quan}_{name}"][i].append(temp)
+        dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_noCells"][2])
+        for ndir, name in enumerate(["left", "right"]):
+            temp = np.array([])
+            for k in range(dic["regional_noCells"][2]):
+                x_a = [
+                    0.5
+                    * (
+                        dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_noCells"][0] * (-1 + j)
+                        )[1][-1]
+                        - dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_noCells"][0] * (-1 + j)
+                        )[1][0]
+                    )
+                    + dic["grid"].xyz_from_active_index(
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
                         + dic["regional_noCells"][0] * (-1 + j)
                     )[1][0]
-                )
-                + dic["grid"].xyz_from_active_index(
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + dic["regional_noCells"][0] * (-1 + j)
-                )[1][0]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
-                )
-            ]
-            y_a = [
-                0.5
-                * (
-                    dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    )[0][-1]
-                    - dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    )[0][0]
-                )
-                + dic["grid"].xyz_from_active_index(
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                )[0][0],
-                0.5
-                * (
-                    dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
-                    )[0][-1]
-                    - dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
-                    )[0][0]
-                )
-                + dic["grid"].xyz_from_active_index(
-                    dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
-                )[0][0],
-            ]
-            z_0 = [
-                dic["PRESSURE"][i][0][
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + dic["regional_noCells"][0] * (-1 + j)
                 ]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                y_a = [
+                    0.5
+                    * (
+                        dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[0][-1]
+                        - dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[0][0]
                     )
-                    + 2
-                )
-            ]
-            z_1 = [
-                dic["PRESSURE"][i][0][
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + 1
-                    + dic["regional_noCells"][0] * (-1 + j)
+                    + dic["grid"].xyz_from_active_index(
+                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                    )[0][0],
+                    0.5
+                    * (
+                        dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        )[0][-1]
+                        - dic["grid"].xyz_from_active_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        )[0][0]
+                    )
+                    + dic["grid"].xyz_from_active_index(
+                        dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                    )[0][0],
                 ]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                z_0 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + dic["regional_noCells"][0] * (-1 + j)
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
+                ]
+                z_1 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + 1
+                        + dic["regional_noCells"][0] * (-1 + j)
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
+                    )
+                ]
+                z_a = np.stack(
+                    [np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1
                 )
-            ]
-            z_a = np.stack([np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1)
-            interp = RegularGridInterpolator(
-                (x_a, y_a), z_a, bounds_error=False, fill_value=None
-            )
-            x_p, y_p = np.meshgrid(
-                dic["yc"], dic["site_location"][3 * ndir], indexing="ij"
-            )
-            temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"R_PRESSURE_{name}"][i].append(temp)
+                interp = RegularGridInterpolator(
+                    (x_a, y_a), z_a, bounds_error=False, fill_value=None
+                )
+                x_p, y_p = np.meshgrid(
+                    dic["yc"], dic["site_location"][3 * ndir], indexing="ij"
+                )
+                temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
+            dic[f"R_{quan}_{name}"][i].append(temp)
     return dic
 
 
-def temporal_interpolation(dic):
+def temporal_interpolation_pressure(dic):
     """
-    Function to interpolate the BC values in time
+    Function to interpolate the BC pressure values in time
     """
-    if dic["site_bctype"] == "pres" or dic["site_bctype"] == "pres2p":
-        keywords = [
-            "PRESSURE_bottom",
-            "PRESSURE_top",
-            "PRESSURE_right",
-            "PRESSURE_left",
+    keywords = [
+        "PRESSURE_bottom",
+        "PRESSURE_top",
+        "PRESSURE_right",
+        "PRESSURE_left",
+    ]
+    for keyword in keywords:
+        dic[f"{keyword}"] = [
+            [np.array([0.0 for _ in range(len(dic[f"S_{keyword}"][0]))])]
+            for _ in range(len(dic["schedule_s"]))
         ]
-    else:
-        keywords = [
-            "AQUFLUX_bottom",
-            "AQUFLUX_top",
-            "AQUFLUX_right",
-            "AQUFLUX_left",
-        ]
+        for i in range(len(dic[f"S_{keyword}"][0])):
+            if dic["time_interp"] == "interp":
+                interp_func = interp1d(
+                    dic["schedule_r"],
+                    [dic[f"S_{keyword}"][j][i] for j in range(len(dic["schedule_r"]))],
+                    fill_value="extrapolate",
+                )
+                for j, time in enumerate(dic["schedule_s"]):
+                    dic[f"{keyword}"][j][0][i] = interp_func(time)
+            else:
+                for j, time in enumerate(dic["schedule_s"]):
+                    dic[f"{keyword}"][j][0][i] = dic[f"S_{keyword}"][
+                        np.searchsorted(dic["schedule_r"], time)
+                    ][i]
+    return dic
+
+
+def temporal_interpolation_flux(dic):
+    """
+    Function to interpolate the BC fluxes values in time
+    """
+    keywords = [
+        "AQUFLUX_bottom",
+        "AQUFLUX_top",
+        "AQUFLUX_right",
+        "AQUFLUX_left",
+    ]
     for keyword in keywords:
         dic[f"{keyword}"] = [
             [np.array([0.0 for _ in range(len(dic[f"R_{keyword}"][0][0]))])]
@@ -854,36 +940,31 @@ def handle_stencil_2p(dic, i):
         dic (dict): Global dictionary with new added parameters
 
     """
-    dic["R_PRESSURE_bottom"][i].append(
-        [
-            0.5
-            * (
-                dic["PRESSURE"][i][0][j]
-                + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
-            )
-            for j in dic["cells_bottom"]
-        ]
-    )
-    dic["R_PRESSURE_top"][i].append(
-        [
-            0.5
-            * (
-                dic["PRESSURE"][i][0][j]
-                + dic["PRESSURE"][i][0][j + dic["regional_noCells"][0]]
-            )
-            for j in dic["cells_top"]
-        ]
-    )
-    dic["R_PRESSURE_left"][i].append(
-        [
-            0.5 * (dic["PRESSURE"][i][0][j] + dic["PRESSURE"][i][0][j + 1])
-            for j in dic["cells_left"]
-        ]
-    )
-    dic["R_PRESSURE_right"][i].append(
-        [
-            0.5 * (dic["PRESSURE"][i][0][j] + dic["PRESSURE"][i][0][j + 1])
-            for j in dic["cells_right"]
-        ]
-    )
+    for quan in ["PRESSURE", "WAT_DEN"]:
+        dic[f"R_{quan}_bottom"][i].append(
+            [
+                0.5
+                * (dic[quan][i][0][j] + dic[quan][i][0][j + dic["regional_noCells"][0]])
+                for j in dic["cells_bottom"]
+            ]
+        )
+        dic[f"R_{quan}_top"][i].append(
+            [
+                0.5
+                * (dic[quan][i][0][j] + dic[quan][i][0][j + dic["regional_noCells"][0]])
+                for j in dic["cells_top"]
+            ]
+        )
+        dic[f"R_{quan}_left"][i].append(
+            [
+                0.5 * (dic[quan][i][0][j] + dic[quan][i][0][j + 1])
+                for j in dic["cells_left"]
+            ]
+        )
+        dic[f"R_{quan}_right"][i].append(
+            [
+                0.5 * (dic[quan][i][0][j] + dic[quan][i][0][j + 1])
+                for j in dic["cells_right"]
+            ]
+        )
     return dic

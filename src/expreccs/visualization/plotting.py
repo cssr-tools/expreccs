@@ -204,6 +204,7 @@ def plotting_settings(dic):
     dic["lregional_1"] = r"REG_1"
     dic["lregional_2"] = r"REG_2"
     dic["lsite_pres"] = r"SITE$_p$"
+    dic["lsite_pres2p"] = r"SITE$_{2p}$"
     dic["lsite_pres_1"] = r"SITE$_{1,p}$"
     dic["lsite_pres_2"] = r"SITE$_{2,p}$"
     dic["lsite_flux"] = r"SITE$_f$"

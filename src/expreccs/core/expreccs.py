@@ -20,7 +20,8 @@ from expreccs.utils.mapboundaries import (
     aquaflux_opm,
     porv_projections,
     porv_regional_segmentation,
-    temporal_interpolation,
+    temporal_interpolation_flux,
+    temporal_interpolation_pressure,
 )
 from expreccs.utils.backcoupling import (
     init_multipliers,
@@ -31,6 +32,68 @@ from expreccs.utils.backcoupling import (
 def expreccs():
     """Main function"""
     start_time = time.monotonic()
+    cmdargs = load_parser()
+    file = cmdargs["input"]  # Name of the input file
+    dic = {"fol": cmdargs["output"]}  # Name for the output folder
+    dic["pat"] = os.path.dirname(__file__)[:-5]  # Path to the expreccs folder
+    dic["exe"] = os.getcwd()  # Path to the folder of the input.txt file
+    dic["mode"] = cmdargs["mode"]  # Parts of the workflow to run
+    dic["plot"] = cmdargs["plot"]  # Generate some nice plots
+    dic["co2store"] = cmdargs["use"]  # Implementation of co2store
+    dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
+    dic["compare"] = cmdargs[
+        "compare"
+    ]  # If not empty, then the folder 'compare' is created.
+    # If the compare plots are generated, then we exit right afterwards
+    if dic["compare"]:
+        plot_results(dic)
+        return
+
+    # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
+    dic = process_input(dic, file)
+
+    # Make the output folders
+    write_folders(dic)
+
+    # Get the location of wells and faults in the reservoirs
+    dic = mapping_properties(dic)
+    write_properties(dic)
+    init_multipliers(dic)
+
+    # Run the models
+    dic = set_gridmako(dic, dic["z_xy"])
+    if dic["mode"] in ["all", "reference"]:
+        write_files(dic, "reference")
+        simulations(dic, "reference")
+    if dic["mode"] in ["all", "regional", "noreference"]:
+        dic = porv_regional_segmentation(dic)
+        write_files(dic, "regional")
+        simulations(dic, "regional")
+    if dic["mode"] in ["all", "site", "noreference"]:
+        if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
+            if dic["reading"] == "resdata":
+                dic = aquaflux_resdata(dic)
+            else:
+                dic = aquaflux_opm(dic)
+            if dic["site_bctype"] in ["pres", "pres2p"]:
+                dic = temporal_interpolation_pressure(dic)
+            else:
+                dic = temporal_interpolation_flux(dic)
+        elif dic["site_bctype"] == "porvproj":
+            dic = porv_projections(dic)
+        write_files(dic, f"site_{dic['site_bctype']}")
+        simulations(dic, f"site_{dic['site_bctype']}")
+
+    if dic["mode"] in ["all"]:
+        backcoupling(dic)
+
+    # Generate some useful plots after the studies
+    if dic["plot"] == "yes":
+        plotting(dic, time.monotonic() - start_time)
+
+
+def load_parser():
+    """Argument options"""
     parser = argparse.ArgumentParser(
         description="Main method to simulate regional and site reservoirs for CO2 storage."
     )
@@ -79,61 +142,7 @@ def expreccs():
         help="Using 'gasoil' or 'gaswater' co2store implementation ('gasoil' by "
         + "default).",
     )
-    cmdargs = vars(parser.parse_known_args()[0])
-    file = cmdargs["input"]  # Name of the input file
-    dic = {"fol": cmdargs["output"]}  # Name for the output folder
-    dic["pat"] = os.path.dirname(__file__)[:-5]  # Path to the expreccs folder
-    dic["exe"] = os.getcwd()  # Path to the folder of the input.txt file
-    dic["mode"] = cmdargs["mode"]  # Parts of the workflow to run
-    dic["plot"] = cmdargs["plot"]  # Generate some nice plots
-    dic["co2store"] = cmdargs["use"]  # Implementation of co2store
-    dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
-    dic["compare"] = cmdargs[
-        "compare"
-    ]  # If not empty, then the folder 'compare' is created.
-    # If the compare plots are generated, then we exit right afterwards
-    if dic["compare"]:
-        plot_results(dic)
-        return
-
-    # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
-    dic = process_input(dic, file)
-
-    # Make the output folders
-    write_folders(dic)
-
-    # Get the location of wells and faults in the reservoirs
-    dic = mapping_properties(dic)
-    write_properties(dic)
-    init_multipliers(dic)
-
-    # Run the models
-    dic = set_gridmako(dic, dic["z_xy"])
-    if dic["mode"] in ["all", "reference"]:
-        write_files(dic, "reference")
-        simulations(dic, "reference")
-    if dic["mode"] in ["all", "regional", "noreference"]:
-        dic = porv_regional_segmentation(dic)
-        write_files(dic, "regional")
-        simulations(dic, "regional")
-    if dic["mode"] in ["all", "site", "noreference"]:
-        if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
-            if dic["reading"] == "resdata":
-                dic = aquaflux_resdata(dic)
-            else:
-                dic = aquaflux_opm(dic)
-            dic = temporal_interpolation(dic)
-        elif dic["site_bctype"] == "porvproj":
-            dic = porv_projections(dic)
-        write_files(dic, f"site_{dic['site_bctype']}")
-        simulations(dic, f"site_{dic['site_bctype']}")
-
-    if dic["mode"] in ["all"]:
-        backcoupling(dic)
-
-    # Generate some useful plots after the studies
-    if dic["plot"] == "yes":
-        plotting(dic, time.monotonic() - start_time)
+    return vars(parser.parse_known_args()[0])
 
 
 def main():

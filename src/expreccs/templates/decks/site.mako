@@ -54,24 +54,24 @@ INCLUDE
 
 % if dic['site_bctype'] == 'pres' or dic['site_bctype'] == 'pres2p':
 BCCON
-% for k in range(dic['regional_noCells'][2]):
+% for k in range(dic['site_noCells'][2]):
 % for i in range(dic["site_noCells"][1]):
-${i+1+k*dic["site_noCells"][1]} 1  1  ${i+1} ${i+1} ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}    'I-'  /
+${i+1+k*dic["site_noCells"][1]} 1 1 ${i+1} ${i+1} ${k+1} ${k+1} 'I-' /
 % endfor
 % endfor
-% for k in range(dic['regional_noCells'][2]):
+% for k in range(dic['site_noCells'][2]):
 % for i in range(dic["site_noCells"][1]):
-${i+1+k*dic["site_noCells"][1]+dic['regional_noCells'][2]*dic["site_noCells"][1]} ${dic['site_noCells'][0]}  ${dic['site_noCells'][0]}  ${i+1} ${i+1} ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1}  'I'  /
+${i+1+k*dic["site_noCells"][1]+dic['site_noCells'][2]*dic["site_noCells"][1]} ${dic['site_noCells'][0]}  ${dic['site_noCells'][0]}  ${i+1} ${i+1} ${k+1} ${k+1} 'I' /
 % endfor
 % endfor
-% for k in range(dic['regional_noCells'][2]):
+% for k in range(dic['site_noCells'][2]):
 % for i in range(dic["site_noCells"][0]):
-${i+1+k*dic["site_noCells"][0]+2*dic['regional_noCells'][2]*dic["site_noCells"][1]} ${i+1} ${i+1} 1 1 ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1} 'J-'  /
+${i+1+k*dic["site_noCells"][0]+2*dic['site_noCells'][2]*dic["site_noCells"][1]} ${i+1} ${i+1} 1 1 ${k+1} ${k+1} 'J-'  /
 % endfor
 % endfor
-% for k in range(dic['regional_noCells'][2]):
+% for k in range(dic['site_noCells'][2]):
 % for i in range(dic["site_noCells"][0]):
-${i+1+k*dic["site_noCells"][0]+2*dic['regional_noCells'][2]*dic["site_noCells"][1]+dic['regional_noCells'][2]*dic["site_noCells"][0]} ${i+1} ${i+1} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} ${np.where(dic["site_zmaps"]==k)[0][0]+1} ${np.where(dic["site_zmaps"]==k)[0][-1]+1} 'J'   /
+${i+1+k*dic["site_noCells"][0]+2*dic['site_noCells'][2]*dic["site_noCells"][1]+dic['site_noCells'][2]*dic["site_noCells"][0]} ${i+1} ${i+1} ${dic['site_noCells'][1]} ${dic['site_noCells'][1]} ${k+1} ${k+1} 'J' /
 % endfor
 % endfor
 /
