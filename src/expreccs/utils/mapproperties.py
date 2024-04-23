@@ -47,7 +47,7 @@ def mapping_properties(dic):
                 f"{dic['exe']}/{dic['fol']}/output/{res}/{res}_{name}",
                 dic[f"{res}_{name}"],
             )
-        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_noCells"][2])
+        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_noCells"][2], int)
         for i, _ in enumerate(dic["thicknes"]):
             dic[f"{res}_layers"] += dic[f"{res}_zmz_mid"] > sum(
                 dic["thicknes"][: i + 1]
@@ -67,8 +67,8 @@ def mapping_properties(dic):
                 f"{dic['exe']}/{dic['fol']}/output/{res}_{dic['site_bctype']}/{res}_{name}",
                 dic[f"{res}_{name}"],
             )
-        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_noCells"][2])
-        dic[f"{res}_zmaps"] = np.zeros(dic[f"{res}_noCells"][2])
+        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_noCells"][2], int)
+        dic[f"{res}_zmaps"] = np.zeros(dic[f"{res}_noCells"][2], int)
         for i, _ in enumerate(dic["thicknes"]):
             dic[f"{res}_layers"] += dic[f"{res}_zmz_mid"] > sum(
                 dic["thicknes"][: i + 1]

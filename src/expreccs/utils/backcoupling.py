@@ -16,7 +16,8 @@ from expreccs.utils.mapboundaries import (
     aquaflux_resdata,
     aquaflux_opm,
     porv_projections,
-    temporal_interpolation,
+    temporal_interpolation_flux,
+    temporal_interpolation_pressure,
 )
 from expreccs.utils.runs import simulations
 from expreccs.utils.writefile import (
@@ -54,7 +55,10 @@ def backcoupling(dic):
                 dic = aquaflux_resdata(dic)
             else:
                 dic = aquaflux_opm(dic, f"_{iteration}")
-            dic = temporal_interpolation(dic)
+            if dic["site_bctype"] == "flux":
+                dic = temporal_interpolation_flux(dic)
+            else:
+                dic = temporal_interpolation_pressure(dic)
         elif dic["site_bctype"] == "porvproj":
             dic = porv_projections(dic)
 
