@@ -98,6 +98,7 @@ def positions_regional(dic):
     dic["site_corners"] = [[0, 0, 0], [0, 0, 0]]
     indx = 0
     indc = 0
+    lasti = 0
     for _, z_c in enumerate(dic["regional_zmz_mid"]):
         for j, y_c in enumerate(dic["regional_ymy_mid"]):
             for i, x_c in enumerate(dic["regional_xmx_mid"]):

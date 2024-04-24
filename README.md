@@ -12,7 +12,7 @@ This repository contains scripts to set up a workflow to run site and regional r
 
 ## Installation
 You will first need to install
-* Flow (https://opm-project.org) (current master branches)
+* Flow (https://opm-project.org,  Release 2024.04 or current master branches)
 
 You can install the Python requirements in a virtual environment with the following commands:
 
