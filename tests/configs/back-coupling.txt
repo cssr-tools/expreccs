@@ -1,5 +1,5 @@
 """Set the full path to the flow executable and flags"""
-/home/runner/work/expreccs/expreccs/build/opm-simulators/bin/flow_gaswater_dissolution --tolerance-mb=1e-7 --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
+flow --tolerance-mb=1e-7 --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true
 
 """Set the model parameters"""
 15000 15000 5               #Reginonal aquifer length, width, and depth [m]

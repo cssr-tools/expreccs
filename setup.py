@@ -13,7 +13,7 @@ with open("dev-requirements.txt", "r", encoding="utf8") as file:
 
 setup(
     name="expreccs",
-    version="2023.10",
+    version="2024.04",
     install_requires=install_requires,
     extras_require={"dev": dev_requires},
     setup_requires=["setuptools_scm"],
@@ -37,7 +37,7 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     license="GPL-3.0",
-    python_requires=">=3.8, <3.11",
+    python_requires=">=3.8, <4",
     entry_points={
         "console_scripts": [
             "expreccs=expreccs.core.expreccs:main",

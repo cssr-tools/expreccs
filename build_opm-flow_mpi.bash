@@ -23,5 +23,5 @@ done
 mkdir build/opm-simulators
 cd build/opm-simulators
 cmake -DUSE_MPI=1 -DNDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid;$CURRENT_DIRECTORY/build/opm-models" $CURRENT_DIRECTORY/opm-simulators
-make -j5 flow_gaswater_dissolution
+make -j5 flow
 cd ../..
