@@ -48,8 +48,12 @@ def reading_resdata(dic):
             [name for name in os.listdir(".") if os.path.isdir(name)]
         )[2:]
         os.chdir(cwd)
-        if dic["mode"] in ["reference"]:
+        if dic["plot"] in ["reference"]:
             dic[f"{fol}_decks"] = ["reference"]
+        elif dic["plot"] in ["regional"]:
+            dic[f"{fol}_decks"] = ["regional"]
+        elif dic["plot"] in ["site"]:
+            dic[f"{fol}_decks"] = dic[f"{fol}_sites"]
         elif dic["compare"]:
             dic[f"{fol}_decks"] = ["reference"] + dic[f"{fol}_sites"]
         else:
@@ -263,8 +267,12 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
             [name for name in os.listdir(".") if os.path.isdir(name)]
         )[2:]
         os.chdir(cwd)
-        if dic["mode"] in ["reference"]:
+        if dic["plot"] in ["reference"]:
             dic[f"{fol}_decks"] = ["reference"]
+        elif dic["plot"] in ["regional"]:
+            dic[f"{fol}_decks"] = ["regional"]
+        elif dic["plot"] in ["site"]:
+            dic[f"{fol}_decks"] = dic[f"{fol}_sites"]
         elif dic["compare"]:
             dic[f"{fol}_decks"] = ["reference"] + dic[f"{fol}_sites"]
         else:
