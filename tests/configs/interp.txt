@@ -68,4 +68,4 @@ PERMXY3 202.650 PERMZ3 20.2650 PORO3 0.20
 
 """Define the injection values""" 
 """injection time [d], time step size to write results regional [d], time step size to write results site/reference [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""
-1. 1 .5 .5 1 3e5 1 3e5 1 5e6 0 0
+2.5 1 .5 .5 1 3e5 1 3e5 1 5e6 0 0

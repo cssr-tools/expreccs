@@ -21,29 +21,90 @@ def final_time_maps(dic):
     for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
             dic = manage_name(dic, res)
-            for j, quantity in enumerate(dic["quantity"][0:2]):
+            for j, quantity in enumerate(dic["quantity"][:2]):
                 dic[f"{fol}/{res}_{quantity}_plot"] = np.zeros(
                     [
                         len(dic[f"{fol}/{dic['name']}_ymy"]) - 1,
                         len(dic[f"{fol}/{dic['name']}_xmx"]) - 1,
                     ]
                 )
-                for i in np.arange(0, len(dic[f"{fol}/{dic['name']}_ymy"]) - 1):
-                    dic[f"{fol}/{res}_{quantity}_plot"][-1 - i, :] = dic[
-                        f"{fol}/{res}_{quantity}_array"
-                    ][-1][
-                        i
-                        * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1) : (i + 1)
-                        * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1)
-                    ]
                 fig, axis = plt.subplots()
-                imag = axis.pcolormesh(
-                    dic[f"{fol}/{dic['name']}_xcor"] / 1000.0,
-                    dic[f"{fol}/{dic['name']}_ycor"] / 1000.0,
-                    dic[f"{fol}/{res}_{quantity}_plot"],
-                    shading="flat",
-                    cmap=dic["cmaps"][j],
-                )
+                if "site" in res:
+                    if res[-1].isdigit():
+                        rwh = res[:-2]
+                    else:
+                        rwh = res
+                    for i in np.arange(0, len(dic[f"{fol}/{dic['name']}_ymy"]) - 1):
+                        dic[f"{fol}/{res}_{quantity}_plot"][i, :] = dic[
+                            f"{fol}/{res}_{quantity}_array"
+                        ][-1][
+                            i
+                            * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1) : (i + 1)
+                            * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1)
+                        ]
+                    dic["xcor"] = np.load(
+                        dic["exe"] + "/" + fol + f"/output/{rwh}/d2x.npy"
+                    ).reshape(
+                        len(dic[f"{fol}/{dic['name']}_ymy"]),
+                        len(dic[f"{fol}/{dic['name']}_xmx"]),
+                    )
+                    dic["ycor"] = np.load(
+                        dic["exe"] + "/" + fol + f"/output/{rwh}/d2y.npy"
+                    ).reshape(
+                        len(dic[f"{fol}/{dic['name']}_ymy"]),
+                        len(dic[f"{fol}/{dic['name']}_xmx"]),
+                    )
+                    imag = axis.pcolormesh(
+                        dic["xcor"] / 1000.0,
+                        dic["ycor"] / 1000.0,
+                        dic[f"{fol}/{res}_{quantity}_plot"],
+                        shading="flat",
+                        cmap=dic["cmaps"][j],
+                    )
+                    axis.set_xticks(
+                        np.linspace(
+                            dic["xcor"].min() / 1000.0,
+                            dic["xcor"].max() / 1000.0,
+                            6,
+                        )
+                    )
+                    axis.set_yticks(
+                        np.linspace(
+                            dic["ycor"].min() / 1000.0,
+                            dic["ycor"].max() / 1000.0,
+                            6,
+                        )
+                    )
+                else:
+                    for i in np.arange(0, len(dic[f"{fol}/{dic['name']}_ymy"]) - 1):
+                        dic[f"{fol}/{res}_{quantity}_plot"][-1 - i, :] = dic[
+                            f"{fol}/{res}_{quantity}_array"
+                        ][-1][
+                            i
+                            * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1) : (i + 1)
+                            * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1)
+                        ]
+                    imag = axis.pcolormesh(
+                        dic[f"{fol}/{dic['name']}_xcor"] / 1000.0,
+                        dic[f"{fol}/{dic['name']}_ycor"] / 1000.0,
+                        dic[f"{fol}/{res}_{quantity}_plot"],
+                        shading="flat",
+                        cmap=dic["cmaps"][j],
+                    )
+                    axis.set_xticks(
+                        np.linspace(
+                            dic[f"{fol}/{dic['name']}_xcor"].min() / 1000.0,
+                            dic[f"{fol}/{dic['name']}_xcor"].max() / 1000.0,
+                            6,
+                        )
+                    )
+                    axis.set_yticks(
+                        np.linspace(
+                            dic[f"{fol}/{dic['name']}_ycor"].min() / 1000.0,
+                            dic[f"{fol}/{dic['name']}_ycor"].max() / 1000.0,
+                            6,
+                        )
+                    )
                 axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
                 # axis.set_title(f"REF (Case 4)")
                 maxp = dic[f"{fol}/{res}_{quantity}_plot"].max()
@@ -55,20 +116,6 @@ def final_time_maps(dic):
                 # axis.spines['left'].set_color('white')
                 # axis.yaxis.label.set_color('white')
                 # axis.tick_params(axis='y', colors='white')
-                axis.set_xticks(
-                    np.linspace(
-                        dic[f"{fol}/{dic['name']}_xcor"].min() / 1000.0,
-                        dic[f"{fol}/{dic['name']}_xcor"].max() / 1000.0,
-                        6,
-                    )
-                )
-                axis.set_yticks(
-                    np.linspace(
-                        dic[f"{fol}/{dic['name']}_ycor"].min() / 1000.0,
-                        dic[f"{fol}/{dic['name']}_ycor"].max() / 1000.0,
-                        6,
-                    )
-                )
                 cax = (make_axes_locatable(axis)).append_axes(
                     "right", size="5%", pad=0.05
                 )

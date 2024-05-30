@@ -147,8 +147,10 @@ opm-simulators/
 tests/configs/back
 tests/configs/compare
 tests/configs/output
+tests/configs/rotate
 examples/output
 developing
+playground
 debugging
 vexpreccs
 workshop

@@ -79,7 +79,43 @@ def mapping_properties(dic):
             ).argmin()
     dic = positions_reference(dic)
     dic = positions_regional(dic)
-    dic = positions_site(dic)
+    dic = rotate_grid(dic)
+    if dic["rotate"] > 0:
+        dic = positions_rotation(dic)
+    else:
+        dic = positions_site(dic)
+    return dic
+
+
+def rotate_grid(dic):
+    """Rotate the grid site if requiered"""
+    dic["site_xc"], dic["site_yc"] = [], []
+    for j in range(dic["site_noCells"][1] + 1):
+        for i in range(dic["site_noCells"][0] + 1):
+            dic["site_xc"].append(
+                1.5 * dic["site_dims"][0]
+                + (dic["site_xmx"][i] - 1.5 * dic["site_dims"][0])
+                * np.cos(dic["rotate"] * np.pi / 180)
+                - (dic["site_ymy"][j] - 1.5 * dic["site_dims"][1])
+                * np.sin(dic["rotate"] * np.pi / 180)
+            )
+            dic["site_yc"].append(
+                1.5 * dic["site_dims"][1]
+                + (dic["site_ymy"][j] - 1.5 * dic["site_dims"][1])
+                * np.cos(dic["rotate"] * np.pi / 180)
+                + (dic["site_xmx"][i] - 1.5 * dic["site_dims"][0])
+                * np.sin(dic["rotate"] * np.pi / 180)
+            )
+    dic["site_xc"] = np.array(dic["site_xc"])
+    dic["site_yc"] = np.array(dic["site_yc"])
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/d2x",
+        dic["site_xc"],
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/d2y",
+        dic["site_yc"],
+    )
     return dic
 
 
@@ -167,6 +203,67 @@ def positions_regional(dic):
     np.save(
         f"{dic['exe']}/{dic['fol']}/output/regional/sensorijk",
         dic["regional_sensor"],
+    )
+    return dic
+
+
+def positions_rotation(dic):
+    """Find the locations after the rotation"""
+    dic["site_fipnum"] = [1] * (
+        dic["site_noCells"][0] * dic["site_noCells"][1] * dic["site_noCells"][2]
+    )
+    dic["site_wellijk"] = []
+    dic["site_sensor"] = [0, 0, 0]
+    dic["site_fault"] = [[0, 0, 0], [0, 0, 0]]
+    for j, _ in enumerate(dic["wellCoord"]):
+        if dic["wellCoord"][j][0] in pd.Interval(
+            dic["site_location"][0], dic["site_location"][3]
+        ) and dic["wellCoord"][j][1] in pd.Interval(
+            dic["site_location"][1], dic["site_location"][4]
+        ):
+            dic["site_wellijk"].append([])
+            w_ij = pd.Series(
+                abs(dic["wellCoord"][j][0] - dic["site_xc"])
+                + abs(dic["wellCoord"][j][1] - dic["site_yc"])
+            ).argmin()
+            w_j = np.floor(w_ij / dic["site_noCells"][0])
+            w_i = 1 + dic["site_noCells"][0] - w_ij + (w_j) * dic["site_noCells"][0]
+            dic["site_wellijk"][j].append(int(w_i) + 2)
+            dic["site_wellijk"][j].append(int(w_j))
+            for _, (well_coord, cord) in enumerate(
+                zip(dic["wellCoord"][j], ["zmz", "zmz"])
+            ):
+                midpoints = dic[f"site_{cord}_mid"]
+                dic["site_wellijk"][j].append(
+                    pd.Series(abs(well_coord - midpoints)).argmin() + 1
+                )
+    for k, cord in enumerate(["xmx", "ymy", "zmz"]):
+        midpoints = dic[f"site_{cord}_mid"]
+        dic["site_fault"][0][k] = pd.Series(
+            abs(dic["fault_site"][0][k] - midpoints)
+        ).argmin()
+        dic["site_fault"][1][k] = pd.Series(
+            abs(dic["fault_site"][1][k] - midpoints)
+        ).argmin()
+        dic["site_sensor"][k] = pd.Series(
+            abs(dic["sensor_location"][k] - midpoints)
+        ).argmin()
+    sensor_ind = (
+        dic["site_sensor"][0]
+        + dic["site_sensor"][1] * dic["site_noCells"][0]
+        + dic["site_sensor"][2] * dic["site_noCells"][0] * dic["site_noCells"][1]
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor",
+        sensor_ind,
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor_location",
+        dic["sensor_location"],
+    )
+    np.save(
+        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensorijk",
+        dic["site_sensor"],
     )
     return dic
 

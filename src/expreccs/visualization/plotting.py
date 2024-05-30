@@ -66,11 +66,10 @@ def main():
         help="Generate a common plot for the current folders.",
     )
     parser.add_argument(
-        "-m",
-        "--mode",
+        "-p",
+        "--plot",
         default="all",
-        help="Plot the whole framework ('all'), only the reference ('reference'), or  "
-        "only regional and site models ('noreference') ('all' by default).",
+        help="Plot 'all', 'reference', 'regional', 'site', or no ('no' by default).",
     )
     parser.add_argument(
         "-r",
@@ -83,7 +82,7 @@ def main():
     dic["compare"] = cmdargs["compare"]  # No empty, then the create compare folder
     dic["time"] = float(cmdargs["time"])
     dic["exe"] = os.getcwd()  # Path to the folder of the configuration file
-    dic["mode"] = cmdargs["mode"]  # Parts of the workflow to plot
+    dic["plot"] = cmdargs["plot"]  # Parts of the workflow to plot
     dic["reading"] = cmdargs["reading"]  # Res or opm python package
     plot_results(dic)
 
@@ -117,7 +116,7 @@ def plot_results(dic):
         dic = reading_resdata(dic)
     else:
         dic = reading_opm(dic)
-    if dic["mode"] in ["reference"]:
+    if dic["plot"] in ["reference", "regional", "site"]:
         plt.rcParams.update({"axes.grid": False})
         final_time_maps(dic)
         return

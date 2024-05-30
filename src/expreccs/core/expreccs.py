@@ -6,23 +6,11 @@ import os
 import time
 import argparse
 from expreccs.utils.inputvalues import process_input
-from expreccs.utils.runs import simulations, plotting
-from expreccs.utils.writefile import (
-    set_gridmako,
-    write_folders,
-    write_files,
-    write_properties,
-)
+from expreccs.utils.runs import run_models, plotting
+from expreccs.utils.writefile import write_folders, write_properties
 from expreccs.utils.mapproperties import mapping_properties
 from expreccs.visualization.plotting import plot_results
-from expreccs.utils.mapboundaries import (
-    aquaflux_resdata,
-    aquaflux_opm,
-    porv_projections,
-    porv_regional_segmentation,
-    temporal_interpolation_flux,
-    temporal_interpolation_pressure,
-)
+from expreccs.utils.reg_sit_given_decks import create_deck
 from expreccs.utils.backcoupling import (
     init_multipliers,
     backcoupling,
@@ -41,6 +29,8 @@ def expreccs():
     dic["plot"] = cmdargs["plot"]  # Generate some nice plots
     dic["co2store"] = cmdargs["use"]  # Implementation of co2store
     dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
+    dic["rotate"] = int(cmdargs["transform"])  # Rotate the site model
+    dic["expreccs"] = str(cmdargs["expreccs"])  # Name of regional and site models
     dic["compare"] = cmdargs[
         "compare"
     ]  # If not empty, then the folder 'compare' is created.
@@ -55,40 +45,26 @@ def expreccs():
     # Make the output folders
     write_folders(dic)
 
+    # For regional and site given decks, then we create a new deck with the proyected pressures
+    if dic["expreccs"]:
+        dic["reg"] = dic["expreccs"].split(",")[0]
+        dic["sit"] = dic["expreccs"].split(",")[1]
+        create_deck(dic)
+        return
+
     # Get the location of wells and faults in the reservoirs
     dic = mapping_properties(dic)
     write_properties(dic)
     init_multipliers(dic)
 
     # Run the models
-    dic = set_gridmako(dic, dic["z_xy"])
-    if dic["mode"] in ["all", "reference"]:
-        write_files(dic, "reference")
-        simulations(dic, "reference")
-    if dic["mode"] in ["all", "regional", "noreference"]:
-        dic = porv_regional_segmentation(dic)
-        write_files(dic, "regional")
-        simulations(dic, "regional")
-    if dic["mode"] in ["all", "site", "noreference"]:
-        if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
-            if dic["reading"] == "resdata":
-                dic = aquaflux_resdata(dic)
-            else:
-                dic = aquaflux_opm(dic)
-            if dic["site_bctype"] in ["pres", "pres2p"]:
-                dic = temporal_interpolation_pressure(dic)
-            else:
-                dic = temporal_interpolation_flux(dic)
-        elif dic["site_bctype"] == "porvproj":
-            dic = porv_projections(dic)
-        write_files(dic, f"site_{dic['site_bctype']}")
-        simulations(dic, f"site_{dic['site_bctype']}")
+    dic = run_models(dic)
 
     if dic["mode"] in ["all"]:
         backcoupling(dic)
 
     # Generate some useful plots after the studies
-    if dic["plot"] == "yes":
+    if dic["plot"] != "no":
         plotting(dic, time.monotonic() - start_time)
 
 
@@ -114,8 +90,8 @@ def load_parser():
         "--mode",
         default="all",
         help="Run the whole framework ('all'), only the reference ('reference'), "
-        "only the site ('site'), only regional and site models ('noreference') "
-        " or none 'none' ('all' by default).",
+        "only the site ('site'), only regional and site models ('noreference'), "
+        "or none 'none' ('all' by default).",
     )
     parser.add_argument(
         "-c",
@@ -127,7 +103,14 @@ def load_parser():
         "-p",
         "--plot",
         default="no",
-        help="Create useful figures in the postprocessing folder ('no' by default).",
+        help="Plot 'all', 'reference', 'regional', 'site', or no ('no' by default).",
+    )
+    parser.add_argument(
+        "-u",
+        "--use",
+        default="gaswater",
+        help="Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by "
+        + "default).",
     )
     parser.add_argument(
         "-r",
@@ -136,11 +119,16 @@ def load_parser():
         help="Using the 'opm' or 'resdata' python package ('opm' by default).",
     )
     parser.add_argument(
-        "-u",
-        "--use",
-        default="gaswater",
-        help="Using 'gasoil' or 'gaswater' co2store implementation ('gasoil' by "
-        + "default).",
+        "-t",
+        "--transform",
+        default=0,
+        help="Grades to rotate the site geological model ('0' by default).",
+    )
+    parser.add_argument(
+        "-e",
+        "--expreccs",
+        default="",
+        help="Name of the regional and site folders to project pressures.",
     )
     return vars(parser.parse_known_args()[0])
 

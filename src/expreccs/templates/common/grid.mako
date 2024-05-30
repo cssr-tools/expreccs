@@ -15,11 +15,17 @@ ${dic[f'{reservoir}_noCells'][0]} ${dic[f'{reservoir}_noCells'][1]} ${dic[f'{res
 /
 
 COORD
+% if reservoir in ["reference", "regional"]:
 % for j in range(dic[f'{reservoir}_noCells'][1] + 1):
 % for i in range(dic[f'{reservoir}_noCells'][0] + 1):
 ${f"{dic[f'{reservoir}_xmx'][i] : E}"} ${f"{dic[f'{reservoir}_ymy'][j] : E}"} 0 ${f"{dic[f'{reservoir}_xmx'][i] : E}"} ${f"{dic[f'{reservoir}_ymy'][j] : E}"} ${f"{dic[f'{reservoir}_dims'][2]  : E}"}
 % endfor
 % endfor
+% else:
+% for xcor,ycor in zip(dic['site_xc'],dic['site_yc']):
+${f"{xcor : E}"} ${f"{ycor : E}"} 0 ${f"{xcor : E}"} ${f"{ycor : E}"} ${f"{dic[f'{reservoir}_dims'][2]  : E}"}
+% endfor
+% endif
 /
 
 ZCORN
