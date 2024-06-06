@@ -39,18 +39,18 @@ def expreccs():
         plot_results(dic)
         return
 
-    # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
-    dic = process_input(dic, file)
-
-    # Make the output folders
-    write_folders(dic)
-
     # For regional and site given decks, then we create a new deck with the proyected pressures
     if dic["expreccs"]:
         dic["reg"] = dic["expreccs"].split(",")[0]
         dic["sit"] = dic["expreccs"].split(",")[1]
         create_deck(dic)
         return
+
+    # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
+    dic = process_input(dic, file)
+
+    # Make the output folders
+    write_folders(dic)
 
     # Get the location of wells and faults in the reservoirs
     dic = mapping_properties(dic)

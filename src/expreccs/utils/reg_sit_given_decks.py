@@ -18,6 +18,10 @@ from resdata.resfile import ResdataFile
 
 def create_deck(dic):
     """Create a deck from given reg and site decks with projected pressures"""
+    if not os.path.exists(f"{dic['exe']}/{dic['fol']}"):
+        os.system(f"mkdir {dic['exe']}/{dic['fol']}")
+    if not os.path.exists(f"{dic['exe']}/{dic['fol']}/bc"):
+        os.system(f"mkdir {dic['exe']}/{dic['fol']}/bc")
     case = f"{dic['exe']}/{dic['reg']}/{dic['reg'].upper()}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
@@ -372,7 +376,7 @@ def write_files(dic):
                 lol.append("'BCCON.INC' /")
     count = 1
     with open(
-        f"{dic['exe']}/{dic['fol']}/EXPRECCS.DATA",
+        f"{dic['exe']}/{dic['fol']}/{dic['fol'].upper()}.DATA",
         "w",
         encoding="utf8",
     ) as file:
