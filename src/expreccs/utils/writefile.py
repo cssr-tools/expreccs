@@ -206,8 +206,6 @@ def write_folders(dic):
     if not os.path.exists(f"{dic['exe']}/{dic['fol']}"):
         os.system(f"mkdir {dic['exe']}/{dic['fol']}")
     if dic["expreccs"]:
-        if not os.path.exists(f"{dic['exe']}/{dic['fol']}/bc"):
-            os.system(f"mkdir {dic['exe']}/{dic['fol']}/bc")
         return
     for fil in ["preprocessing", "jobs", "output", "postprocessing"]:
         if not os.path.exists(f"{dic['exe']}/{dic['fol']}/{fil}"):
