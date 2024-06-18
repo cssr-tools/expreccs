@@ -20,8 +20,11 @@ def final_time_maps(dic):
     """
     for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
+            # es = "regional"
             dic = manage_name(dic, res)
             for j, quantity in enumerate(dic["quantity"][:2]):
+                # j = 2
+                # quantity = "FLOWATI+"
                 dic[f"{fol}/{res}_{quantity}_plot"] = np.zeros(
                     [
                         len(dic[f"{fol}/{dic['name']}_ymy"]) - 1,
@@ -93,23 +96,25 @@ def final_time_maps(dic):
                     )
                     axis.set_xticks(
                         np.linspace(
-                            dic[f"{fol}/{dic['name']}_xcor"].min() / 1000.0,
-                            dic[f"{fol}/{dic['name']}_xcor"].max() / 1000.0,
+                            0 * 5 + dic[f"{fol}/{dic['name']}_xcor"].min() / 1000.0,
+                            0 * 10 + dic[f"{fol}/{dic['name']}_xcor"].max() / 1000.0,
                             6,
                         )
                     )
                     axis.set_yticks(
                         np.linspace(
-                            dic[f"{fol}/{dic['name']}_ycor"].min() / 1000.0,
-                            dic[f"{fol}/{dic['name']}_ycor"].max() / 1000.0,
+                            0 * 5 + dic[f"{fol}/{dic['name']}_ycor"].min() / 1000.0,
+                            0 * 10 + dic[f"{fol}/{dic['name']}_ycor"].max() / 1000.0,
                             6,
                         )
                     )
                 axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
-                # axis.set_title(f"REF (Case 4)")
+                # axis.set_title(f"REFERENCE (Case 4)")
+                # axis.set_title("REGIONAL (Cases 1, 2, and 3)")
+                # axis.set_title(f"REGIONAL: {dic['lfolders'][nfol]} (Case 2)")
                 maxp = dic[f"{fol}/{res}_{quantity}_plot"].max()
                 minp = dic[f"{fol}/{res}_{quantity}_plot"].min()
-                # minp, maxp = 305, 359
+                # minp, maxp = -0.55, 0.43
                 axis.axis("scaled")
                 axis.set_xlabel("Easting [km]")
                 axis.set_ylabel("Northing [km]")
@@ -133,6 +138,8 @@ def final_time_maps(dic):
                     label=dic["units"][j],
                     format=lambda x, _: f"{x:.2f}",
                 )
+                # axis.set_xlim([5, 10])
+                # axis.set_ylim([5, 10])
                 imag.set_clim(
                     minp,
                     maxp,
@@ -231,8 +238,7 @@ def final_time_maps_difference(dic):
                 axis.set_xlabel("Easting [km]")
                 axis.set_ylabel("Northing [km]")
                 axis.set_title(
-                    "SITE "
-                    + r"$\sum$|REF-"
+                    r"SITE $\sum$|REF-"
                     + f"{dic[f'l{res}']}"
                     + f"|={abs(dic[f'{fol}/{res}_difference_{quantity}_plot']).sum():.2E}"
                 )
@@ -241,7 +247,7 @@ def final_time_maps_difference(dic):
                 # axis.tick_params(axis='y', colors='white')
                 maxp = dic[f"{fol}/{res}_difference_{quantity}_plot"].max()
                 minp = dic[f"{fol}/{res}_difference_{quantity}_plot"].min()
-                # minp, maxp = -1.53, 1.53
+                # minp, maxp = -0.27, 0.27
                 divider = make_axes_locatable(axis)
                 cax = divider.append_axes("right", size="5%", pad=1e-3)
                 vect = np.linspace(
@@ -281,7 +287,6 @@ def geological_maps(dic):
     """
     for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
-            j = 0
             dic = manage_name(dic, res)
             dic[f"{fol}/{res}_fipn_plot"] = np.zeros(
                 [
@@ -301,10 +306,11 @@ def geological_maps(dic):
                 dic[f"{fol}/{dic['name']}_ycor"] / 1000.0,
                 dic[f"{fol}/{res}_fipn_plot"],
                 shading="flat",
-                cmap=dic["cmaps"][j],
+                cmap="Set1",
             )
             axis.set_title(dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})")
             # axis.set_title("REG/REF (Case 1)")
+            # axis.set_title("REGIONAL")
             axis.axis("scaled")
             name = dic["name"]
             axis.set_xlabel(

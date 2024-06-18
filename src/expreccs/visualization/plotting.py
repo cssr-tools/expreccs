@@ -159,12 +159,12 @@ def plotting_settings(dic):
         "#2ca02c",
         "#d62728",
         "#9467bd",
-        "#8c564b",
-        "#e377c2",
-        "#17becf",
-        "#bcbd22",
         "k",
+        "#e377c2",
+        "#8c564b",
+        "#bcbd22",
         "#17becf",
+        "k",
         "r",
     ]
     dic["markers"] = [
@@ -193,24 +193,24 @@ def plotting_settings(dic):
         (0, (3, 5, 1, 5, 1, 5)),
         ":",
         "-.",
-        "--",
         (0, (3, 1, 1, 1)),
         (0, (3, 1, 1, 1, 1, 1)),
+        "--",
         "solid",
     ]
     dic["lreference"] = r"REF"
     dic["lregional"] = r"REG"
     dic["lregional_1"] = r"REG_1"
     dic["lregional_2"] = r"REG_2"
-    dic["lsite_pres"] = r"SITE$_p$"
-    dic["lsite_pres2p"] = r"SITE$_{2p}$"
-    dic["lsite_pres_1"] = r"SITE$_{1,p}$"
-    dic["lsite_pres_2"] = r"SITE$_{2,p}$"
-    dic["lsite_flux"] = r"SITE$_f$"
-    dic["lsite_porvproj"] = r"SITE$_{V_p}$"
-    dic["lsite_wells"] = r"SITE$_w$"
-    dic["lsite_closed"] = r"SITE$_c$"
-    dic["lsite_free"] = r"SITE$_o$"
+    dic["lsite_pres"] = r"S$_{pressure}$"
+    dic["lsite_pres2p"] = r"S$_{pressure 2p}$"
+    dic["lsite_pres_1"] = r"S$_{1,pres}$"
+    dic["lsite_pres_2"] = r"S$_{2,pres}$"
+    dic["lsite_flux"] = r"S$_{flux}$"
+    dic["lsite_porvproj"] = r"S$_{pore\;volume}$"
+    dic["lsite_wells"] = r"S$_{wells}$"
+    dic["lsite_closed"] = r"S$_{closed}$"
+    dic["lsite_free"] = r"S$_{open}$"
     dic["cmaps"] = [
         "jet",
         "brg",
@@ -775,7 +775,7 @@ def handle_labels_distance(dic, nfol, res, fol, j):
                 dic[f"{fol}/{res}_dates"],
                 dic[f"{fol}/{res}_indicator_plot"],
                 color=dic["colors"][-j - 1],
-                linestyle=dic["linestyle"][-nfol - 1],
+                linestyle=dic["linestyle"][-nfol - 2],
                 label=label,
             )
             dic["nmarker"] += 1
@@ -849,7 +849,7 @@ def over_time_max_difference(dic, nqua, quantity):
                     )
             dic = handle_labels_difference(dic, res, j, nqua, nfol)
     dic["axis"][nqua].set_title(
-        r"$\max$(REF-SITE), $\max$(REF)="
+        r"$\max|$REF-SITE|, $\max$(REF)="
         + f"{np.array(dic[f'reference_maximum_{quantity}']).max():.2E}"
     )
     dic["axis"][nqua].set_ylabel(dic["units"][nqua])
