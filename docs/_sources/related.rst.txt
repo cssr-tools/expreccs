@@ -23,6 +23,23 @@ pyopmnearwell
 
 `A framework to simulate near well dynamics using OPM Flow <https://github.com/cssr-tools/pyopmnearwell>`_.
 
+******
+pycopm
+******
+
+.. image:: ./figs/pycopm.gif
+    :scale: 60%
+
+`Simplified and flexible framework for coarsening geological models <https://github.com/cssr-tools/pycopm>`_.
+
+*****
+plopm
+*****
+
+.. image:: ./figs/plopm.png
+
+`Quick generation of PNG figures from a simulation model given any 2D slide <https://github.com/cssr-tools/plopm>`_.
+
 *******
 ad-micp
 *******

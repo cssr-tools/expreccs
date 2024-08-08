@@ -63,3 +63,15 @@ to generate the animation (using ResInsight) in the :doc:`introduction section <
 .. code-block:: bash
 
     expreccs -i example2.txt -m reference
+
+Generic (under development)
+---------------------------
+
+See/run the last lines (34 to 42) in the `test_main.py <https://github.com/cssr-tools/expreccs/blob/main/pyproject.toml>`_ 
+for an example where **expreccs** is used in two given models (regional and site, in this case they are created using
+the **expreccs** package, but in general can be any given geological models), generating a new input deck where
+the pressures are projected.
+
+.. code-block:: bash
+
+    expreccs -e name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model

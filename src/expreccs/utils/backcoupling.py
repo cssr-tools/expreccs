@@ -33,6 +33,7 @@ def backcoupling(dic):
     MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
     and added to the regional model. This is done
     iterativly for number of iterations given in the input
+
     Args:
         dic (dict): Global dictionary with required parameters
 
@@ -70,6 +71,7 @@ def backcoupling(dic):
 def write_folder_iter(dic, fil):
     """
     Write folders for the _{iteration} models
+
     Args:
         dic (dict): Global dictionary with required parameters
 
@@ -86,6 +88,7 @@ def write_folder_iter(dic, fil):
 def init_multipliers(dic):
     """
     Function initialize input for regional multipliers
+
     Args:
         dic (dict): Global dictionary with required parameters
 
@@ -108,6 +111,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
     difference in fluxes
     MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
     and added to the regional model
+
     Args:
         dic (dict): Global dictionary with required parameters
         iteration:       Current iteration number

@@ -16,13 +16,13 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Configuration file" href="configuration_file.html" />
+    <link rel="next" title="Installation" href="installation.html" />
     <link rel="prev" title="Welcome to expreccs’s documentation!" href="index.html" /> 
 </head>
 
@@ -50,9 +50,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#concept">Concept</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration file</a></li>
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
@@ -90,7 +90,7 @@
 <a class="reference internal image-reference" href="_images/introduction.gif"><img alt="_images/introduction.gif" src="_images/introduction.gif" style="width: 778.0px; height: 407.0px;" /></a>
 <p>This documentation describes the content of the <strong>expreccs</strong> package.
 The numerical simulations are performed using the
-<a class="reference external" href="https://opm-project.org/?page_id=19">Flow</a> simulator.</p>
+<a class="reference external" href="https://opm-project.org/?page_id=19">OPM Flow</a> simulator.</p>
 <section id="concept">
 <h2>Concept<a class="headerlink" href="#concept" title="Link to this heading"></a></h2>
 <p>Simplified and flexible testing framework for two-stage approach to improve regional and site simulations:</p>
@@ -102,31 +102,26 @@ The numerical simulations are performed using the
 </ul>
 </section>
 <section id="overview">
-<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>The current implementation supports the following executable with the argument options:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>input.txt<span class="w"> </span>-o<span class="w"> </span>output<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">&#39;yes&#39;</span><span class="w"> </span>-r<span class="w"> </span>opm
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>input.txt<span class="w"> </span>-o<span class="w"> </span>output<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;&#39;</span><span class="w"> </span>-p<span class="w"> </span><span class="s1">&#39;no&#39;</span><span class="w"> </span>-r<span class="w"> </span>opm<span class="w"> </span>-u<span class="w"> </span>gaswater<span class="w"> </span>-t<span class="w"> </span><span class="m">0</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&#39;</span>
 </pre></div>
 </div>
 <p>where</p>
 <ul class="simple">
-<li><p>-i, -input: The base name of the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> (‘input.txt’ by default).</p></li>
-<li><p>-o, -output: The base name of the <a class="reference internal" href="output_folder.html"><span class="doc">output folder</span></a> (‘output’ by default).</p></li>
-<li><p>-m, -mode: Run the whole framework (‘all’), only the reference (‘reference’), only the site (‘site’), or only regional and site models (‘noreference’) (‘all’ by default).</p></li>
-<li><p>-c, -compare: Generate metric plots for the current outputed folders (‘compare’) (’ ‘ by default).</p></li>
-<li><p>-p, -plot: Create nice figures in the postprocessing folder (‘no’ by default).</p></li>
-<li><p>-r, -reading: Using the ‘opm’ or ‘ecl’ python package (‘opm’ by default).</p></li>
+<li><p>-i: The base name of the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> (‘input.txt’ by default).</p></li>
+<li><p>-o: The base name of the <a class="reference internal" href="output_folder.html"><span class="doc">output folder</span></a> (‘output’ by default).</p></li>
+<li><p>-m: Run the whole framework (‘all’), only the reference (‘reference’), only the site (‘site’), or only regional and site models (‘noreference’) (‘all’ by default).</p></li>
+<li><p>-c: Generate metric plots for the current outputed folders (‘compare’) (’’ by default).</p></li>
+<li><p>-p: Create nice figures in the postprocessing folder (‘no’ by default).</p></li>
+<li><p>-r: Using the ‘opm’ or ‘resdata’ python package (‘opm’ by default).</p></li>
+<li><p>-u: Using ‘gasoil’ or ‘gaswater’ co2store implementation (‘gaswater’ by default).</p></li>
+<li><p>-t: Grades to rotate the site geological model (‘0’ by default).</p></li>
+<li><p>-e:: Name of the regional and site folders to project pressures (’’ by default).</p></li>
 </ul>
 <p>In the <strong>configuration file</strong> the geological model is defined by generation
 of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults), wells, and defining schedules for the
 operations (see the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> section).</p>
-</section>
-<section id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h2>
-<p>See the <a class="reference external" href="https://github.com/cssr-tools/expreccs">Github page</a>.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Check the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml">CI.yml</a> file.</p>
-</div>
 </section>
 </section>
 
@@ -135,7 +130,7 @@ operations (see the <a class="reference internal" href="configuration_file.html"
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="Welcome to expreccs’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="configuration_file.html" class="btn btn-neutral float-right" title="Configuration file" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

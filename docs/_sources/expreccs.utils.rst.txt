@@ -11,6 +11,7 @@ Submodules
    expreccs.utils.inputvalues
    expreccs.utils.mapboundaries
    expreccs.utils.mapproperties
+   expreccs.utils.reg_sit_given_decks
    expreccs.utils.runs
    expreccs.utils.writefile
 
