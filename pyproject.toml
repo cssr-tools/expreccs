@@ -5,8 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "expreccs"
 description = "A framework to simulate regional and site reservoirs for CO2 storage"
-authors = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" }]
-maintainers = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" }]
+authors = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" },
+{ name = "Tor Harald Sandve", email = "tosa@norceresearch.no" }]
+maintainers = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" },
+{ name = "Tor Harald Sandve", email = "tosa@norceresearch.no" }]
 version = "2024.04"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {text = "GPL-3.0"}
