@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "expreccs"
+description = "A framework to simulate regional and site reservoirs for CO2 storage"
+authors = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" }]
+maintainers = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" }]
+version = "2024.04"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "GPL-3.0"}
+keywords = ["co2", "aquifer", "regional", "opm", "site", "coupling", "projection"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent"
+]
+dependencies = [
+    "mako",
+    "pandas",
+    "resdata",
+    "scipy",
+    "shapely",
+    "matplotlib",
+]
+requires-python = ">=3.8"
+
+[project.scripts]
+expreccs = "expreccs.core.expreccs:main"
+
+[project.urls]
+Homepage = "https://cssr-tools.github.io/expreccs"
+Repository = "https://github.com/cssr-tools/expreccs"
+
+[tool.setuptools]
+packages.find.where = ["src"]
+platforms = ["all"]

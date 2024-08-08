@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -48,10 +48,12 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration file</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#example-1">Example 1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-2">Example 2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generic-under-development">Generic (under development)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
@@ -142,6 +144,16 @@ distance from the CO2 plume to the site boundaries (bottom).</span><a class="hea
 <p>The configuration file example2.txt set a more complex geological model with more grid cells (1 417 500). This was used
 to generate the animation (using ResInsight) in the <a class="reference internal" href="introduction.html"><span class="doc">introduction section</span></a> by running</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example2.txt<span class="w"> </span>-m<span class="w"> </span>reference
+</pre></div>
+</div>
+</section>
+<section id="generic-under-development">
+<h2>Generic (under development)<a class="headerlink" href="#generic-under-development" title="Link to this heading"></a></h2>
+<p>See/run the last lines (34 to 42) in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/pyproject.toml">test_main.py</a>
+for an example where <strong>expreccs</strong> is used in two given models (regional and site, in this case they are created using
+the <strong>expreccs</strong> package, but in general can be any given geological models), generating a new input deck where
+the pressures are projected.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-e<span class="w"> </span>name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
 </pre></div>
 </div>
 </section>

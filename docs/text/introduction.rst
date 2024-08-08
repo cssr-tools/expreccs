@@ -7,7 +7,7 @@ Introduction
 
 This documentation describes the content of the **expreccs** package.
 The numerical simulations are performed using the 
-`Flow <https://opm-project.org/?page_id=19>`_ simulator.
+`OPM Flow <https://opm-project.org/?page_id=19>`_ simulator.
 
 Concept
 -------
@@ -18,31 +18,28 @@ Simplified and flexible testing framework for two-stage approach to improve regi
 - Set the fluxes/pressures from the regional model as boundary conditions on the site model.
 - Simulate the site model.
 
+.. _overview:
+
 Overview
 --------
 The current implementation supports the following executable with the argument options:
 
 .. code-block:: bash
 
-    expreccs -i input.txt -o output -m all -c '' -p 'yes' -r opm
+    expreccs -i input.txt -o output -m all -c '' -p 'no' -r opm -u gaswater -t 0 -e ''
 
 where 
 
-- \-i, \-input: The base name of the :doc:`configuration file <./configuration_file>` ('input.txt' by default).
-- \-o, \-output: The base name of the :doc:`output folder <./output_folder>` ('output' by default).
-- \-m, \-mode: Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
-- \-c, \-compare: Generate metric plots for the current outputed folders ('compare') (' ' by default).
-- \-p, \-plot: Create nice figures in the postprocessing folder ('no' by default).
-- \-r, \-reading: Using the 'opm' or 'ecl' python package ('opm' by default).
+- \-i: The base name of the :doc:`configuration file <./configuration_file>` ('input.txt' by default).
+- \-o: The base name of the :doc:`output folder <./output_folder>` ('output' by default).
+- \-m: Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
+- \-c: Generate metric plots for the current outputed folders ('compare') ('' by default).
+- \-p: Create nice figures in the postprocessing folder ('no' by default).
+- \-r: Using the 'opm' or 'resdata' python package ('opm' by default).
+- \-u: Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by default).
+- \-t: Grades to rotate the site geological model ('0' by default).
+- \-e:: Name of the regional and site folders to project pressures ('' by default).
 
 In the **configuration file** the geological model is defined by generation
 of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults), wells, and defining schedules for the
-operations (see the :doc:`configuration file <./configuration_file>` section). 
-
-Installation
-------------
-
-See the `Github page <https://github.com/cssr-tools/expreccs>`_.
-
-.. tip::
-    Check the `CI.yml <https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml>`_ file.
+operations (see the :doc:`configuration file <./configuration_file>` section).

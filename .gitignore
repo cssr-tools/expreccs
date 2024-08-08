@@ -142,6 +142,8 @@ opm-common/
 opm-grid/
 opm-models/
 opm-simulators/
+build_opm_mpi.sh
+build_opm_macos.sh
 
 # Extra folders
 tests/configs/back

@@ -1,7 +1,0 @@
-resdata
-opm
-mako
-scipy
-pandas
-shapely
-matplotlib
