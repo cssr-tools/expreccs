@@ -67,7 +67,7 @@ to generate the animation (using ResInsight) in the :doc:`introduction section <
 Generic (under development)
 ---------------------------
 
-See/run the last lines (34 to 42) in the `test_main.py <https://github.com/cssr-tools/expreccs/blob/main/pyproject.toml>`_ 
+See/run the last lines (34 to 42) in the `test_main.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_main.py>`_ 
 for an example where **expreccs** is used in two given models (regional and site, in this case they are created using
 the **expreccs** package, but in general can be any given geological models), generating a new input deck where
 the pressures are projected.
