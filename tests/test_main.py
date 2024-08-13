@@ -14,7 +14,7 @@ def test():
     os.chdir(f"{cwd}/tests/configs")
     os.system("expreccs -i interp.txt -m site")
     os.chdir(f"{cwd}/tests/configs")
-    os.system("expreccs -i flux.txt -m site -p all")
+    os.system("expreccs -i flux.txt -m site -p all -r opm")
     assert os.path.exists(
         "./output/postprocessing/output_difference_site_wells_pressure.png"
     )
@@ -27,11 +27,11 @@ def test():
     os.chdir(f"{cwd}/tests/configs")
     os.system("expreccs -c compare")
     assert os.path.exists("./compare/compareoutput_distance_from_border.png")
-    os.system("expreccs -i back-coupling.txt -o back -p yes -r opm")
+    os.system("expreccs -i back-coupling.txt -o back -p yes")
     assert os.path.exists(
         "./back/postprocessing/back_difference_site_pres_watfluxi-.png"
     )
-    os.system("expreccs -i rotate.txt -o rotate -m all -t 30 -r resdata -p site")
+    os.system("expreccs -i rotate.txt -o rotate -m all -t 30 -r opm -p site")
     assert os.path.exists("./rotate/postprocessing/rotate_site_closed_pressure.png")
     os.system("scp -r ./rotate/preprocessing/regional/. ./rotate/output/regional")
     os.system("scp -r ./rotate/preprocessing/site_closed/. ./rotate/output/site_closed")

@@ -30,15 +30,16 @@ WAT_DEN_REF = 998.108
 KG_TO_KT = 1e-6
 
 
-def reading_resdata(dic):
+def reading_resdata(dic, loadnpy=True):
     """
-    Function to read the deck quantities using resdata
+    Read the deck quantities using resdata
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        loadnpy (bool): True for plotting, False for back-coupling
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     for fol in dic["folders"]:
@@ -59,29 +60,22 @@ def reading_resdata(dic):
         else:
             dic[f"{fol}_decks"] = ["reference", "regional"] + dic[f"{fol}_sites"]
         for res in dic[f"{fol}_decks"]:
+            if res[-3].isdigit():
+                name = res[:-4]
+            if res[-2].isdigit():
+                name = res[:-3]
+            if res[-1].isdigit():
+                name = res[:-2]
+            else:
+                name = res
             case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
-            dic[f"{fol}/{res}_nowells"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/nowells.npy"
-            )
-            dic[f"{fol}/{res}_sensor"] = int(
-                np.load(dic["exe"] + "/" + fol + f"/output/{res}/sensor.npy")
-            )
-            dic[f"{fol}/{res}_sensor_location"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/sensor_location.npy"
-            )
-            dic[f"{fol}/{res}_nowells_site"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/nowells_site.npy"
-            )
-            dic[f"{fol}/{res}_sensorijk"] = np.load(
-                dic["exe"] + "/" + fol + f"/output/{res}/sensorijk.npy"
-            )
             dic[f"{fol}/{res}_rst"] = ResdataFile(case + ".UNRST")
             dic[f"{fol}/{res}_ini"] = ResdataFile(case + ".INIT")
             dic[f"{fol}/{res}_grid"] = Grid(case + ".EGRID")
             dic[f"{fol}/{res}_smsp"] = Summary(case + ".SMSPEC")
             dic[f"{fol}/{res}_num_rst"] = dic[f"{fol}/{res}_rst"].num_report_steps()
-            dic[f"{fol}/{res}_dates"] = dic[f"{fol}/{res}_rst"].dates
-            dic[f"{fol}/{res}_smsp_dates"] = dic[f"{fol}/{res}_smsp"].dates
+            if loadnpy:
+                resdata_load_data(dic, fol, res, name)
             dic[f"{fol}/{res}_phiv"] = dic[f"{fol}/{res}_ini"].iget_kw("PORV")[0]
             dic[f"{fol}/{res}_poro"] = dic[f"{fol}/{res}_ini"].iget_kw("PORO")[0]
             dic[f"{fol}/{res}_fipn"] = np.array(
@@ -90,7 +84,6 @@ def reading_resdata(dic):
             dic[f"{fol}/{res}_dx"] = np.array(dic[f"{fol}/{res}_ini"].iget_kw("DX")[0])
             dic[f"{fol}/{res}_dy"] = np.array(dic[f"{fol}/{res}_ini"].iget_kw("DY")[0])
             dic[f"{fol}/{res}_dz"] = np.array(dic[f"{fol}/{res}_ini"].iget_kw("DZ")[0])
-            dic = handle_smsp_time(dic, fol, res)
             if dic[f"{fol}/{res}_rst"].has_kw("SWAT"):
                 dic[f"{fol}/{res}liq"] = "WAT"
                 dic[f"{fol}/{res}l"] = "W"
@@ -102,12 +95,68 @@ def reading_resdata(dic):
             dic[f"{fol}/{res}_indicator_array"] = []
             for quantity in dic["quantity"]:
                 dic[f"{fol}/{res}_{quantity}_array"] = []
-            dic = resdata_arrays(dic, fol, res)
-    return dic
+            resdata_arrays(dic, fol, res, loadnpy)
 
 
-def resdata_arrays(dic, fol, res):
-    """From simulaion data to arrays"""
+def resdata_load_data(dic, fol, res, name):
+    """
+    Read the data needed for the plotting
+
+    Args:
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        res (str): Complete name of the simulated model\n
+        name (str): Name of the type of simulated model (e.g., site)
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    dic[f"{fol}/{res}_rst_seconds"] = np.load(
+        dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
+    )
+    dic[f"{fol}/{res}_nowells"] = np.load(
+        dic["exe"] + "/" + fol + f"/output/{name}/nowells.npy"
+    )
+    dic[f"{fol}/{res}_sensor"] = int(
+        np.load(dic["exe"] + "/" + fol + f"/output/{name}/sensor.npy")
+    )
+    dic[f"{fol}/{res}_sensor_location"] = np.load(
+        dic["exe"] + "/" + fol + f"/output/{name}/sensor_location.npy"
+    )
+    dic[f"{fol}/{res}_nowells_site"] = np.load(
+        dic["exe"] + "/" + fol + f"/output/{name}/nowells_site.npy"
+    )
+    dic[f"{fol}/{res}_sensorijk"] = np.load(
+        dic["exe"] + "/" + fol + f"/output/{name}/sensorijk.npy"
+    )
+    dic[f"{fol}/{res}_dates"] = dic[f"{fol}/{res}_rst"].dates
+    dic[f"{fol}/{res}_smsp_dates"] = dic[f"{fol}/{res}_smsp"].dates
+    ini = dic[f"{fol}/{res}_smsp"].start_date
+    day_0 = datetime.datetime(
+        year=ini.year, month=ini.month, day=ini.day, hour=0, minute=0, second=0
+    )
+    dic[f"{fol}/{res}_dates"] = [
+        day_0 + datetime.timedelta(seconds=seconds)
+        for seconds in dic[f"{fol}/{res}_rst_seconds"]
+    ]
+    handle_smsp_time(dic, fol, res, name)
+
+
+def resdata_arrays(dic, fol, res, loadnpy):
+    """
+    From simulation data to arrays
+
+    Args:
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        res (str): Complete name of the simulated model\n
+        loadnpy (bool): True for plotting, False for back-coupling
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     phiva = np.array([porv for porv in dic[f"{fol}/{res}_phiv"] if porv > 0])
     for i in range(dic[f"{fol}/{res}_num_rst"]):
         sgas = np.array(dic[f"{fol}/{res}_rst"]["SGAS"][i])
@@ -183,39 +232,44 @@ def resdata_arrays(dic, fol, res):
                     dic[f"{fol}/{res}_{quantity}_array"].append(
                         0.0 * np.array(dic[f"{fol}/{res}_rst"]["SGAS"][0])
                     )
-    name = "site" if "site" in res else res
-    dic[f"{fol}/{name}_boxi"] = dic[f"{fol}/{res}_grid"].getNodePos(0, 0, 0)
-    dic[f"{fol}/{name}_boxf"] = dic[f"{fol}/{res}_grid"].getNodePos(
+    manage_names(dic, res)
+    dic[f"{fol}/{dic['namel']}_boxi"] = dic[f"{fol}/{res}_grid"].getNodePos(0, 0, 0)
+    dic[f"{fol}/{dic['namel']}_boxf"] = dic[f"{fol}/{res}_grid"].getNodePos(
         dic[f"{fol}/{res}_grid"].getNX(),
         dic[f"{fol}/{res}_grid"].getNY(),
         dic[f"{fol}/{res}_grid"].getNZ(),
     )
-    dic[f"{fol}/{name}_xmx"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{res}/{name}_xmx.npy"
-    )
-    dic[f"{fol}/{name}_ymy"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{res}/{name}_ymy.npy"
-    )
-    dic[f"{fol}/{res}_xcor"], dic[f"{fol}/{res}_ycor"] = np.meshgrid(
-        dic[f"{fol}/{name}_xmx"], dic[f"{fol}/{name}_ymy"][::-1]
-    )
-    return dic
+    if loadnpy:
+        dic[f"{fol}/{dic['namel']}_xmx"] = np.load(
+            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_xmx.npy"
+        )
+        dic[f"{fol}/{dic['namel']}_ymy"] = np.load(
+            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
+        )
+        (
+            dic[f"{fol}/{dic['namel']}_xcor"],
+            dic[f"{fol}/{dic['namel']}_ycor"],
+        ) = np.meshgrid(
+            dic[f"{fol}/{dic['namel']}_xmx"], dic[f"{fol}/{dic['namel']}_ymy"][::-1]
+        )
 
 
-def handle_smsp_time(dic, fol, res):
+def handle_smsp_time(dic, fol, res, name):
     """
-    Function to chandle the times in the summary files
+    Handle the times in the summary files
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        str (study): Name of the folder containing the results
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        res (str): Complete name of the simulated model\n
+        name (str): Name of the type of simulated model (e.g., site)
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic[f"{fol}/{res}_rst_seconds"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{res}/schedule.npy"
+        dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
     )
     dic[f"{fol}/{res}_smsp_report_step"] = dic[f"{fol}/{res}_smsp"][
         "WBHP:INJ0"
@@ -246,18 +300,18 @@ def handle_smsp_time(dic, fol, res):
     dic[f"{fol}/{res}_smsp_seconds"] = np.insert(
         dic[f"{fol}/{res}_smsp_seconds"], 0, 0.0
     )
-    return dic
 
 
 def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
     """
-    Function to read the deck quantities using opm
+    Read the deck quantities using opm
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        loadnpy (bool): True for plotting, False for back-coupling
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     for fol in dic["folders"]:
@@ -351,12 +405,23 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
             for quantity in dic["quantity"]:
                 dic[f"{fol}/{res}_{quantity}_array"] = []
             dic[f"{fol}/{res}_indicator_array"] = []
-            dic = opm_arrays(dic, fol, res, loadnpy)
-    return dic
+            opm_arrays(dic, fol, res, loadnpy)
 
 
 def opm_arrays(dic, fol, res, loadnpy):
-    """From simulaion data to arrays"""
+    """
+    From simulation data to arrays
+
+    Args:
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        res (str): Complete name of the simulated model\n
+        loadnpy (bool): True for plotting, False for back-coupling
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     phiva = np.array([porv for porv in dic[f"{fol}/{res}_phiv"] if porv > 0])
     for i in range(dic[f"{fol}/{res}_num_rst"]):
         sgas = np.array(dic[f"{fol}/{res}_rst"]["SGAS", i])
@@ -433,7 +498,7 @@ def opm_arrays(dic, fol, res, loadnpy):
                         0.0 * np.array(dic[f"{fol}/{res}_rst"]["SGAS", 0])
                     )
 
-    dic = manage_names(dic, res)
+    manage_names(dic, res)
     dic[f"{fol}/{dic['namel']}_boxi"] = [
         dic[f"{fol}/{res}_grid"].xyz_from_ijk(0, 0, 0)[i][0] for i in range(3)
     ]
@@ -452,16 +517,26 @@ def opm_arrays(dic, fol, res, loadnpy):
         dic[f"{fol}/{dic['namel']}_ymy"] = np.load(
             dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
         )
-        dic[f"{fol}/{dic['namel']}_xcor"], dic[f"{fol}/{dic['namel']}_ycor"] = (
-            np.meshgrid(
-                dic[f"{fol}/{dic['namel']}_xmx"], dic[f"{fol}/{dic['namel']}_ymy"][::-1]
-            )
+        (
+            dic[f"{fol}/{dic['namel']}_xcor"],
+            dic[f"{fol}/{dic['namel']}_ycor"],
+        ) = np.meshgrid(
+            dic[f"{fol}/{dic['namel']}_xmx"], dic[f"{fol}/{dic['namel']}_ymy"][::-1]
         )
-    return dic
 
 
 def manage_names(dic, res):
-    """Figure out the folder names (needs to be fixed)"""
+    """
+    Figure out the folder names
+
+    Args:
+        dic (dict): Global dictionary\n
+        res (str): Complete name of the simulated model
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     if res[-3].isdigit():
         dic["namef"] = res[:-4]
     if res[-2].isdigit():
@@ -471,4 +546,3 @@ def manage_names(dic, res):
     else:
         dic["namef"] = res
     dic["namel"] = "site" if "site" in res else dic["namef"]
-    return dic

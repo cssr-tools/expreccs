@@ -33,7 +33,8 @@ install the Python requirements in a virtual environment with the following comm
 
 .. note::
 
-    For not macOS users, to install the Python opm package, execute in the terminal **pip install opm**.
+    Regarding the reading of from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST), it is possible to use the opm python package instead of resdata (e.g., it seems the opm Python package 
+    is faster than resdata to read large simulation files). For not macOS users, to install the Python opm package, execute in the terminal **pip install opm**.
     For macOS, see :ref:`macOS`.
 
 OPM Flow
@@ -133,4 +134,4 @@ This builds OPM Flow as well as the opm Python package, and it exports the requi
 
 Regarding the resdata Python package, it might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10).
 Then, it is recommended to use a Python version equal or higher than 3.10; otherwise, remove resdata from the requirements in the `pyproject.toml <https://github.com/cssr-tools/expreccs/blob/main/pyproject.toml>`_,
-and the opm Python package will be used (this is the default package for reading the simulation files, see the :ref:`overview`).
+and when executing **expreccs** always set the flag **-r opm** (resdata is the default package for reading the simulation files, see the :ref:`overview`).

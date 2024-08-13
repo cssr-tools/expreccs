@@ -17,7 +17,16 @@ from resdata.resfile import ResdataFile
 
 
 def create_deck(dic):
-    """Create a deck from given reg and site decks with projected pressures"""
+    """
+    Create a deck from given reg and site decks with projected pressures
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     if not os.path.exists(f"{dic['exe']}/{dic['fol']}"):
         os.system(f"mkdir {dic['exe']}/{dic['fol']}")
     if not os.path.exists(f"{dic['exe']}/{dic['fol']}/bc"):
@@ -56,7 +65,16 @@ def create_deck(dic):
 
 
 def handle_grid_coord(dic):
-    """Process the regional and site grid coordinates"""
+    """
+    Process the regional and site grid coordinates
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["sbox"] = dic["sgrid"].get_bounding_box_2d()
     dic["sbox"] += (dic["sbox"][0],)
     c_x, c_y, c_z = [], [], []
@@ -106,7 +124,18 @@ def handle_grid_coord(dic):
 
 
 def check_regional_neighbours(dic, gind, p):
-    """Add to the interpolator neighbouring regional cells"""
+    """
+    Add to the interpolator neighbouring regional cells
+
+    Args:
+        dic (dict): Global dictionary\n
+        gind (int): Global cell index\n
+        p (str): Cardinal direction
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     if dic["rgrid"].nz > 1:
         noise = -1e-4 * np.random.rand()
     else:
@@ -204,7 +233,20 @@ def check_regional_neighbours(dic, gind, p):
 
 
 def check_intersection(dic, ind, gind, i, n):
-    """Check if there are nnc in the regional/site overlapping"""
+    """
+    Check if there are nnc in the regional/site overlapping
+
+    Args:
+        dic (dict): Global dictionary\n
+        ind (int): Index for the closest cell\n
+        gind (int): Global cell index in the regional model\n
+        i (int): Position of the x, y, or z coords\n
+        n (int): Position for the cardinal direction
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     shift = [dic["rgrid"].nx, 1, dic["rgrid"].nx, 1][n]
     x_l, y_l, x_p, y_p = 0, 0, 0, 0
     l_p = [0, 0]
@@ -237,7 +279,16 @@ def check_intersection(dic, ind, gind, i, n):
 
 
 def find_regional_cells(dic):
-    """Find the cells to build the interpolator"""
+    """
+    Find the cells to build the interpolator
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     handle_grid_coord(dic)
     count = -1
     for n, p in enumerate(
@@ -308,7 +359,16 @@ def find_regional_cells(dic):
 
 
 def dynamic_mapping(dic):
-    """Project the pressures from the regional to the site over time"""
+    """
+    Project the pressures from the regional to the site over time
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["rp"] = ["" for _ in range(dic["rrst"].num_report_steps())]
     for p in ["n", "w", "s", "e"]:
         dic[f"rp{p}"] = [[] for _ in range(dic["rrst"].num_report_steps())]
@@ -317,7 +377,16 @@ def dynamic_mapping(dic):
 
 
 def project_pressures(dic, i):
-    """Project the pressures at restart number i"""
+    """
+    Project the pressures at restart number i
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     count, c_c = 0, 0
     for p in ["n", "w", "s", "e"]:
         z_p = np.array(dic["rrst"].iget_kw("PRESSURE")[i])[dic[f"ri{p}"]]
@@ -358,7 +427,16 @@ def project_pressures(dic, i):
 
 
 def write_files(dic):
-    """Write the files"""
+    """
+    Write the files with the projected pressures
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["files"] = [
         f for f in os.listdir(f"{dic['exe']}/{dic['sit']}") if f.endswith(".INC")
     ]
@@ -421,7 +499,16 @@ def write_files(dic):
 
 
 def find_ij_orientation(dic):
-    """Find if the counting is left/right handed"""
+    """
+    Find if the counting is left/right handed
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     y1 = dic["sgrid"].get_xyz(ijk=(0, 0, 0))[1]
     y2 = dic["sgrid"].get_xyz(ijk=(0, 1, 0))[1]
     x1 = dic["sgrid"].get_xyz(ijk=(0, 0, 0))[1]
@@ -437,7 +524,16 @@ def find_ij_orientation(dic):
 
 
 def extract_site_borders(dic):
-    """Get the index/coord from the site border"""
+    """
+    Get the index/coord from the site border
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     for k in range(dic["sgrid"].nz):
         j = 0
         for i in range(dic["sgrid"].nx):

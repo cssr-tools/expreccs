@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 
 """
-Utiliy function for finding the well i,j, and k ids.
+Utiliy function for mapping quantities in the different sites.
 """
 
 import numpy as np
@@ -14,10 +14,10 @@ def mapping_properties(dic):
     Function to handle the reservoir location settings.
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["site_dims"] = [
@@ -77,18 +77,26 @@ def mapping_properties(dic):
             dic[f"{res}_zmaps"][i] = pd.Series(
                 abs(dic["regional_zmz_mid"] - dic["site_zmz_mid"][i])
             ).argmin()
-    dic = positions_reference(dic)
-    dic = positions_regional(dic)
-    dic = rotate_grid(dic)
+    positions_reference(dic)
+    positions_regional(dic)
+    rotate_grid(dic)
     if dic["rotate"] > 0:
-        dic = positions_rotation(dic)
+        positions_rotation(dic)
     else:
-        dic = positions_site(dic)
-    return dic
+        positions_site(dic)
 
 
 def rotate_grid(dic):
-    """Rotate the grid site if requiered"""
+    """
+    Rotate the grid site if requiered.
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["site_xc"], dic["site_yc"] = [], []
     for j in range(dic["site_noCells"][1] + 1):
         for i in range(dic["site_noCells"][0] + 1):
@@ -116,7 +124,6 @@ def rotate_grid(dic):
         f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/d2y",
         dic["site_yc"],
     )
-    return dic
 
 
 def positions_regional(dic):
@@ -124,10 +131,10 @@ def positions_regional(dic):
     Function to locate well, site, and fault positions
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["regional_fipnum"] = []
@@ -204,11 +211,19 @@ def positions_regional(dic):
         f"{dic['exe']}/{dic['fol']}/output/regional/sensorijk",
         dic["regional_sensor"],
     )
-    return dic
 
 
 def positions_rotation(dic):
-    """Find the locations after the rotation"""
+    """
+    Find the locations after the rotation
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["site_fipnum"] = [1] * (
         dic["site_noCells"][0] * dic["site_noCells"][1] * dic["site_noCells"][2]
     )
@@ -265,7 +280,6 @@ def positions_rotation(dic):
         f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensorijk",
         dic["site_sensor"],
     )
-    return dic
 
 
 def positions_site(dic):
@@ -273,10 +287,10 @@ def positions_site(dic):
     Function to locate well and fault positions in the site reservoir.
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["site_fipnum"] = [1] * (
@@ -327,7 +341,6 @@ def positions_site(dic):
         f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensorijk",
         dic["site_sensor"],
     )
-    return dic
 
 
 def positions_reference(dic):
@@ -335,10 +348,10 @@ def positions_reference(dic):
     Function to locate well, fault, and site positions in the reference reservoir.
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["reference_fipnum"] = []
@@ -400,4 +413,3 @@ def positions_reference(dic):
         f"{dic['exe']}/{dic['fol']}/output/reference/sensorijk",
         dic["reference_sensor"],
     )
-    return dic

@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -90,10 +90,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.writefile.set_gridmako">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.writefile.</span></span><span class="sig-name descname"><span class="pre">set_gridmako</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_xy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.writefile.set_gridmako" title="Link to this definition"></a></dt>
-<dd><p>Method to set the mainfold function</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-f_xy: The function for the reservoir surface</p>
+<dd><p>Set the mainfold function in the grid for the reservoir z profile</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>f_xy: The function for the reservoir surface</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -102,9 +104,11 @@ f_xy: The function for the reservoir surface</p>
 <dt class="sig sig-object py" id="expreccs.utils.writefile.write_files">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.writefile.</span></span><span class="sig-name descname"><span class="pre">write_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reservoir</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.writefile.write_files" title="Link to this definition"></a></dt>
 <dd><p>Function to write opm-related reference files by running mako templates</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-reservoir (str): Name of the geological model</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>reservoir (str): Name of the geological model</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -114,7 +118,9 @@ reservoir (str): Name of the geological model</p>
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.writefile.</span></span><span class="sig-name descname"><span class="pre">write_folders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.writefile.write_folders" title="Link to this definition"></a></dt>
 <dd><p>Function to make the output folders</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -122,9 +128,11 @@ reservoir (str): Name of the geological model</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.writefile.write_properties">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.writefile.</span></span><span class="sig-name descname"><span class="pre">write_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.writefile.write_properties" title="Link to this definition"></a></dt>
-<dd><p>Function to write some numpy files used in the plotting routine</p>
+<dd><p>Write some numpy files used in the plotting routine</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>

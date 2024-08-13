@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
 
-"""Main script"""
+"""Main script for expreccs"""
 import os
 import time
 import argparse
@@ -18,7 +18,7 @@ from expreccs.utils.backcoupling import (
 
 
 def expreccs():
-    """Main function"""
+    """Main function for the expreccs executable"""
     start_time = time.monotonic()
     cmdargs = load_parser()
     file = cmdargs["input"]  # Name of the input file
@@ -47,18 +47,18 @@ def expreccs():
         return
 
     # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
-    dic = process_input(dic, file)
+    process_input(dic, file)
 
     # Make the output folders
     write_folders(dic)
 
     # Get the location of wells and faults in the reservoirs
-    dic = mapping_properties(dic)
+    mapping_properties(dic)
     write_properties(dic)
     init_multipliers(dic)
 
     # Run the models
-    dic = run_models(dic)
+    run_models(dic)
 
     if dic["mode"] in ["all"]:
         backcoupling(dic)
@@ -115,8 +115,8 @@ def load_parser():
     parser.add_argument(
         "-r",
         "--reading",
-        default="opm",
-        help="Using the 'opm' or 'resdata' python package ('opm' by default).",
+        default="resdata",
+        help="Using the 'opm' or 'resdata' python package ('resdata' by default).",
     )
     parser.add_argument(
         "-t",

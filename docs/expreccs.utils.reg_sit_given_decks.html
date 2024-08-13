@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -92,60 +92,126 @@ regional and site decks.</p>
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.check_intersection">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">check_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.check_intersection" title="Link to this definition"></a></dt>
 <dd><p>Check if there are nnc in the regional/site overlapping</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>ind (int): Index for the closest cell</p>
+<p>gind (int): Global cell index in the regional model</p>
+<p>i (int): Position of the x, y, or z coords</p>
+<p>n (int): Position for the cardinal direction</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.check_regional_neighbours">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">check_regional_neighbours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.check_regional_neighbours" title="Link to this definition"></a></dt>
 <dd><p>Add to the interpolator neighbouring regional cells</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>gind (int): Global cell index</p>
+<p>p (str): Cardinal direction</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.create_deck">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">create_deck</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.create_deck" title="Link to this definition"></a></dt>
 <dd><p>Create a deck from given reg and site decks with projected pressures</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.dynamic_mapping">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">dynamic_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.dynamic_mapping" title="Link to this definition"></a></dt>
 <dd><p>Project the pressures from the regional to the site over time</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.extract_site_borders">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">extract_site_borders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.extract_site_borders" title="Link to this definition"></a></dt>
 <dd><p>Get the index/coord from the site border</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.find_ij_orientation">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">find_ij_orientation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.find_ij_orientation" title="Link to this definition"></a></dt>
 <dd><p>Find if the counting is left/right handed</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.find_regional_cells">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">find_regional_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.find_regional_cells" title="Link to this definition"></a></dt>
 <dd><p>Find the cells to build the interpolator</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.handle_grid_coord">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">handle_grid_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.handle_grid_coord" title="Link to this definition"></a></dt>
 <dd><p>Process the regional and site grid coordinates</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.project_pressures">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">project_pressures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.project_pressures" title="Link to this definition"></a></dt>
 <dd><p>Project the pressures at restart number i</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.write_files">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">write_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.write_files" title="Link to this definition"></a></dt>
-<dd><p>Write the files</p>
+<dd><p>Write the files with the projected pressures</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

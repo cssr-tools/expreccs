@@ -12,16 +12,19 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 def final_time_maps(dic):
     """
-    Function to plot the 2D maps for the different reservoirs and quantities
+    Plot the 2D maps for the different reservoirs and quantities
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
+
+    Returns:
+        None
 
     """
     for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
             # es = "regional"
-            dic = manage_name(dic, res)
+            manage_name(dic, res)
             for j, quantity in enumerate(dic["quantity"][:2]):
                 # j = 2
                 # quantity = "FLOWATI+"
@@ -153,19 +156,19 @@ def final_time_maps(dic):
 
 def final_time_maps_difference(dic):
     """
-    Function to plot the difference between the reference and site simulations
+    Plot the difference between the reference and site simulations
     in the last time step
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        None
 
     """
     for fol in dic["folders"]:
         for res in dic[f"{fol}_sites"]:
-            dic = manage_name(dic, res)
+            manage_name(dic, res)
             for j, quantity in enumerate(dic["quantity"]):
                 dic[f"{fol}/{res}_difference_{quantity}"] = (
                     dic[f"{fol}/reference_{quantity}_array"][-1][
@@ -279,15 +282,18 @@ def final_time_maps_difference(dic):
 
 def geological_maps(dic):
     """
-    Function to plot the 2D maps for the reservoir model
+    Plot the 2D maps for the reservoir model
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
+
+    Returns:
+        None
 
     """
     for nfol, fol in enumerate(dic["folders"]):
         for res in dic[f"{fol}_decks"]:
-            dic = manage_name(dic, res)
+            manage_name(dic, res)
             dic[f"{fol}/{res}_fipn_plot"] = np.zeros(
                 [
                     len(dic[f"{fol}/{dic['name']}_ymy"]) - 1,
@@ -335,11 +341,20 @@ def geological_maps(dic):
 
 
 def manage_name(dic, res):
-    """Figure out the folder name (needs to be fixed)"""
+    """
+    Figure out the folder names
+
+    Args:
+        dic (dict): Global dictionary\n
+        res (str): Complete name of the simulated model
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     if "regional" in res:
         dic["name"] = "regional"
     elif "site" in res:
         dic["name"] = "site"
     else:
         dic["name"] = res
-    return dic
