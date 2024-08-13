@@ -54,6 +54,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-1">Example 1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#example-2">Example 2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#generic-under-development">Generic (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#back-coupling-under-development">Back-coupling (under development)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
@@ -90,7 +91,7 @@
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
 <section id="example-1">
 <h2>Example 1<a class="headerlink" href="#example-1" title="Link to this heading"></a></h2>
-<p>We consider the configuration file ‘example1.txt’ in the
+<p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt">example1.txt</a> in the
 examples folder (the animation in the <a class="reference external" href="https://github.com/cssr-tools/expreccs">Github home page</a> was based on this configuration file).
 If the results are to be saved in a folder called ‘hello_world’, this is achieved by the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world
@@ -156,6 +157,34 @@ the pressures are projected.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-e<span class="w"> </span>name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
 </pre></div>
 </div>
+</section>
+<section id="back-coupling-under-development">
+<span id="back-coupling"></span><h2>Back-coupling (under development)<a class="headerlink" href="#back-coupling-under-development" title="Link to this heading"></a></h2>
+<p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt">example1_back.txt</a> in the examples folder.
+The plan is to update properties (e.g., transmissibility multipliers) in the regional model from features (e.g., faults) in the site model (i.e., not included in the regional model).
+By running:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1_back.txt<span class="w"> </span>-o<span class="w"> </span>back-coupling<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-p<span class="w"> </span>yes
+</pre></div>
+</div>
+<p>This is one of the generated figures:</p>
+<img alt="_images/back-coupling_summary_BPR_regional_reference.png" src="_images/back-coupling_summary_BPR_regional_reference.png" />
+<p>The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of
+iteration is set to 10 in line 22 of the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt">configuration_file</a>). To visualize/compare results
+between any of the iterations, we can use our friend <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can install plopm by executing in the terminal: pip install git+https://github.com/cssr-tools/plopm.git.</p>
+</div>
+<p>For example, to show the difference in the spatial maps for pressure at iteration 4 and 7 at the third restart, this is achieved by executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_7/regional_7,back-coupling/output/regional_4/regional_4<span class="w"> </span>-v<span class="w"> </span>pressure<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-c<span class="w"> </span>rainbow<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;lambda x, _: f&#39;{x:.2f}&#39;&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5
+</pre></div>
+</div>
+<img alt="_images/pressure_plopm.png" src="_images/pressure_plopm.png" />
+<p>And to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_1/regional_1,back-coupling/output/regional_5/regional_5,back-coupling/output/regional_7/regional_7,back-coupling/output/regional_9/regional_9<span class="w"> </span>-v<span class="w"> </span>fpr<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5<span class="w"> </span>-f<span class="w"> </span><span class="m">10</span>
+</pre></div>
+</div>
+<img alt="_images/fpr_plopm.png" src="_images/fpr_plopm.png" />
 </section>
 </section>
 

@@ -5,7 +5,7 @@ Examples
 Example 1
 ---------
 
-We consider the configuration file 'example1.txt' in the 
+We consider the configuration file `example1.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt>`_ in the 
 examples folder (the animation in the `Github home page <https://github.com/cssr-tools/expreccs>`_ was based on this configuration file). 
 If the results are to be saved in a folder called 'hello_world', this is achieved by the following command: 
 
@@ -75,3 +75,43 @@ the pressures are projected.
 .. code-block:: bash
 
     expreccs -e name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
+
+.. _back_coupling:
+
+Back-coupling (under development)
+---------------------------------
+
+We consider the configuration file `example1_back.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt>`_ in the examples folder.
+The plan is to update properties (e.g., transmissibility multipliers) in the regional model from features (e.g., faults) in the site model (i.e., not included in the regional model).
+By running:
+
+.. code-block:: bash
+
+    expreccs -i example1_back.txt -o back-coupling -m all -p yes
+
+This is one of the generated figures:
+
+.. image:: ./figs/back-coupling_summary_BPR_regional_reference.png
+
+The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of 
+iteration is set to 10 in line 22 of the `configuration_file <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt>`_). To visualize/compare results
+between any of the iterations, we can use our friend `plopm <https://github.com/cssr-tools/plopm>`_. 
+
+.. tip::
+    You can install plopm by executing in the terminal: pip install git+https://github.com/cssr-tools/plopm.git.
+
+For example, to show the difference in the spatial maps for pressure at iteration 4 and 7 at the third restart, this is achieved by executing:
+
+.. code-block:: bash
+
+    plopm -i back-coupling/output/regional_7/regional_7,back-coupling/output/regional_4/regional_4 -v pressure -r 3 -s ,,1 -c rainbow -n "lambda x, _: f'{x:.2f}'" -d 5,5
+
+.. image:: ./figs/pressure_plopm.png
+
+And to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:
+
+.. code-block:: bash
+
+    plopm -i back-coupling/output/regional_1/regional_1,back-coupling/output/regional_5/regional_5,back-coupling/output/regional_7/regional_7,back-coupling/output/regional_9/regional_9 -v fpr -d 5,5 -f 10
+
+.. image:: ./figs/fpr_plopm.png

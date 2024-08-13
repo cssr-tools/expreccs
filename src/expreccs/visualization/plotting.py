@@ -212,12 +212,12 @@ def plotting_settings(dic):
     ]
     dic["lreference"] = r"REF"
     dic["lregional"] = r"REG"
-    dic["lregional_1"] = r"REG_1"
-    dic["lregional_2"] = r"REG_2"
+    dic["lregional_1"] = r"REG1"
+    dic["lregional_2"] = r"REG2"
     dic["lsite_pres"] = r"S$_{pressure}$"
     dic["lsite_pres2p"] = r"S$_{pressure 2p}$"
-    dic["lsite_pres_1"] = r"S$_{1,pres}$"
-    dic["lsite_pres_2"] = r"S$_{2,pres}$"
+    dic["lsite_pres_1"] = r"S1$_{pressure}$"
+    dic["lsite_pres_2"] = r"S2$_{pressure}$"
     dic["lsite_flux"] = r"S$_{flux}$"
     dic["lsite_porvproj"] = r"S$_{pore\;volume}$"
     dic["lsite_wells"] = r"S$_{wells}$"
@@ -311,23 +311,22 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
         yvalues = [val * GAS_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
     if opm[nquan] == f"W{dic[f'{fol}/{res}l']}R":
         yvalues = [val * WAT_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
-    # fols = f" ({fol})"
-    # if nwell > 0:
-    #     marker = dic["markers"][nwell]
-    # else:
-    #     marker = ""
-    # dic["axis"].step(
-    #     dic[f"{fol}/{res}_smsp_dates"],
-    #     yvalues,
-    #     label=f"INJ{nwell} "
-    #     + dic[f"l{res}"]
-    #     + f" {' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
-    #     color=dic["colors"][-ndeck - 1],
-    #     linestyle=dic["linestyle"][-ndeck - 1 - nfol * len(dic[f"{fol}_decks"])],
-    #     marker=marker,
-    #     lw=2,
-    # )
-    # if ndeck == 0 and nfol == 1 or nwell > 0:
+    if nwell > 0:
+        marker = dic["markers"][nwell]
+    else:
+        marker = ""
+    dic["axis"].step(
+        dic[f"{fol}/{res}_smsp_dates"],
+        yvalues,
+        label=f"INJ{nwell} "
+        + dic[f"l{res}"]
+        + f" {' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
+        color=dic["colors"][-ndeck - 1],
+        linestyle=dic["linestyle"][-ndeck - 1 - nfol * len(dic[f"{fol}_decks"])],
+        marker=marker,
+        lw=2,
+    )
+    # if ndeck == 0 and nfol > 0:
     #     return
     # if ndeck == 0:
     #     dic["axis"].step(
@@ -356,16 +355,16 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     #     linestyle=dic["linestyle"][-1 + nwell],
     #     lw=3,
     # )
-    if ndeck != 1 or nfol > 0:  # or nwell > 0:
-        return
-    dic["axis"].step(
-        dic[f"{fol}/{res}_smsp_dates"],
-        yvalues,
-        label=f"INJ{nwell}",
-        color=dic["colors"][nwell],
-        linestyle=dic["linestyle"][-1 + nwell],
-        lw=3,
-    )
+    # if ndeck != 1 or nfol > 0:  # or nwell > 0:
+    #     return
+    # dic["axis"].step(
+    #     dic[f"{fol}/{res}_smsp_dates"],
+    #     yvalues,
+    #     label=f"INJ{nwell}",
+    #     color=dic["colors"][nwell],
+    #     linestyle=dic["linestyle"][-1 + nwell],
+    #     lw=3,
+    # )
 
 
 def summary_site(dic, nfol, ndeck, opmn):
@@ -439,7 +438,7 @@ def handle_site_summary(dic, i, quantity):
     """
     for nfol, fol in enumerate(dic["folders"]):
         for ndeck, res in enumerate(dic[f"{fol}_decks"]):
-            if res == "regional":
+            if "regional" in res:
                 continue
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
                 summary_site(dic, nfol, ndeck, f"R{quantity}:1")
