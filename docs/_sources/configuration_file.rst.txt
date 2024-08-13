@@ -65,8 +65,7 @@ the location of a point of interest to compare results, and the z position of th
 Killough hysteresis model on the gas relative permeability.
 
 .. note::
-    The functionality for back-coupling in line 22 is under development, see/run `back-coupling.txt <https://github.com/cssr-tools/expreccs/blob/main/tests/configs/back-coupling.txt>`_ 
-    if you are curious.
+    The functionality for back-coupling in line 22 is under development, see the :ref:`back_coupling` if you are curious.
 
 .. figure:: figs/grids.png
 

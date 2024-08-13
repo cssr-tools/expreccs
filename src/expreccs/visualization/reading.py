@@ -45,9 +45,8 @@ def reading_resdata(dic, loadnpy=True):
     for fol in dic["folders"]:
         cwd = os.getcwd()
         os.chdir(f"{dic['exe']}/{fol}/output")
-        dic[f"{fol}_sites"] = sorted(
-            [name for name in os.listdir(".") if os.path.isdir(name)]
-        )[2:]
+        folders = sorted([name for name in os.listdir(".") if os.path.isdir(name)])
+        dic[f"{fol}_sites"] = folders[2:]
         os.chdir(cwd)
         if dic["plot"] in ["reference"]:
             dic[f"{fol}_decks"] = ["reference"]
@@ -75,6 +74,7 @@ def reading_resdata(dic, loadnpy=True):
             dic[f"{fol}/{res}_smsp"] = Summary(case + ".SMSPEC")
             dic[f"{fol}/{res}_num_rst"] = dic[f"{fol}/{res}_rst"].num_report_steps()
             if loadnpy:
+                define_cases(dic, fol, folders)
                 resdata_load_data(dic, fol, res, name)
             dic[f"{fol}/{res}_phiv"] = dic[f"{fol}/{res}_ini"].iget_kw("PORV")[0]
             dic[f"{fol}/{res}_poro"] = dic[f"{fol}/{res}_ini"].iget_kw("PORO")[0]
@@ -317,9 +317,8 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
     for fol in dic["folders"]:
         cwd = os.getcwd()
         os.chdir(f"{dic['exe']}/{fol}/output")
-        dic[f"{fol}_sites"] = sorted(
-            [name for name in os.listdir(".") if os.path.isdir(name)]
-        )[2:]
+        folders = sorted([name for name in os.listdir(".") if os.path.isdir(name)])
+        dic[f"{fol}_sites"] = folders[2:]
         os.chdir(cwd)
         if dic["plot"] in ["reference"]:
             dic[f"{fol}_decks"] = ["reference"]
@@ -340,8 +339,8 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
                 name = res[:-2]
             else:
                 name = res
-
             if loadnpy:
+                define_cases(dic, fol, folders)
                 dic[f"{fol}/{res}_rst_seconds"] = np.load(
                     dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
                 )
@@ -406,6 +405,30 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
                 dic[f"{fol}/{res}_{quantity}_array"] = []
             dic[f"{fol}/{res}_indicator_array"] = []
             opm_arrays(dic, fol, res, loadnpy)
+
+
+def define_cases(dic, fol, folders):
+    """
+    Only plot the first two and last cases for the back-coupling
+
+    Args:
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        folders (list): Names of the cases
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    dic[f"{fol}_sites"] = [folder for folder in folders if "site" in folder]
+    if "site_pres_2" in dic[f"{fol}_sites"]:
+        n_c = len(dic[f"{fol}_sites"]) - 1
+        dic[f"lregional_{n_c}"] = "REG" + f"{n_c}"
+        dic[f"lsite_pres_{n_c}"] = f"S{n_c}" + r"$_{pressure}$"
+        dic[f"{fol}_sites"] = dic[f"{fol}_sites"][:2] + [dic[f"{fol}_sites"][-1]]
+        dic[f"{fol}_decks"] = (
+            dic[f"{fol}_decks"][:3] + [f"regional_{n_c}"] + dic[f"{fol}_sites"]
+        )
 
 
 def opm_arrays(dic, fol, res, loadnpy):
