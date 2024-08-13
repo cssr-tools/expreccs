@@ -26,7 +26,7 @@ The current implementation supports the following executable with the argument o
 
 .. code-block:: bash
 
-    expreccs -i input.txt -o output -m all -c '' -p 'no' -r opm -u gaswater -t 0 -e ''
+    expreccs -i input.txt -o output -m all -c '' -p 'no' -r resdata -u gaswater -t 0 -e ''
 
 where 
 
@@ -35,10 +35,10 @@ where
 - \-m: Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
 - \-c: Generate metric plots for the current outputed folders ('compare') ('' by default).
 - \-p: Create nice figures in the postprocessing folder ('no' by default).
-- \-r: Using the 'opm' or 'resdata' python package ('opm' by default).
+- \-r: Using the 'opm' or 'resdata' python package ('resdata' by default).
 - \-u: Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by default).
 - \-t: Grades to rotate the site geological model ('0' by default).
-- \-e:: Name of the regional and site folders to project pressures ('' by default).
+- \-e: Name of the regional and site folders to project pressures ('' by default).
 
 In the **configuration file** the geological model is defined by generation
 of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults), wells, and defining schedules for the

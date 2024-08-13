@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -86,15 +86,15 @@
              
   <section id="module-expreccs.utils.mapproperties">
 <span id="expreccs-utils-mapproperties-module"></span><h1>expreccs.utils.mapproperties module<a class="headerlink" href="#module-expreccs.utils.mapproperties" title="Link to this heading"></a></h1>
-<p>Utiliy function for finding the well i,j, and k ids.</p>
+<p>Utiliy function for mapping quantities in the different sites.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapproperties.mapping_properties">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">mapping_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.mapping_properties" title="Link to this definition"></a></dt>
 <dd><p>Function to handle the reservoir location settings.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -104,9 +104,9 @@
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_reference" title="Link to this definition"></a></dt>
 <dd><p>Function to locate well, fault, and site positions in the reference reservoir.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -116,9 +116,9 @@
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_regional</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_regional" title="Link to this definition"></a></dt>
 <dd><p>Function to locate well, site, and fault positions</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -127,6 +127,12 @@
 <dt class="sig sig-object py" id="expreccs.utils.mapproperties.positions_rotation">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_rotation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_rotation" title="Link to this definition"></a></dt>
 <dd><p>Find the locations after the rotation</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -134,9 +140,9 @@
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">positions_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.positions_site" title="Link to this definition"></a></dt>
 <dd><p>Function to locate well and fault positions in the site reservoir.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -144,7 +150,13 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapproperties.rotate_grid">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapproperties.</span></span><span class="sig-name descname"><span class="pre">rotate_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapproperties.rotate_grid" title="Link to this definition"></a></dt>
-<dd><p>Rotate the grid site if requiered</p>
+<dd><p>Rotate the grid site if requiered.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

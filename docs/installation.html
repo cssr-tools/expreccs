@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -117,7 +117,8 @@ install the Python requirements in a virtual environment with the following comm
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>For not macOS users, to install the Python opm package, execute in the terminal <strong>pip install opm</strong>.
+<p>Regarding the reading of from OPM Flow output files (i.e., .EGRID, .INIT, .UNRST), it is possible to use the opm python package instead of resdata (e.g., it seems the opm Python package
+is faster than resdata to read large simulation files). For not macOS users, to install the Python opm package, execute in the terminal <strong>pip install opm</strong>.
 For macOS, see <a class="reference internal" href="#macos"><span class="std std-ref">Source build in macOS</span></a>.</p>
 </div>
 </section>
@@ -210,7 +211,7 @@ package (see the <a class="reference external" href="https://opm-project.org/?pa
 <p>This builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH. Then after execution, deactivate and activate the Python virtual environment.</p>
 <p>Regarding the resdata Python package, it might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10).
 Then, it is recommended to use a Python version equal or higher than 3.10; otherwise, remove resdata from the requirements in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/pyproject.toml">pyproject.toml</a>,
-and the opm Python package will be used (this is the default package for reading the simulation files, see the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a>).</p>
+and when executing <strong>expreccs</strong> always set the flag <strong>-r opm</strong> (resdata is the default package for reading the simulation files, see the <a class="reference internal" href="introduction.html#overview"><span class="std std-ref">Overview</span></a>).</p>
 </section>
 </section>
 </section>

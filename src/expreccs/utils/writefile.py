@@ -17,8 +17,11 @@ def write_files(dic, reservoir):
     Function to write opm-related reference files by running mako templates
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
         reservoir (str): Name of the geological model
+
+    Returns:
+        None
 
     """
     name = "site" if "site" in reservoir else reservoir
@@ -138,10 +141,13 @@ def write_files(dic, reservoir):
 
 def write_properties(dic):
     """
-    Function to write some numpy files used in the plotting routine
+    Write some numpy files used in the plotting routine
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     dic["schedule_r"] = [0]
@@ -175,11 +181,14 @@ def write_properties(dic):
 
 def set_gridmako(dic, f_xy):
     """
-    Method to set the mainfold function
+    Set the mainfold function in the grid for the reservoir z profile
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
         f_xy: The function for the reservoir surface
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     lol = []
@@ -192,7 +201,6 @@ def set_gridmako(dic, f_xy):
             else:
                 lol.append(row[0])
     dic["gridtemplate"] = Template(text="\n".join(lol))
-    return dic
 
 
 def write_folders(dic):
@@ -200,7 +208,10 @@ def write_folders(dic):
     Function to make the output folders
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
+
+    Returns:
+        None
 
     """
     if not os.path.exists(f"{dic['exe']}/{dic['fol']}"):

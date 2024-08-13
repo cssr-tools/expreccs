@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=C0302
 
 """
 Utiliy script for mapping to the site boundaries
@@ -29,10 +30,10 @@ def porv_regional_segmentation(dic):
     Function to locate the different sides for the pv projections
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["regional_fipnum"] = []
@@ -112,7 +113,6 @@ def porv_regional_segmentation(dic):
                     dic["regional_fipnum"].append(8)
                 else:
                     dic["regional_fipnum"].append(9)
-    return dic
 
 
 def porv_projections(dic):
@@ -120,10 +120,10 @@ def porv_projections(dic):
     Function to project the pore volumes from the regional to the site.
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     case = f"{dic['exe']}/{dic['fol']}/output/regional/REGIONAL"
@@ -155,21 +155,20 @@ def porv_projections(dic):
         + 0.5 * porv[fipnum == 8].sum()
         + 0.5 * porv[fipnum == 9].sum()
     )
-    return dic
 
 
-def aquaflux_resdata(dic):
+def aquaflux_resdata(dic, iteration=""):
     """
     Function to read the fluxes and pressures from the regional
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
-    case = f"{dic['exe']}/{dic['fol']}/output/regional/REGIONAL"
+    case = f"{dic['exe']}/{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     dic["rst"], dic["grid"] = ResdataFile(rst), Grid(grid)
@@ -217,6 +216,7 @@ def aquaflux_resdata(dic):
         f"FLO{dic['liq']}I+",
         f"FLO{dic['liq']}J+",
         "PRESSURE",
+        "WAT_DEN",
         "R_AQUFLUX_bottom",
         "R_AQUFLUX_top",
         "R_AQUFLUX_right",
@@ -225,10 +225,23 @@ def aquaflux_resdata(dic):
         "R_PRESSURE_top",
         "R_PRESSURE_right",
         "R_PRESSURE_left",
+        "R_WAT_DEN_bottom",
+        "R_WAT_DEN_top",
+        "R_WAT_DEN_right",
+        "R_WAT_DEN_left",
+        "S_PRESSURE_bottom",
+        "S_PRESSURE_top",
+        "S_PRESSURE_right",
+        "S_PRESSURE_left",
     ]:
         dic[keyword] = [[] for _ in range(dic["rst"].num_report_steps())]
     for i in range(dic["rst"].num_report_steps()):
-        for keyword in [f"FLO{dic['liq']}I+", f"FLO{dic['liq']}J+", "PRESSURE"]:
+        for keyword in [
+            f"FLO{dic['liq']}I+",
+            f"FLO{dic['liq']}J+",
+            "PRESSURE",
+            "WAT_DEN",
+        ]:
             dic[keyword][i].append(np.array(dic["rst"].iget_kw(keyword)[i]))
         if dic["site_bctype"] == "flux":
             n_xy = dic["regional_noCells"][0] * dic["regional_noCells"][1]
@@ -277,10 +290,11 @@ def aquaflux_resdata(dic):
                 ]
             )
         elif dic["site_bctype"] == "pres":
-            dic = handle_stencil_resdata(dic, i)
+            handle_stencil_resdata(dic, i)
         elif dic["site_bctype"] == "pres2p":
-            dic = handle_stencil_2p(dic, i)
-    return dic
+            handle_stencil_2p(dic, i)
+    if dic["site_bctype"] == "pres" or dic["site_bctype"] == "pres2p":
+        handle_pressure_correction(dic)
 
 
 def aquaflux_opm(dic, iteration=""):
@@ -288,10 +302,10 @@ def aquaflux_opm(dic, iteration=""):
     Function to read the fluxes and pressures from the regional
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     case = f"{dic['exe']}/{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
@@ -451,16 +465,24 @@ def aquaflux_opm(dic, iteration=""):
                 ]
             )
         elif dic["site_bctype"] == "pres":
-            dic = handle_stencil_opm(dic, i)
+            handle_stencil_opm(dic, i)
         elif dic["site_bctype"] == "pres2p":
-            dic = handle_stencil_2p(dic, i)
+            handle_stencil_2p(dic, i)
     if dic["site_bctype"] == "pres" or dic["site_bctype"] == "pres2p":
-        dic = handle_pressure_correction(dic)
-    return dic
+        handle_pressure_correction(dic)
 
 
 def handle_pressure_correction(dic):
-    """Correct for the REG pres to the SITE on the z dir if refinement"""
+    """
+    Correct for the REG pres to the SITE on the z dir if refinement
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     for i in range(len(dic["schedule_r"])):
         for k, z_p in enumerate(dic["site_zmz_mid"]):
             for j in range(dic["site_noCells"][0]):
@@ -495,7 +517,6 @@ def handle_pressure_correction(dic):
                         ]
                         + corr
                     )
-    return dic
 
 
 def handle_stencil_resdata(dic, i):
@@ -503,11 +524,11 @@ def handle_stencil_resdata(dic, i):
     Function to project the cell pressures to the cell faces
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
         i (int): Counter for the time in the schedule
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["ncellsh"] = mt.floor(len(dic["cells_bottom"]) / dic["regional_noCells"][2])
@@ -519,132 +540,138 @@ def handle_stencil_resdata(dic, i):
         dic["site_location"][1], dic["site_location"][4], dic["site_noCells"][1] + 1
     )
     dic["yc"] = 0.5 * (dic["yc"][1:] + dic["yc"][:-1])
-    for ndir, name in enumerate(["bottom", "top"]):
-        temp = np.array([])
-        for k in range(dic["regional_noCells"][2]):
-            x_a = [
-                dic["grid"].get_xyz(
-                    active_index=dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
-                )[0]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+    for quan in ["PRESSURE", "WAT_DEN"]:
+        for ndir, name in enumerate(["bottom", "top"]):
+            temp = np.array([])
+            for k in range(dic["regional_noCells"][2]):
+                x_a = [
+                    dic["grid"].get_xyz(
+                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                    )[0]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
-                )
-            ]
-            y_a = [
-                dic["grid"].get_xyz(
-                    active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
-                )[1],
-                dic["grid"].get_xyz(
-                    active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + dic["regional_noCells"][0]
-                )[1],
-            ]
-            z_0 = [
-                dic["PRESSURE"][i][0][dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
-                    )
-                    + 2
-                )
-            ]
-            z_1 = [
-                dic["PRESSURE"][i][0][
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    - 1
-                    + j
-                    + dic["regional_noCells"][0]
                 ]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
-                    )
-                    + 2
-                )
-            ]
-            z_a = np.stack([np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1)
-            interp = RegularGridInterpolator(
-                (x_a, y_a), z_a, bounds_error=False, fill_value=None
-            )
-            x_p, y_p = np.meshgrid(
-                dic["xc"], dic["site_location"][1 + 3 * ndir], indexing="ij"
-            )
-            temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"R_PRESSURE_{name}"][i].append(temp)
-    dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_noCells"][2])
-    for ndir, name in enumerate(["left", "right"]):
-        temp = np.array([])
-        for k in range(dic["regional_noCells"][2]):
-            x_a = [
-                dic["grid"].get_xyz(
-                    active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + dic["regional_noCells"][0] * (-1 + j)
-                )[1]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
-                    )
-                    + 2
-                )
-            ]
-            y_a = [
-                dic["grid"].get_xyz(
-                    active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
-                )[0],
-                dic["grid"].get_xyz(
-                    active_index=dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
-                )[0],
-            ]
-            z_0 = [
-                dic["PRESSURE"][i][0][
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + dic["regional_noCells"][0] * (-1 + j)
+                y_a = [
+                    dic["grid"].get_xyz(
+                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                    )[1],
+                    dic["grid"].get_xyz(
+                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + dic["regional_noCells"][0]
+                    )[1],
                 ]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                z_0 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
-                )
-            ]
-            z_1 = [
-                dic["PRESSURE"][i][0][
-                    dic[f"cells_{name}"][k * dic["ncellsh"]]
-                    + 1
-                    + dic["regional_noCells"][0] * (-1 + j)
                 ]
-                for j in range(
-                    len(
-                        dic[f"cells_{name}"][
-                            k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
-                        ]
+                z_1 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        - 1
+                        + j
+                        + dic["regional_noCells"][0]
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
                     )
-                    + 2
+                ]
+                z_a = np.stack(
+                    [np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1
                 )
-            ]
-            z_a = np.stack([np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1)
-            interp = RegularGridInterpolator(
-                (x_a, y_a), z_a, bounds_error=False, fill_value=None
-            )
-            x_p, y_p = np.meshgrid(
-                dic["yc"], dic["site_location"][3 * ndir], indexing="ij"
-            )
-            temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
-        dic[f"R_PRESSURE_{name}"][i].append(temp)
-    return dic
+                interp = RegularGridInterpolator(
+                    (x_a, y_a), z_a, bounds_error=False, fill_value=None
+                )
+                x_p, y_p = np.meshgrid(
+                    dic["xc"], dic["site_location"][1 + 3 * ndir], indexing="ij"
+                )
+                temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
+            dic[f"R_{quan}_{name}"][i].append(temp)
+        dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_noCells"][2])
+        for ndir, name in enumerate(["left", "right"]):
+            temp = np.array([])
+            for k in range(dic["regional_noCells"][2]):
+                x_a = [
+                    dic["grid"].get_xyz(
+                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + dic["regional_noCells"][0] * (-1 + j)
+                    )[1]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
+                    )
+                ]
+                y_a = [
+                    dic["grid"].get_xyz(
+                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                    )[0],
+                    dic["grid"].get_xyz(
+                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                    )[0],
+                ]
+                z_0 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + dic["regional_noCells"][0] * (-1 + j)
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
+                    )
+                ]
+                z_1 = [
+                    dic[f"{quan}"][i][0][
+                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + 1
+                        + dic["regional_noCells"][0] * (-1 + j)
+                    ]
+                    for j in range(
+                        len(
+                            dic[f"cells_{name}"][
+                                k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
+                            ]
+                        )
+                        + 2
+                    )
+                ]
+                z_a = np.stack(
+                    [np.array(z_0).flatten(), np.array(z_1).flatten()], axis=-1
+                )
+                interp = RegularGridInterpolator(
+                    (x_a, y_a), z_a, bounds_error=False, fill_value=None
+                )
+                x_p, y_p = np.meshgrid(
+                    dic["yc"], dic["site_location"][3 * ndir], indexing="ij"
+                )
+                temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
+            dic[f"R_{quan}_{name}"][i].append(temp)
 
 
 def handle_stencil_opm(dic, i):
@@ -652,11 +679,11 @@ def handle_stencil_opm(dic, i):
     Function to project the cell pressures to the cell faces
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
         i (int): Counter for the time in the schedule
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["ncellsh"] = mt.floor(len(dic["cells_bottom"]) / dic["regional_noCells"][2])
@@ -858,13 +885,20 @@ def handle_stencil_opm(dic, i):
                 )
                 temp = np.hstack((temp, interp((x_p, y_p)).flatten()))
             dic[f"R_{quan}_{name}"][i].append(temp)
-    return dic
 
 
 def temporal_interpolation_pressure(dic):
     """
     Function to interpolate the BC pressure values in time
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
     """
+
     keywords = [
         "PRESSURE_bottom",
         "PRESSURE_top",
@@ -890,12 +924,18 @@ def temporal_interpolation_pressure(dic):
                     dic[f"{keyword}"][j][0][i] = dic[f"S_{keyword}"][
                         np.searchsorted(dic["schedule_r"], time)
                     ][i]
-    return dic
 
 
 def temporal_interpolation_flux(dic):
     """
     Function to interpolate the BC fluxes values in time
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
     """
     keywords = [
         "AQUFLUX_bottom",
@@ -925,7 +965,6 @@ def temporal_interpolation_flux(dic):
                     dic[f"{keyword}"][j][0][i] = dic[f"R_{keyword}"][
                         np.searchsorted(dic["schedule_r"], time)
                     ][0][i]
-    return dic
 
 
 def handle_stencil_2p(dic, i):
@@ -933,11 +972,11 @@ def handle_stencil_2p(dic, i):
     Function to project the cell pressures to the cell faces
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
         i (int): Counter for the time in the schedule
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     for quan in ["PRESSURE", "WAT_DEN"]:
@@ -967,4 +1006,3 @@ def handle_stencil_2p(dic, i):
                 for j in dic["cells_right"]
             ]
         )
-    return dic

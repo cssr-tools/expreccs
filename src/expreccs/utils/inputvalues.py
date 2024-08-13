@@ -15,17 +15,18 @@ def process_input(dic, in_file):
     Function to process the input file
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
         in_file (str): Name of the input text file
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
+
     """
     lol = []
     with open(in_file, "r", encoding="utf8") as file:
         for row in csv.reader(file, delimiter="#"):
             lol.append(row)
-    dic = readthefirstpart(lol, dic)
+    readthefirstpart(lol, dic)
     if dic["co2store"] == "gasoil":
         dic["liq"] = "OIL"
         dic["lin"] = "OIL"
@@ -34,7 +35,6 @@ def process_input(dic, in_file):
         dic["liq"] = "WAT"
         dic["lin"] = "WATER"
         dic["l"] = "W"
-    return dic
 
 
 def readthefirstpart(lol, dic):  # pylint: disable=R0915
@@ -42,12 +42,13 @@ def readthefirstpart(lol, dic):  # pylint: disable=R0915
     Function to process the lines in the configuration file.
 
     Args:
-        lol (list): List of lines read from the input file
-        dic (dict): Global dictionary with required parameters
+        lol (list): List of lines read from the input file\n
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary\n
         inc (int): Number of line in the input file before the first injection value
+
     """
     dic["flow"] = str(lol[1])[2:-2]  # Path to the flow executable
     dic["regional_dims"] = [float((lol[4][0].strip()).split()[j]) for j in range(3)]
@@ -116,8 +117,7 @@ def readthefirstpart(lol, dic):  # pylint: disable=R0915
     dic["salinity"] = float((lol[20][0].strip()).split()[1])
     dic["iterations"] = int((lol[21][0].strip()).split()[0])
     index = 24  # Increase this if more rows are added to the model parameters part
-    dic = readthesecondpart(lol, dic, index)
-    return dic
+    readthesecondpart(lol, dic, index)
 
 
 def readthesecondpart(lol, dic, index):
@@ -125,12 +125,13 @@ def readthesecondpart(lol, dic, index):
     Function to process the remaining lines in the configuration file
 
     Args:
-        lol (list): List of lines read from the input file
-        dic (dict): Global dictionary with required parameters
-        inc (int): Number of line in the input file
+        lol (list): List of lines read from the input file\n
+        dic (dict): Global dictionary\n
+        index (int): Number of line in the input file
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
+
     """
     dic["krwf"] = str(lol[index][0])  # Wetting rel perm saturation function [-]
     dic["krnf"] = str(lol[index + 1][0])  # Non-wetting rel perm saturation function [-]
@@ -201,4 +202,3 @@ def readthesecondpart(lol, dic, index):
                 ]
             )
     dic["inj"] = column
-    return dic

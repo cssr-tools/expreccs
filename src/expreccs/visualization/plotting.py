@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0914
+# pylint: disable=R0914,C0302
 
 """"
 Script to plot the top surface for the reference, regional, and site reservoirs.
@@ -45,7 +45,7 @@ plt.rcParams.update(
 
 
 def main():
-    """Postprocessing"""
+    """Generate figures"""
     parser = argparse.ArgumentParser(description="Main script to plot the results")
     parser.add_argument(
         "-t",
@@ -89,10 +89,13 @@ def main():
 
 def plot_results(dic):
     """
-    Function to plot the 2D maps/1D projections for the different quantities
+    Plot the 2D maps/1D projections for the different quantities
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
+
+    Returns:
+        None
 
     """
     dic["rhog_ref"] = 1.86843  # CO2 reference density
@@ -111,11 +114,11 @@ def plot_results(dic):
         dic["where"] = f"{dic['exe']}/{dic['folders'][0]}/postprocessing"
         dic["id"] = dic["folders"][0] + "_"
     dic["lfolders"] = [name.replace("_", " ") for name in dic["folders"]]
-    dic = plotting_settings(dic)
+    plotting_settings(dic)
     if dic["reading"] == "resdata":
-        dic = reading_resdata(dic)
+        reading_resdata(dic)
     else:
-        dic = reading_opm(dic)
+        reading_opm(dic)
     if dic["plot"] in ["reference", "regional", "site"]:
         plt.rcParams.update({"axes.grid": False})
         final_time_maps(dic)
@@ -152,7 +155,16 @@ def plot_results(dic):
 
 
 def plotting_settings(dic):
-    """Set the color/line styles and labels"""
+    """
+    Set the color/line styles and labels
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     dic["colors"] = [
         "#1f77b4",
         "#ff7f0e",
@@ -271,15 +283,21 @@ def plotting_settings(dic):
         "CO$_2$ in-place (liquid phase) [kt]",
         "CO$_2$ in-place (gas phase) [kt]",
     ]
-    return dic
 
 
 def wells_site(dic, nquan, nfol, ndeck, nwell):
     """
-    Function to plot the injection rates and BHP
+    Plot the injection rates and BHP
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        nquan (int): Current number of quantity\n
+        nfol (int): Current number of folder\n
+        ndeck (int): Current number of deck\n
+        nwell (int): Current number of well
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     fol = dic["folders"][nfol]
@@ -310,7 +328,7 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     #     lw=2,
     # )
     # if ndeck == 0 and nfol == 1 or nwell > 0:
-    #     return dic
+    #     return
     # if ndeck == 0:
     #     dic["axis"].step(
     #         dic[f"{fol}/{res}_smsp_dates"],
@@ -329,7 +347,7 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     #         lw=3,
     #     )
     # if ndeck > 0:
-    #     return dic
+    #     return
     # dic["axis"].step(
     #     dic[f"{fol}/{res}_smsp_dates"],
     #     yvalues,
@@ -339,7 +357,7 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     #     lw=3,
     # )
     if ndeck != 1 or nfol > 0:  # or nwell > 0:
-        return dic
+        return
     dic["axis"].step(
         dic[f"{fol}/{res}_smsp_dates"],
         yvalues,
@@ -348,15 +366,20 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
         linestyle=dic["linestyle"][-1 + nwell],
         lw=3,
     )
-    return dic
 
 
 def summary_site(dic, nfol, ndeck, opmn):
     """
-    Function to plot summary quantities
+    Plot summary quantities
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        nfol (int): Current number of folder\n
+        ndeck (int): Current number of deck\n
+        opmn (str): Summary name to plot
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     # if dic["compare"]:
@@ -382,7 +405,7 @@ def summary_site(dic, nfol, ndeck, opmn):
         poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
         yvalues = [val / (poro * dx * dz) for val in yvalues]
     if ndeck == 0 and nfol > 0:
-        return dic
+        return
     if ndeck == 0:
         dic["axis"].step(
             dic[f"{fol}/{res}_smsp_dates"],
@@ -399,23 +422,33 @@ def summary_site(dic, nfol, ndeck, opmn):
             color=dic["colors"][-ndeck - 1],
             linestyle=dic["linestyle"][-nfol - 2],
         )
-    return dic
 
 
 def handle_site_summary(dic, i, quantity):
-    """Routine for the summary qunatities at the site location"""
+    """
+    Routine for the summary quantities at the site location
+
+    Args:
+        dic (dict): Global dictionary\n
+        i (int): Index of the quantity\n
+        quantity (str): Name of the quantity
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
     for nfol, fol in enumerate(dic["folders"]):
         for ndeck, res in enumerate(dic[f"{fol}_decks"]):
             if res == "regional":
                 continue
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
-                dic = summary_site(dic, nfol, ndeck, f"R{quantity}:1")
+                summary_site(dic, nfol, ndeck, f"R{quantity}:1")
                 dic["axis"].set_title(
                     "SITE "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
                 )
             elif quantity in ["BPR", "BGIP", "BGIPL", "BGIPG", "BFLOWI", "BFLOWJ"]:
-                dic = summary_site(
+                summary_site(
                     dic,
                     nfol,
                     ndeck,
@@ -429,22 +462,24 @@ def handle_site_summary(dic, i, quantity):
                 )
             else:
                 for nwell in range(dic[f"{fol}/{res}_nowells_site"]):
-                    dic = wells_site(dic, i, nfol, ndeck, nwell)
+                    wells_site(dic, i, nfol, ndeck, nwell)
                 dic["axis"].set_title(
                     "SITE "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
                 )
-    return dic
 
 
 def summary_plot(dic, i, quantity):
     """
-    Function to plot the summary qunatities
+    Plot the summary quantities
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        i (int): Index of the quantity
+        dic (dict): Global dictionary\n
+        i (int): Index of the quantity\n
         quantity (str): Name of the quantity
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     units = [
@@ -463,7 +498,7 @@ def summary_plot(dic, i, quantity):
         "Mass flux in the j+ direction [t m$^{-2}$ day$^{-1}$]",
     ]
     dic["fig"], dic["axis"] = plt.subplots()
-    dic = handle_site_summary(dic, i, quantity)
+    handle_site_summary(dic, i, quantity)
     dic["axis"].set_ylabel(units[i])
     dic["axis"].set_xlabel("Time")
     handles, labels = plt.gca().get_legend_handles_labels()
@@ -481,13 +516,13 @@ def summary_plot(dic, i, quantity):
             if "site" in res:
                 continue
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
-                dic = summary_site(dic, nfol, ndeck, f"F{quantity}")
+                summary_site(dic, nfol, ndeck, f"F{quantity}")
                 dic["axis"].set_title(
                     "REGION "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
                 )
             elif quantity in ["BPR", "BGIP", "BGIPL", "BGIPG", "BFLOWI", "BFLOWJ"]:
-                dic = summary_site(
+                summary_site(
                     dic,
                     nfol,
                     ndeck,
@@ -501,7 +536,7 @@ def summary_plot(dic, i, quantity):
                 )
             else:
                 for nwell in range(dic[f"{fol}/{res}_nowells"]):
-                    dic = wells_site(dic, i, nfol, ndeck, nwell)
+                    wells_site(dic, i, nfol, ndeck, nwell)
                 dic["axis"].set_title(
                     "REGION "
                     + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
@@ -521,10 +556,13 @@ def summary_plot(dic, i, quantity):
 
 def over_time_distance(dic):
     """
-    Function to plot the distance from the closest saturation cell to the site border
+    Plot the distance from the closest saturation cell to the site border
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     dic["fig"], dic["axis"], dic["nmarker"] = [], [], 0
@@ -575,7 +613,7 @@ def over_time_distance(dic):
                         (dic[f"{fol}/site_boxf"][0] - dic[f"{fol}/site_boxi"][0])
                         / (2.0 * 1000.0)
                     )
-            dic = handle_labels_distance(dic, nfol, res, fol, j)
+            handle_labels_distance(dic, nfol, res, fol, j)
 
         dic["axis"][-1].set_title(
             "Minimum "
@@ -598,12 +636,12 @@ def over_time_distance(dic):
 
 def positions_opm(dic, fol, res, nrst):
     """
-    Function to extract the point coordinates using opm
+    Extract the point coordinates using opm
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        fol (str): Name of the output folder
-        res (str): Name of the reservoir
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        res (str): Name of the reservoir\n
         nrst (int): Indice for the schedule
 
     Returns:
@@ -711,12 +749,12 @@ def positions_opm(dic, fol, res, nrst):
 
 def positions_resdata(dic, fol, res, nrst):
     """
-    Function to extract the point coordinates using resdata
+    Extract the point coordinates using resdata
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        fol (str): Name of the output folder
-        res (str): Name of the reservoir
+        dic (dict): Global dictionary\n
+        fol (str): Name of the output folder\n
+        res (str): Name of the reservoir\n
         nrst (int): Indice for the schedule
 
     Returns:
@@ -746,17 +784,17 @@ def positions_resdata(dic, fol, res, nrst):
 
 def handle_labels_distance(dic, nfol, res, fol, j):
     """
-    Function to handle the labeling for better visualization.
+    Manage the labeling for better visualization.
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        nfol (int): Indice for the color
-        res (str): Name of the reservoir
-        fol (str): Name of the output folder
+        dic (dict): Global dictionary\n
+        nfol (int): Indice for the color\n
+        res (str): Name of the reservoir\n
+        fol (str): Name of the output folder\n
         j (int): Indice for the reservoir
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     if dic["compare"]:
@@ -793,15 +831,19 @@ def handle_labels_distance(dic, nfol, res, fol, j):
             linestyle=dic["linestyle"][-nfol - 2],
             label=label,
         )
-    return dic
 
 
 def over_time_max_difference(dic, nqua, quantity):
     """
-    Function to plot the the max difference between pressure/saturation.
+    Plot the max difference between pressure/saturation.
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        nqua (int): Index of the quantity\n
+        quantity (str): Name of the quantity
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     fig, axis = plt.subplots()
@@ -847,7 +889,7 @@ def over_time_max_difference(dic, nqua, quantity):
                             ]
                         )
                     )
-            dic = handle_labels_difference(dic, res, j, nqua, nfol)
+            handle_labels_difference(dic, res, j, nqua, nfol)
     dic["axis"][nqua].set_title(
         r"$\max|$REF-SITE|, $\max$(REF)="
         + f"{np.array(dic[f'reference_maximum_{quantity}']).max():.2E}"
@@ -865,10 +907,15 @@ def over_time_max_difference(dic, nqua, quantity):
 
 def over_time_sensor(dic, nqua, quantity):
     """
-    Function to plot the the quantities on the sensor.
+    Plot the quantities on the sensor.
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        nqua (int): Index of the quantity\n
+        quantity (str): Name of the quantity
+
+    Returns:
+        dic (dict): Modified global dictionary
 
     """
     fig, axis = plt.subplots()
@@ -936,15 +983,17 @@ def over_time_sensor(dic, nqua, quantity):
 
 def handle_labels_difference(dic, res, j, nqua, nfol):
     """
-    Function to handle the labeling for improve visualization.
+    Manage the labeling to improve the visualization.
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        res (str): Name of the reservoir
-        j (int): Indice for the reservoir
+        dic (dict): Global dictionary\n
+        res (str): Name of the reservoir\n
+        j (int): Indice for the reservoir\n
+        nqua (int): Current number of quantity\n
+        nfol (int): Current number of folder
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     quantity = dic["quantity"][nqua]
@@ -976,7 +1025,6 @@ def handle_labels_difference(dic, res, j, nqua, nfol):
             linestyle=dic["linestyle"][-j - 2],
             label=label,
         )
-    return dic
 
 
 if __name__ == "__main__":

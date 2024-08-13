@@ -51,6 +51,7 @@ The following input lines are:
     20000 8000 0                #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
     (20-20*mt.sin((2*mt.pi*(x+y)/10000))) #The function for the reservoir surface
     1 2.92                      #Add hysteresis (1/0) and salinity (value [1E-3 kg-M/kg])
+    0                           #Number of interations for back-coupling.
 
 Here we first set the dimensions of the regional model and the grid size for the discretization,
 where the origen is located in the left bottom corner. Then the site model is defined by giving the coordinates
@@ -62,6 +63,10 @@ location and continues in zig-zag until the given final location. Finally, we se
 which allows to consider different rock and saturation function properties, as well as the reservoir conditions (pressure, temperature, and rock compressibility), 
 the location of a point of interest to compare results, and the z position of the tops cells as a function of the (x,y) location. The hysteresis option activates the
 Killough hysteresis model on the gas relative permeability.
+
+.. note::
+    The functionality for back-coupling in line 22 is under development, see/run `back-coupling.txt <https://github.com/cssr-tools/expreccs/blob/main/tests/configs/back-coupling.txt>`_ 
+    if you are curious.
 
 .. figure:: figs/grids.png
 
@@ -77,7 +82,7 @@ The following entries define the rock related parameters:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 23
+    :lineno-start: 24
 
     """Set the saturation functions"""
     krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw             #Wetting rel perm saturation function [-]
@@ -89,7 +94,7 @@ In this example we consider properties for the sands number 1 to 5 as described 
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 28
+    :lineno-start: 29
 
     """Properties sat functions"""
     """swi [-], sni [-], krw [-], krn [-], pec [Pa], nkrw [-], nkrn [-], npe [-], threshold cP evaluation"""
@@ -120,7 +125,7 @@ Simillarly for the rock properties:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 49
+    :lineno-start: 50
 
     """Properties rock"""
     """Kxy [mD], Kz [mD], phi [-]"""
@@ -150,7 +155,7 @@ Now we proceed to define the location of the wells:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 61
+    :lineno-start: 62
 
     """Wells position"""
     """x, y, zi, and zf positions [m]"""
@@ -172,7 +177,7 @@ The injection rates are given in the following entries:
 
 .. code-block:: python
     :linenos:
-    :lineno-start: 70
+    :lineno-start: 71
 
     """Define the injection values""" 
     """injection time [d], time step size to write results regional [d], time step size to write results site/reference [d], maximum time step [d], fluid (0 wetting, 1 non-wetting) well 0, injection rates [kg/day] well 0, fluid ... well n, injection, ...well n, (if 'wells' for BC in site (Line 14); bottom, right, top, and left values (0(prod)/1(inj), pressure [Pa]))"""

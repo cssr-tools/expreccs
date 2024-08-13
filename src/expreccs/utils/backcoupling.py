@@ -35,10 +35,10 @@ def backcoupling(dic):
     iterativly for number of iterations given in the input
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     for iteration in range(1, dic["iterations"]):
@@ -53,15 +53,15 @@ def backcoupling(dic):
 
         if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
             if dic["reading"] == "resdata":
-                dic = aquaflux_resdata(dic)
+                aquaflux_resdata(dic, f"_{iteration}")
             else:
-                dic = aquaflux_opm(dic, f"_{iteration}")
+                aquaflux_opm(dic, f"_{iteration}")
             if dic["site_bctype"] == "flux":
-                dic = temporal_interpolation_flux(dic)
+                temporal_interpolation_flux(dic)
             else:
-                dic = temporal_interpolation_pressure(dic)
+                temporal_interpolation_pressure(dic)
         elif dic["site_bctype"] == "porvproj":
-            dic = porv_projections(dic)
+            porv_projections(dic)
 
         write_folder_iter(dic, f"site_{dic['site_bctype']}_{iteration}")
         write_files(dic, f"site_{dic['site_bctype']}_{iteration}")
@@ -73,10 +73,11 @@ def write_folder_iter(dic, fil):
     Write folders for the _{iteration} models
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary\n
+        fil (str): Name of the geological model
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        None
 
     """
     if not os.path.exists(f"{dic['exe']}/{dic['fol']}/preprocessing/{fil}"):
@@ -90,10 +91,10 @@ def init_multipliers(dic):
     Function initialize input for regional multipliers
 
     Args:
-        dic (dict): Global dictionary with required parameters
+        dic (dict): Global dictionary
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     numcells = (
@@ -113,11 +114,11 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
     and added to the regional model
 
     Args:
-        dic (dict): Global dictionary with required parameters
-        iteration:       Current iteration number
+        dic (dict): Global dictionary\n
+        iteration (int): Current iteration number
 
     Returns:
-        dic (dict): Global dictionary with new added parameters
+        dic (dict): Modified global dictionary
 
     """
     dic["folders"] = [dic["fol"]]
@@ -132,9 +133,9 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
     ]
 
     if dic["reading"] == "resdata":
-        dic = reading_resdata(dic)
+        reading_resdata(dic, False)
     else:
-        dic = reading_opm(dic, False)
+        reading_opm(dic, False)
 
     # Check for refinement
     numx = (int)(dic["site_noCells"][0])

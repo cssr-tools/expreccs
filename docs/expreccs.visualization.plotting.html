@@ -16,7 +16,7 @@
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
         <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=9a2dae69"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
@@ -91,13 +91,15 @@ Script to plot the top surface for the reference, regional, and site reservoirs.
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_labels_difference">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_labels_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_labels_difference" title="Link to this definition"></a></dt>
-<dd><p>Function to handle the labeling for improve visualization.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-res (str): Name of the reservoir
-j (int): Indice for the reservoir</p>
+<dd><p>Manage the labeling to improve the visualization.</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>res (str): Name of the reservoir</p>
+<p>j (int): Indice for the reservoir</p>
+<p>nqua (int): Current number of quantity</p>
+<p>nfol (int): Current number of folder</p>
 </dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -105,15 +107,15 @@ j (int): Indice for the reservoir</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_labels_distance">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_labels_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_labels_distance" title="Link to this definition"></a></dt>
-<dd><p>Function to handle the labeling for better visualization.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-nfol (int): Indice for the color
-res (str): Name of the reservoir
-fol (str): Name of the output folder
-j (int): Indice for the reservoir</p>
+<dd><p>Manage the labeling for better visualization.</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>nfol (int): Indice for the color</p>
+<p>res (str): Name of the reservoir</p>
+<p>fol (str): Name of the output folder</p>
+<p>j (int): Indice for the reservoir</p>
 </dd>
-<dt>Returns:</dt><dd><p>dic (dict): Global dictionary with new added parameters</p>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -121,21 +123,31 @@ j (int): Indice for the reservoir</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.handle_site_summary">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">handle_site_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.handle_site_summary" title="Link to this definition"></a></dt>
-<dd><p>Routine for the summary qunatities at the site location</p>
+<dd><p>Routine for the summary quantities at the site location</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>i (int): Index of the quantity</p>
+<p>quantity (str): Name of the quantity</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.main">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.main" title="Link to this definition"></a></dt>
-<dd><p>Postprocessing</p>
+<dd><p>Generate figures</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_distance">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_distance" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the distance from the closest saturation cell to the site border</p>
+<dd><p>Plot the distance from the closest saturation cell to the site border</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -143,9 +155,13 @@ j (int): Indice for the reservoir</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_max_difference">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_max_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_max_difference" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the the max difference between pressure/saturation.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dd><p>Plot the max difference between pressure/saturation.</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>nqua (int): Index of the quantity</p>
+<p>quantity (str): Name of the quantity</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -153,9 +169,13 @@ j (int): Indice for the reservoir</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.over_time_sensor">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">over_time_sensor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nqua</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.over_time_sensor" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the the quantities on the sensor.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dd><p>Plot the quantities on the sensor.</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>nqua (int): Index of the quantity</p>
+<p>quantity (str): Name of the quantity</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -163,9 +183,11 @@ j (int): Indice for the reservoir</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.plot_results">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">plot_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.plot_results" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the 2D maps/1D projections for the different quantities</p>
+<dd><p>Plot the 2D maps/1D projections for the different quantities</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -174,17 +196,23 @@ j (int): Indice for the reservoir</p>
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.plotting_settings">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">plotting_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.plotting_settings" title="Link to this definition"></a></dt>
 <dd><p>Set the color/line styles and labels</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.positions_opm">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">positions_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.positions_opm" title="Link to this definition"></a></dt>
-<dd><p>Function to extract the point coordinates using opm</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-fol (str): Name of the output folder
-res (str): Name of the reservoir
-nrst (int): Indice for the schedule</p>
+<dd><p>Extract the point coordinates using opm</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>fol (str): Name of the output folder</p>
+<p>res (str): Name of the reservoir</p>
+<p>nrst (int): Indice for the schedule</p>
 </dd>
 <dt>Returns:</dt><dd><p>points (list): x,y,z coordinates</p>
 </dd>
@@ -194,12 +222,12 @@ nrst (int): Indice for the schedule</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.positions_resdata">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">positions_resdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nrst</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.positions_resdata" title="Link to this definition"></a></dt>
-<dd><p>Function to extract the point coordinates using resdata</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-fol (str): Name of the output folder
-res (str): Name of the reservoir
-nrst (int): Indice for the schedule</p>
+<dd><p>Extract the point coordinates using resdata</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>fol (str): Name of the output folder</p>
+<p>res (str): Name of the reservoir</p>
+<p>nrst (int): Indice for the schedule</p>
 </dd>
 <dt>Returns:</dt><dd><p>points (list): x,y,z coordinates</p>
 </dd>
@@ -209,11 +237,13 @@ nrst (int): Indice for the schedule</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.summary_plot">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">summary_plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.summary_plot" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the summary qunatities</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters
-i (int): Index of the quantity
-quantity (str): Name of the quantity</p>
+<dd><p>Plot the summary quantities</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>i (int): Index of the quantity</p>
+<p>quantity (str): Name of the quantity</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -221,9 +251,14 @@ quantity (str): Name of the quantity</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.summary_site">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">summary_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndeck</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opmn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.summary_site" title="Link to this definition"></a></dt>
-<dd><p>Function to plot summary quantities</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dd><p>Plot summary quantities</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>nfol (int): Current number of folder</p>
+<p>ndeck (int): Current number of deck</p>
+<p>opmn (str): Summary name to plot</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
@@ -231,9 +266,15 @@ quantity (str): Name of the quantity</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.plotting.wells_site">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.plotting.</span></span><span class="sig-name descname"><span class="pre">wells_site</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nquan</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nfol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ndeck</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nwell</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.plotting.wells_site" title="Link to this definition"></a></dt>
-<dd><p>Function to plot the injection rates and BHP</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary with required parameters</p>
+<dd><p>Plot the injection rates and BHP</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>nquan (int): Current number of quantity</p>
+<p>nfol (int): Current number of folder</p>
+<p>ndeck (int): Current number of deck</p>
+<p>nwell (int): Current number of well</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
 </dl>
 </dd></dl>
