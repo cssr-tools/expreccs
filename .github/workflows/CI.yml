@@ -1,4 +1,4 @@
-name: Run the expreccs executable
+name: Run expreccs
 
 on:
  push:

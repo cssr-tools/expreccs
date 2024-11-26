@@ -2,8 +2,7 @@
 Related
 =======
 
-Below are some packages following the same configuration-file-to-postprocessing-folder approach; 
-check them out 🙂.
+Below are some tools that might be of interest; check them out 🙂.
 
 **********
 pyopmspe11

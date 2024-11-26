@@ -27,22 +27,6 @@ WAT_DEN_REF = 998.108  # kg/sm3
 KG_TO_KT = 1e-6
 KG_TO_MT = 1e-9
 
-font = {"family": "normal", "weight": "normal", "size": 16}
-matplotlib.rc("font", **font)
-plt.rcParams.update(
-    {
-        "text.usetex": True,
-        "font.family": "monospace",
-        "legend.columnspacing": 0.9,
-        "legend.handlelength": 2.2,
-        "legend.fontsize": 14,
-        "lines.linewidth": 3,
-        "axes.titlesize": 16,
-        "axes.grid": True,
-        "figure.figsize": (10, 5),
-    }
-)
-
 
 def main():
     """Generate figures"""
@@ -77,6 +61,12 @@ def main():
         default="opm",
         help="Using the 'resdata' or 'opm' python package (opm by default).",
     )
+    parser.add_argument(
+        "-l",
+        "--latex",
+        default=0,
+        help="Set to 1 to use LaTeX formatting ('0' by default).",
+    )
     cmdargs = vars(parser.parse_known_args()[0])
     dic = {"folders": [cmdargs["folder"].strip()]}
     dic["compare"] = cmdargs["compare"]  # No empty, then the create compare folder
@@ -84,6 +74,7 @@ def main():
     dic["exe"] = os.getcwd()  # Path to the folder of the configuration file
     dic["plot"] = cmdargs["plot"]  # Parts of the workflow to plot
     dic["reading"] = cmdargs["reading"]  # Res or opm python package
+    dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
     plot_results(dic)
 
 
@@ -98,6 +89,21 @@ def plot_results(dic):
         None
 
     """
+    font = {"family": "normal", "weight": "normal", "size": 16}
+    matplotlib.rc("font", **font)
+    plt.rcParams.update(
+        {
+            "text.usetex": dic["latex"],
+            "font.family": "monospace",
+            "legend.columnspacing": 0.9,
+            "legend.handlelength": 2.2,
+            "legend.fontsize": 14,
+            "lines.linewidth": 3,
+            "axes.titlesize": 16,
+            "axes.grid": True,
+            "figure.figsize": (10, 5),
+        }
+    )
     dic["rhog_ref"] = 1.86843  # CO2 reference density
     dic["sat_thr"] = 0.01  # Threshold for the plume location [-]
     if dic["compare"]:
@@ -957,17 +963,21 @@ def over_time_sensor(dic, nqua, quantity):
                     # #if quantity == "pressure":
                     # print(fol, res, quantity, f"{error:.2f}")
             else:
+                if j == 0:
+                    j_j = 0
+                else:
+                    j_j = j + 1
                 dic["axiss"][nqua].step(
                     dic[f"{fol}/{res}_dates"],
                     dic[f"{fol}/{res}_sensor_{quantity}"],
-                    color=dic["colors"][-1 - j],
+                    color=dic["colors"][-1 - j_j],
                     linestyle=dic["linestyle"][-1 - j],
                     label=dic[f"l{res}"],
                 )
             location = f"({dic[f'{fol}/{res}_sensor_location'][0]/1000.}, "
             location += f"{dic[f'{fol}/{res}_sensor_location'][1]/1000.}, "
             location += f"{dic[f'{fol}/{res}_sensor_location'][2]/1000.})"
-    dic["axiss"][nqua].set_title(f"Sensor location {location} [km] (Case 4)")
+    dic["axiss"][nqua].set_title(f"Sensor location {location} [km]")
     dic["axiss"][nqua].set_ylabel(f"{dic['units'][nqua]}")
     dic["axiss"][nqua].set_xlabel("Time")
     # if quantity != "pressure":

@@ -5,6 +5,7 @@
 import os
 import time
 import argparse
+import warnings
 from expreccs.utils.inputvalues import process_input
 from expreccs.utils.runs import run_models, plotting
 from expreccs.utils.writefile import write_folders, write_properties
@@ -21,6 +22,8 @@ def expreccs():
     """Main function for the expreccs executable"""
     start_time = time.monotonic()
     cmdargs = load_parser()
+    if int(cmdargs["warnings"]) == 0:
+        warnings.warn = lambda *args, **kwargs: None
     file = cmdargs["input"]  # Name of the input file
     dic = {"fol": cmdargs["output"]}  # Name for the output folder
     dic["pat"] = os.path.dirname(__file__)[:-5]  # Path to the expreccs folder
@@ -31,6 +34,7 @@ def expreccs():
     dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
     dic["rotate"] = int(cmdargs["transform"])  # Rotate the site model
     dic["expreccs"] = str(cmdargs["expreccs"])  # Name of regional and site models
+    dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
     dic["compare"] = cmdargs[
         "compare"
     ]  # If not empty, then the folder 'compare' is created.
@@ -129,6 +133,18 @@ def load_parser():
         "--expreccs",
         default="",
         help="Name of the regional and site folders to project pressures.",
+    )
+    parser.add_argument(
+        "-w",
+        "--warnings",
+        default=0,
+        help="Set to 1 to print warnings ('0' by default).",
+    )
+    parser.add_argument(
+        "-l",
+        "--latex",
+        default=1,
+        help="Set to 0 to not use LaTeX formatting (1' by default).",
     )
     return vars(parser.parse_known_args()[0])
 

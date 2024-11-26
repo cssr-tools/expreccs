@@ -11,6 +11,7 @@ Welcome to expreccs's documentation!
    configuration_file
    examples
    api
+   contributing
    output_folder
    related
    about

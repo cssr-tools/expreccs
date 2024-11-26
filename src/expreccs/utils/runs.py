@@ -57,6 +57,7 @@ def plotting(dic, time):
         f"-f {dic['fol']}",
         f"-m {dic['plot']}",
         f"-r {dic['reading']}",
+        f"-l {dic['latex']}",
     ]
     print(" ".join(plot_exe))
     plot_results(dic)
