@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="./">
 <head>
@@ -6,18 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Examples &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="_static/jquery.js?v=5d32c60e"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=5929fcd5"></script>
-        <script src="_static/doctools.js?v=888ff710"></script>
-        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -58,6 +56,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
 <li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
 <li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
@@ -92,7 +91,7 @@
 <section id="example-1">
 <h2>Example 1<a class="headerlink" href="#example-1" title="Link to this heading"></a></h2>
 <p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt">example1.txt</a> in the
-examples folder (the animation in the <a class="reference external" href="https://github.com/cssr-tools/expreccs">Github home page</a> was based on this configuration file).
+examples folder (the animation in the <a class="reference external" href="https://github.com/cssr-tools/expreccs">GitHub home page</a> was based on this configuration file).
 If the results are to be saved in a folder called ‘hello_world’, this is achieved by the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1.txt<span class="w"> </span>-o<span class="w"> </span>hello_world
 </pre></div>
@@ -114,29 +113,35 @@ in PNGs figures, we run the following command:</p>
 </div>
 <p>Below are some of the figures generated inside the postprocessing folder:</p>
 <figure class="align-default">
-<a class="reference internal image-reference" href="_images/reference_watfluxi+.png"><img alt="_images/reference_watfluxi%2B.png" src="_images/reference_watfluxi%2B.png" style="width: 462.40000000000003px; height: 378.40000000000003px;" /></a>
+<a class="reference internal image-reference" href="_images/hello_world_reference_watfluxi+.png"><img alt="_images/hello_world_reference_watfluxi%2B.png" src="_images/hello_world_reference_watfluxi%2B.png" style="width: 464.8px; height: 384.0px;" />
+</a>
 </figure>
 <figure class="align-default">
-<a class="reference internal image-reference" href="_images/regional_watfluxi+.png"><img alt="_images/regional_watfluxi%2B.png" src="_images/regional_watfluxi%2B.png" style="width: 462.40000000000003px; height: 378.40000000000003px;" /></a>
+<a class="reference internal image-reference" href="_images/hello_world_regional_watfluxi+.png"><img alt="_images/hello_world_regional_watfluxi%2B.png" src="_images/hello_world_regional_watfluxi%2B.png" style="width: 464.8px; height: 384.0px;" />
+</a>
 </figure>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="_images/site_flux_watfluxi+.png"><img alt="_images/site_flux_watfluxi%2B.png" src="_images/site_flux_watfluxi%2B.png" style="width: 454.40000000000003px; height: 378.40000000000003px;" /></a>
+<figure class="align-default" id="id2">
+<a class="reference internal image-reference" href="_images/hello_world_site_flux_watfluxi+.png"><img alt="_images/hello_world_site_flux_watfluxi%2B.png" src="_images/hello_world_site_flux_watfluxi%2B.png" style="width: 464.8px; height: 385.6px;" />
+</a>
 <figcaption>
-<p><span class="caption-text">Final water flux (sm3/day) in the x direction for (top) the reference, (middle) regional, and
-(bottom) site (with fluxes as BC).</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
+<p><span class="caption-text">Final water velocity (m/day) in the x direction for (top) the reference, (middle) regional, and
+(bottom) site (with fluxes as BC). The figure names in the postprocessing folder are hello_world_reference_watfluxi+.png,
+hello_world_regional_watfluxi+.png, and hello_world_site_flux_watfluxi+.png respectively.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default">
-<img alt="_images/sensor_pressure_over_time.png" src="_images/sensor_pressure_over_time.png" />
+<img alt="_images/hello_world_sensor_pressure_over_time.png" src="_images/hello_world_sensor_pressure_over_time.png" />
 </figure>
 <figure class="align-default">
-<img alt="_images/wells_pressure_site_reference.png" src="_images/wells_pressure_site_reference.png" />
+<img alt="_images/hello_world_summary_BHP_site_reference.png" src="_images/hello_world_summary_BHP_site_reference.png" />
 </figure>
-<figure class="align-default" id="id2">
-<img alt="_images/distance_from_border.png" src="_images/distance_from_border.png" />
+<figure class="align-default" id="id3">
+<img alt="_images/hello_world_distance_from_border.png" src="_images/hello_world_distance_from_border.png" />
 <figcaption>
 <p><span class="caption-text">Comparison of cell pressures on the sensor location (top), well BHPs (middle), and minimum
-distance from the CO2 plume to the site boundaries (bottom).</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+distance from the CO2 plume to the site boundaries (bottom). The figure names in the postprocessing folder are
+hello_world_sensor_pressure_over_time.png, hello_world_summary_BHP_site_reference.png, and
+hello_world_distance_from_border.png respectively</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
@@ -150,7 +155,7 @@ to generate the animation (using ResInsight) in the <a class="reference internal
 </section>
 <section id="generic-under-development">
 <h2>Generic (under development)<a class="headerlink" href="#generic-under-development" title="Link to this heading"></a></h2>
-<p>See/run the last lines (34 to 42) in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_main.py">test_main.py</a>
+<p>See/run the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_generic_deck.py">test_generic_deck.py</a>
 for an example where <strong>expreccs</strong> is used in two given models (regional and site, in this case they are created using
 the <strong>expreccs</strong> package, but in general can be any given geological models), generating a new input deck where
 the pressures are projected.</p>
@@ -166,22 +171,22 @@ By running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1_back.txt<span class="w"> </span>-o<span class="w"> </span>back-coupling<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-p<span class="w"> </span>yes
 </pre></div>
 </div>
-<p>This is one of the generated figures:</p>
+<p>This is one of the generated figures in the back-coupling/postprocessing folder (named as back-coupling_summary_BPR_regional_reference.png):</p>
 <img alt="_images/back-coupling_summary_BPR_regional_reference.png" src="_images/back-coupling_summary_BPR_regional_reference.png" />
 <p>The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of
 iteration is set to 10 in line 22 of the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt">configuration_file</a>). To visualize/compare results
 between any of the iterations, we can use our friend <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a>.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>You can install plopm by executing in the terminal: pip install git+https://github.com/cssr-tools/plopm.git.</p>
+<p>You can install <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing in the terminal: <strong>pip install git+https://github.com/cssr-tools/plopm.git</strong>.</p>
 </div>
-<p>For example, to show the difference in the spatial maps for pressure at iteration 4 and 7 at the third restart, this is achieved by executing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_7/regional_7,back-coupling/output/regional_4/regional_4<span class="w"> </span>-v<span class="w"> </span>pressure<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-c<span class="w"> </span>rainbow<span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;lambda x, _: f&#39;{x:.2f}&#39;&quot;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5
+<p>For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this is achieved by executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_7/regional_7<span class="w"> </span>-diff<span class="w"> </span>back-coupling/output/regional_4/regional_4<span class="w"> </span>-v<span class="w"> </span>pressure<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-c<span class="w"> </span>rainbow<span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5
 </pre></div>
 </div>
 <img alt="_images/pressure_plopm.png" src="_images/pressure_plopm.png" />
-<p>And to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_1/regional_1,back-coupling/output/regional_5/regional_5,back-coupling/output/regional_7/regional_7,back-coupling/output/regional_9/regional_9<span class="w"> </span>-v<span class="w"> </span>fpr<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5<span class="w"> </span>-f<span class="w"> </span><span class="m">10</span>
+<p>and to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;back-coupling/output/regional_1/regional_1 back-coupling/output/regional_5/regional_5 back-coupling/output/regional_7/regional_7 back-coupling/output/regional_9/regional_9&#39;</span><span class="w"> </span>-v<span class="w"> </span>fpr<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5<span class="w"> </span>-f<span class="w"> </span><span class="m">10</span>
 </pre></div>
 </div>
 <img alt="_images/fpr_plopm.png" src="_images/fpr_plopm.png" />

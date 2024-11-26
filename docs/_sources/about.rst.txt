@@ -12,3 +12,5 @@ This is work in progress.
 `Here <https://www.norceresearch.no/en/projects/expansion-of-resources-for-co2-storage-on-the-horda-platform-expreccs>`_ is the link to the project details.
 
 Contributions are more than welcome using the fork and pull request approach.
+
+For new features, please request them raising an issue.

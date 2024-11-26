@@ -25,7 +25,7 @@ def final_time_maps(dic):
         for res in dic[f"{fol}_decks"]:
             # es = "regional"
             manage_name(dic, res)
-            for j, quantity in enumerate(dic["quantity"][:2]):
+            for j, quantity in enumerate(dic["quantity"]):
                 # j = 2
                 # quantity = "FLOWATI+"
                 dic[f"{fol}/{res}_{quantity}_plot"] = np.zeros(

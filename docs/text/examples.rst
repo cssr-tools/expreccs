@@ -6,12 +6,12 @@ Example 1
 ---------
 
 We consider the configuration file `example1.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt>`_ in the 
-examples folder (the animation in the `Github home page <https://github.com/cssr-tools/expreccs>`_ was based on this configuration file). 
+examples folder (the animation in the `GitHub home page <https://github.com/cssr-tools/expreccs>`_ was based on this configuration file). 
 If the results are to be saved in a folder called 'hello_world', this is achieved by the following command: 
 
 .. code-block:: bash
 
-    expreccs -i example1.txt -o hello_world 
+    expreccs -i example1.txt -o hello_world
 
 Then we can change in line 14 the BC projections from the regional simulations from
 'flux' to 'pres', and run the following command to only simulate the site model:
@@ -36,22 +36,25 @@ in PNGs figures, we run the following command:
 
 Below are some of the figures generated inside the postprocessing folder:
 
-.. figure:: figs/reference_watfluxi+.png
+.. figure:: figs/hello_world_reference_watfluxi+.png
     :scale: 80%
-.. figure:: figs/regional_watfluxi+.png
+.. figure:: figs/hello_world_regional_watfluxi+.png
     :scale: 80%
-.. figure:: figs/site_flux_watfluxi+.png
+.. figure:: figs/hello_world_site_flux_watfluxi+.png
     :scale: 80%
 
-    Final water flux (sm3/day) in the x direction for (top) the reference, (middle) regional, and 
-    (bottom) site (with fluxes as BC). 
+    Final water velocity (m/day) in the x direction for (top) the reference, (middle) regional, and 
+    (bottom) site (with fluxes as BC). The figure names in the postprocessing folder are hello_world_reference_watfluxi+.png,
+    hello_world_regional_watfluxi+.png, and hello_world_site_flux_watfluxi+.png respectively. 
 
-.. figure:: figs/sensor_pressure_over_time.png
-.. figure:: figs/wells_pressure_site_reference.png
-.. figure:: figs/distance_from_border.png
+.. figure:: figs/hello_world_sensor_pressure_over_time.png
+.. figure:: figs/hello_world_summary_BHP_site_reference.png
+.. figure:: figs/hello_world_distance_from_border.png
     
     Comparison of cell pressures on the sensor location (top), well BHPs (middle), and minimum
-    distance from the CO2 plume to the site boundaries (bottom). 
+    distance from the CO2 plume to the site boundaries (bottom). The figure names in the postprocessing folder are 
+    hello_world_sensor_pressure_over_time.png, hello_world_summary_BHP_site_reference.png, and 
+    hello_world_distance_from_border.png respectively
 
 
 Example 2
@@ -67,7 +70,7 @@ to generate the animation (using ResInsight) in the :doc:`introduction section <
 Generic (under development)
 ---------------------------
 
-See/run the last lines (34 to 42) in the `test_main.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_main.py>`_ 
+See/run the `test_generic_deck.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_generic_deck.py>`_ 
 for an example where **expreccs** is used in two given models (regional and site, in this case they are created using
 the **expreccs** package, but in general can be any given geological models), generating a new input deck where
 the pressures are projected.
@@ -89,7 +92,7 @@ By running:
 
     expreccs -i example1_back.txt -o back-coupling -m all -p yes
 
-This is one of the generated figures:
+This is one of the generated figures in the back-coupling/postprocessing folder (named as back-coupling_summary_BPR_regional_reference.png):
 
 .. image:: ./figs/back-coupling_summary_BPR_regional_reference.png
 
@@ -98,20 +101,20 @@ iteration is set to 10 in line 22 of the `configuration_file <https://github.com
 between any of the iterations, we can use our friend `plopm <https://github.com/cssr-tools/plopm>`_. 
 
 .. tip::
-    You can install plopm by executing in the terminal: pip install git+https://github.com/cssr-tools/plopm.git.
+    You can install `plopm <https://github.com/cssr-tools/plopm>`_ by executing in the terminal: **pip install git+https://github.com/cssr-tools/plopm.git**.
 
-For example, to show the difference in the spatial maps for pressure at iteration 4 and 7 at the third restart, this is achieved by executing:
+For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this is achieved by executing:
 
 .. code-block:: bash
 
-    plopm -i back-coupling/output/regional_7/regional_7,back-coupling/output/regional_4/regional_4 -v pressure -r 3 -s ,,1 -c rainbow -n "lambda x, _: f'{x:.2f}'" -d 5,5
+    plopm -i back-coupling/output/regional_7/regional_7 -diff back-coupling/output/regional_4/regional_4 -v pressure -r 3 -s ,,1 -c rainbow -cformat .2f -d 5,5
 
 .. image:: ./figs/pressure_plopm.png
 
-And to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:
+and to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:
 
 .. code-block:: bash
 
-    plopm -i back-coupling/output/regional_1/regional_1,back-coupling/output/regional_5/regional_5,back-coupling/output/regional_7/regional_7,back-coupling/output/regional_9/regional_9 -v fpr -d 5,5 -f 10
+    plopm -i 'back-coupling/output/regional_1/regional_1 back-coupling/output/regional_5/regional_5 back-coupling/output/regional_7/regional_7 back-coupling/output/regional_9/regional_9' -v fpr -d 5,5 -f 10
 
 .. image:: ./figs/fpr_plopm.png
