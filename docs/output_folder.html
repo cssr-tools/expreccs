@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Output folder &mdash; expreccs  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -51,7 +51,11 @@
 <li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Output folder</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Output folder</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#via-configuration-files">Via configuration files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#via-opm-flow-decks">Via OPM Flow decks</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
 <li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
 </ul>
@@ -82,6 +86,8 @@
              
   <section id="output-folder">
 <h1>Output folder<a class="headerlink" href="#output-folder" title="Link to this heading"></a></h1>
+<section id="via-configuration-files">
+<h2>Via configuration files<a class="headerlink" href="#via-configuration-files" title="Link to this heading"></a></h2>
 <p>The following screenshot shows the generated files in the selected output folder after
 executing <strong>expreccs</strong>.</p>
 <figure class="align-default" id="id1">
@@ -98,6 +104,24 @@ the preprocessing folder and  run directly the simulations calling the Flow solv
 In addition, some plots comparing the site simulations to the reference
 and the site are generated in the postprocessing folder.</p>
 </section>
+<section id="via-opm-flow-decks">
+<h2>Via OPM Flow decks<a class="headerlink" href="#via-opm-flow-decks" title="Link to this heading"></a></h2>
+<p>The following screenshot shows the generated files in the selected output folder after
+executing <strong>expreccs</strong>, this corresponds to the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_generic_deck.py">test_generic_deck.py</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-o<span class="w"> </span>expreccs<span class="w"> </span>-e<span class="w"> </span>regional,site_closed
+</pre></div>
+</div>
+<figure class="align-default" id="id2">
+<img alt="_images/generic.png" src="_images/generic.png" />
+<figcaption>
+<p><span class="caption-text">Generated files after executing <strong>expreccs</strong>.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+<p>The dynamic boundary conditions are saved in the expreccs/bc folder, and the definition of the boundary connections in
+expreccs/BCCON.INC. In addition, OPERNUM is used to label de boundary cells in the site, and also to label the overlapping cells and
+cells to use for the pressure interpolator in the regional model (regional/OPERNUM_EXPRECCS.INC).</p>
+</section>
+</section>
 
 
            </div>
@@ -110,7 +134,7 @@ and the site are generated in the postprocessing folder.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, NORCE Norwegian Research Centre AS.</p>
+    <p>&#169; Copyright 2025, NORCE Norwegian Research Centre AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

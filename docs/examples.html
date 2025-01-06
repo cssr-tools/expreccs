@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Examples &mdash; expreccs  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -49,10 +49,13 @@
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration file</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#example-1">Example 1</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#example-2">Example 2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generic-under-development">Generic (under development)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#back-coupling-under-development">Back-coupling (under development)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#via-configuration-files">Via configuration files</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hello-world">Hello world</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#layered-model">Layered model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#back-coupling-under-development">Back-coupling (under development)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#via-opm-flow-decks">Via OPM Flow decks</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
@@ -88,8 +91,10 @@
              
   <section id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h1>
-<section id="example-1">
-<h2>Example 1<a class="headerlink" href="#example-1" title="Link to this heading"></a></h2>
+<section id="via-configuration-files">
+<h2>Via configuration files<a class="headerlink" href="#via-configuration-files" title="Link to this heading"></a></h2>
+<section id="hello-world">
+<h3>Hello world<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h3>
 <p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt">example1.txt</a> in the
 examples folder (the animation in the <a class="reference external" href="https://github.com/cssr-tools/expreccs">GitHub home page</a> was based on this configuration file).
 If the results are to be saved in a folder called ‘hello_world’, this is achieved by the following command:</p>
@@ -120,13 +125,13 @@ in PNGs figures, we run the following command:</p>
 <a class="reference internal image-reference" href="_images/hello_world_regional_watfluxi+.png"><img alt="_images/hello_world_regional_watfluxi%2B.png" src="_images/hello_world_regional_watfluxi%2B.png" style="width: 464.8px; height: 384.0px;" />
 </a>
 </figure>
-<figure class="align-default" id="id2">
+<figure class="align-default" id="id3">
 <a class="reference internal image-reference" href="_images/hello_world_site_flux_watfluxi+.png"><img alt="_images/hello_world_site_flux_watfluxi%2B.png" src="_images/hello_world_site_flux_watfluxi%2B.png" style="width: 464.8px; height: 385.6px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Final water velocity (m/day) in the x direction for (top) the reference, (middle) regional, and
 (bottom) site (with fluxes as BC). The figure names in the postprocessing folder are hello_world_reference_watfluxi+.png,
-hello_world_regional_watfluxi+.png, and hello_world_site_flux_watfluxi+.png respectively.</span><a class="headerlink" href="#id2" title="Link to this image"></a></p>
+hello_world_regional_watfluxi+.png, and hello_world_site_flux_watfluxi+.png respectively.</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <figure class="align-default">
@@ -135,36 +140,33 @@ hello_world_regional_watfluxi+.png, and hello_world_site_flux_watfluxi+.png resp
 <figure class="align-default">
 <img alt="_images/hello_world_summary_BHP_site_reference.png" src="_images/hello_world_summary_BHP_site_reference.png" />
 </figure>
-<figure class="align-default" id="id3">
+<figure class="align-default" id="id4">
 <img alt="_images/hello_world_distance_from_border.png" src="_images/hello_world_distance_from_border.png" />
 <figcaption>
 <p><span class="caption-text">Comparison of cell pressures on the sensor location (top), well BHPs (middle), and minimum
 distance from the CO2 plume to the site boundaries (bottom). The figure names in the postprocessing folder are
 hello_world_sensor_pressure_over_time.png, hello_world_summary_BHP_site_reference.png, and
-hello_world_distance_from_border.png respectively</span><a class="headerlink" href="#id3" title="Link to this image"></a></p>
+hello_world_distance_from_border.png respectively</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 </section>
-<section id="example-2">
-<h2>Example 2<a class="headerlink" href="#example-2" title="Link to this heading"></a></h2>
+<section id="layered-model">
+<h3>Layered model<a class="headerlink" href="#layered-model" title="Link to this heading"></a></h3>
 <p>The configuration file example2.txt set a more complex geological model with more grid cells (1 417 500). This was used
 to generate the animation (using ResInsight) in the <a class="reference internal" href="introduction.html"><span class="doc">introduction section</span></a> by running</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example2.txt<span class="w"> </span>-m<span class="w"> </span>reference
 </pre></div>
 </div>
-</section>
-<section id="generic-under-development">
-<h2>Generic (under development)<a class="headerlink" href="#generic-under-development" title="Link to this heading"></a></h2>
-<p>See/run the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_generic_deck.py">test_generic_deck.py</a>
-for an example where <strong>expreccs</strong> is used in two given models (regional and site, in this case they are created using
-the <strong>expreccs</strong> package, but in general can be any given geological models), generating a new input deck where
-the pressures are projected.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-e<span class="w"> </span>name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
-</pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This example shows how <strong>expreccs</strong> can be used to generate the requiered input files to run OPM Flow for heterogenous
+layered models at different grid sizes, which can be used for further studies such as optimization. Regarding the configuration
+files in <a class="reference external" href="https://github.com/cssr-tools/expreccs/tree/main/examples/newcases">examples/newcases</a>, these are explained in
+<a class="reference external" href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5005237">this manuscript</a>.</p>
 </div>
 </section>
 <section id="back-coupling-under-development">
-<span id="back-coupling"></span><h2>Back-coupling (under development)<a class="headerlink" href="#back-coupling-under-development" title="Link to this heading"></a></h2>
+<span id="back-coupling"></span><h3>Back-coupling (under development)<a class="headerlink" href="#back-coupling-under-development" title="Link to this heading"></a></h3>
 <p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt">example1_back.txt</a> in the examples folder.
 The plan is to update properties (e.g., transmissibility multipliers) in the regional model from features (e.g., faults) in the site model (i.e., not included in the regional model).
 By running:</p>
@@ -174,13 +176,9 @@ By running:</p>
 <p>This is one of the generated figures in the back-coupling/postprocessing folder (named as back-coupling_summary_BPR_regional_reference.png):</p>
 <img alt="_images/back-coupling_summary_BPR_regional_reference.png" src="_images/back-coupling_summary_BPR_regional_reference.png" />
 <p>The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of
-iteration is set to 10 in line 22 of the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt">configuration_file</a>). To visualize/compare results
-between any of the iterations, we can use our friend <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a>.</p>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>You can install <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing in the terminal: <strong>pip install git+https://github.com/cssr-tools/plopm.git</strong>.</p>
-</div>
-<p>For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this is achieved by executing:</p>
+iteration is set to 10 in line 22 of the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt">configuration_file</a>).</p>
+<p>For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this can be achieved using
+<a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_7/regional_7<span class="w"> </span>-diff<span class="w"> </span>back-coupling/output/regional_4/regional_4<span class="w"> </span>-v<span class="w"> </span>pressure<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-c<span class="w"> </span>rainbow<span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5
 </pre></div>
 </div>
@@ -190,6 +188,37 @@ between any of the iterations, we can use our friend <a class="reference externa
 </pre></div>
 </div>
 <img alt="_images/fpr_plopm.png" src="_images/fpr_plopm.png" />
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can install <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing in the terminal: <strong>pip install git+https://github.com/cssr-tools/plopm.git</strong>.</p>
+</div>
+</section>
+</section>
+<section id="via-opm-flow-decks">
+<span id="generic"></span><h2>Via OPM Flow decks<a class="headerlink" href="#via-opm-flow-decks" title="Link to this heading"></a></h2>
+<p>See/run the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_generic_deck.py">test_generic_deck.py</a>
+for an example where <strong>expreccs</strong> is used in two given models (regional and site, in this case they are created using
+the <strong>expreccs</strong> package, but in general can be any given geological models), generating a new input deck where
+the pressures are projected.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-e<span class="w"> </span>name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
+</pre></div>
+</div>
+<p>In the current implementation, the name of the decks need to match the name of the given folder (e.g., regional/REGIONAL.DATA).
+For example, to run the test, this can be achieved by executing:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--cov<span class="o">=</span>expreccs<span class="w"> </span>--cov-report<span class="w"> </span>term-missing<span class="w"> </span>tests/test_generic_deck.py
+</pre></div>
+</div>
+<p>To visualize/compare results between the model with static (input) and dynamic (generated by expreccs) boundary conditions,
+we can use our friend <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;tests/configs/rotate/output/site_closed/SITE_CLOSED tests/configs/rotate/output/expreccs/EXPRECCS tests/configs/rotate/output/reference/REFERENCE&#39;</span><span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1 ,,1 ,,1&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.2,0.95,0.6,0.02<span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,8<span class="w"> </span>-cformat<span class="w"> </span>.1f<span class="w"> </span>-f<span class="w"> </span><span class="m">20</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,15000]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,15000]&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span>
+</pre></div>
+</div>
+<figure class="align-default" id="id5">
+<img alt="_images/reference_sgas.png" src="_images/reference_sgas.png" />
+<figcaption>
+<p><span class="caption-text">Comparison of the gas saturation on the top cells at the end of the simulations.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 </section>
 </section>
 
@@ -204,7 +233,7 @@ between any of the iterations, we can use our friend <a class="reference externa
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, NORCE Norwegian Research Centre AS.</p>
+    <p>&#169; Copyright 2025, NORCE Norwegian Research Centre AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

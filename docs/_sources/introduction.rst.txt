@@ -41,6 +41,7 @@ where
 -u  Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by default).
 -t  Grades to rotate the site geological model ('0' by default).
 -e  Name of the regional and site folders to project pressures ('' by default).
+-b  Set the number of entries to skip the bc projections on the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side ('0,0,0,0' by default).
 -w  Set to 1 to print warnings ('0' by default).
 -l  Set to 0 to not use LaTeX formatting ('1' by default).
 
