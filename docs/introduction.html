@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Introduction &mdash; expreccs  documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
@@ -137,6 +137,9 @@ of the input decks to include the dynamic boundary updates.</p>
 <dt><kbd><span class="option">-e</span></kbd></dt>
 <dd><p>Name of the regional and site folders to project pressures (’’ by default).</p>
 </dd>
+<dt><kbd><span class="option">-b</span></kbd></dt>
+<dd><p>Set the number of entries to skip the bc projections on the site, where ‘j=0,i=nx,j=ny,i=0’, e.g., ‘0,2,0,0’ would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side (‘0,0,0,0’ by default).</p>
+</dd>
 <dt><kbd><span class="option">-w</span></kbd></dt>
 <dd><p>Set to 1 to print warnings (‘0’ by default).</p>
 </dd>
@@ -161,7 +164,7 @@ operations (see the <a class="reference internal" href="configuration_file.html"
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2023, NORCE Norwegian Research Centre AS.</p>
+    <p>&#169; Copyright 2025, NORCE Norwegian Research Centre AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -1,6 +1,13 @@
 ==================
 Configuration file
 ==================
+.. Note::
+    The configuration files allow to set the integrated studies (generation of regional and site models,
+    in addition to set the different boundary projection approaches). To use **expreccs** in any given two OPM Flow geological models
+    to dynamically project pressures, this can be achieve without a configuration file, but setting
+    the parameters via command lines (see the :ref:`overview` or run `pycopm -h` for the definition 
+    of the argument options, as well as the example in :ref:`generic`).
+
 We consider the configuration file (`input.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/input.txt>`_) available in the 
 examples folder. The parameters are chosen to show the functionality and capabilities of the **expreccs** framework regarding generation
 of corner-point grids (cpg), heterogeinities (e.g., different rock properties, faults), adding wells, and defining schedules for the
@@ -13,7 +20,7 @@ The first input parameter in the configuration file is:
     :linenos:
 
     """Set the full path to the flow executable and flags"""
-    flow --enable-opm-rst-file=true  --linear-solver=cprw --enable-tuning=true  
+    flow --enable-opm-rst-file=true --enable-tuning=true  
 
 If **flow** is not in your path, then write the full path to the executable
 (e.g., /Users/dmar/expreccs/build/opm-simulators/bin/flow). We also add in the same 

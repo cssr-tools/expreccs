@@ -379,7 +379,7 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
                 )
                 dic[f"{fol}/{res}_smsp_dates"] = [
                     dic[f"{fol}/{res}_smsp"].start_date
-                    + datetime.timedelta(seconds=seconds)
+                    + datetime.timedelta(seconds=float(seconds))
                     for seconds in dic[f"{fol}/{res}_smsp_dates"]
                 ]
                 dic[f"{fol}/{res}_smsp_rst"] = [

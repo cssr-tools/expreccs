@@ -46,7 +46,7 @@ See the [_installation_](https://cssr-tools.github.io/exprecss/installation.html
 ## Running expreccs
 You can run _expreccs_ as a single command line:
 ```
-expreccs -i configuration_file.txt
+expreccs -i name_of_input_file
 ```
 Run `expreccs --help` to see all possible command line argument options. Inside the `configuration_file.txt` file you provide the path to the
 flow executable and simulation parameters. See the .txt files in the [_examples_](https://github.com/cssr-tools/expreccs/tree/main/examples) and [_tests_](https://github.com/cssr-tools/expreccs/tree/main/tests/configs) folders.
@@ -57,13 +57,13 @@ See the [_examples_](https://cssr-tools.github.io/expreccs/examples.html) in the
 ## Citing
 If you would like to cite this repository:
 
-* Landa-Marbán, D. 2024. expreccs: A Python framework using OPM Flow to simulate regional and site reservoirs for CO2 storage. V2024.04. https://doi.org/10.5281/zenodo.12100600.
+* Landa-Marbán, D. 2024. expreccs: A Python framework using OPM Flow to simulate regional and site reservoirs for CO2 storage. https://doi.org/10.5281/zenodo.12100600.
 
 ## Publications
 The following is a list of manuscripts in which _expreccs_ is used:
 
 1. Tveit, S., Gasda, S.E., Landa-Marbán, D., Sandve, T.H., submitted. A hierarchical approach for modeling regional pressure interference in multi-site CO2 operations. http://dx.doi.org/10.2139/ssrn.5005237.
-1. Gasda, S.E., et al., submitted. Quantifying the impact of regional-scale pressure interference on commercial CO2 storage targets for multiple licenses. 
+1. Gasda, S.E., et al., 2024. Quantifying the impact of regional-scale pressure interference on commercial CO2 storage targets for multiple licenses. http://dx.doi.org/10.2139/ssrn.5053633.
 
 ## About expreccs
 The _expreccs_ package is funded by Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 336294].

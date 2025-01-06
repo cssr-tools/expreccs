@@ -35,6 +35,8 @@ def expreccs():
     dic["rotate"] = int(cmdargs["transform"])  # Rotate the site model
     dic["expreccs"] = str(cmdargs["expreccs"])  # Name of regional and site models
     dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
+    dic["boundaries"] = (cmdargs["boundaries"].strip()).split(",")  # Boundaries
+    dic["boundaries"] = [int(val) for val in dic["boundaries"]]
     dic["compare"] = cmdargs[
         "compare"
     ]  # If not empty, then the folder 'compare' is created.
@@ -133,6 +135,15 @@ def load_parser():
         "--expreccs",
         default="",
         help="Name of the regional and site folders to project pressures.",
+    )
+    parser.add_argument(
+        "-b",
+        "--boundaries",
+        default="0,0,0,0",
+        help="Set the number of entries to skip the bc projections on "
+        "the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells "
+        "with i=nx and i=nx-1; this becomes handly for models where all cells in a "
+        "given site are inactive along a side ('0,0,0,0' by default).",
     )
     parser.add_argument(
         "-w",

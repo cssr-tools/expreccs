@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2024 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=C0302,R0914,R1702,R0912
 
 """
 Utiliy script for creating a deck with projected pressures from given
@@ -50,13 +51,15 @@ def create_deck(dic):
     dic["sxs"], dic["sxe"], dic["sxn"], dic["sxw"] = [], [], [], []
     dic["sys"], dic["sye"], dic["syn"], dic["syw"] = [], [], [], []
     dic["szs"], dic["sze"], dic["szn"], dic["szw"] = [], [], [], []
-    dic["rbound"], dic["rcoord"], dic["sdel"], dic["snum"], dic["fipn"] = (
+    dic["rbound"], dic["rcoord"], dic["sdel"], dic["snum"], dic["fipn"], dic["oprn"] = (
+        [],
         [],
         [],
         [],
         [],
         [],
     )
+    dic["sopn"] = ["1"] * (dic["sgrid"].nx * dic["sgrid"].ny * dic["sgrid"].nz)
     find_ij_orientation(dic)
     extract_site_borders(dic)
     find_regional_cells(dic)
@@ -109,28 +112,36 @@ def handle_grid_coord(dic):
                 z_b = dic["sgrid"].get_xyz(
                     ijk=(ijk[0], ijk[1], ijk[2] + dic["sgrid"].nz - 1)
                 )[2]
-                if c_z[-1] >= z_t and c_z[-1] <= z_b:
-                    dic["fipn"].append("1")
+                d_z = 0.5 * dic["sgrid"].cell_dz(ijk=ijk)
+                dic["fipn"].append(f"{cell.k+2}")
+                if (
+                    c_z[-1] + 0.5 * cell.dz >= z_t - d_z
+                    and c_z[-1] - 0.5 * cell.dz <= z_b + d_z
+                ):
+                    dic["oprn"].append("1")
                 else:
-                    dic["fipn"].append("4")
+                    dic["oprn"].append("7")
             else:
-                dic["fipn"].append("4")
+                dic["oprn"].append("8")
+                dic["fipn"].append("1")
         else:
-            dic["fipn"].append("4")
+            dic["oprn"].append("8")
+            dic["fipn"].append("1")
     dic["c_x"] = np.array(c_x)
     dic["c_y"] = np.array(c_y)
     dic["c_z"] = np.array(c_z)
     dic["rnxy"] = dic["rgrid"].nx * dic["rgrid"].ny
 
 
-def check_regional_neighbours(dic, gind, p):
+def check_regional_neighbours(dic, gind, p, n):
     """
     Add to the interpolator neighbouring regional cells
 
     Args:
         dic (dict): Global dictionary\n
         gind (int): Global cell index\n
-        p (str): Cardinal direction
+        p (str): Cardinal direction\n
+        n (int): Side number
 
     Returns:
         dic (dict): Modified global dictionary
@@ -155,9 +166,9 @@ def check_regional_neighbours(dic, gind, p):
         dic[f"ri{p}"].append(
             dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
         )
-        dic["fipn"][
+        dic["oprn"][
             gind - dic["rgrid"].nx
-        ] = f"{2 if int(dic['fipn'][gind-dic['rgrid'].nx])==2 else 3}"
+        ] = f"{2+n if int(dic['oprn'][gind-dic['rgrid'].nx])==2+n else 6}"
     if dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx) not in dic[
         f"ri{p}"
     ] and dic["rgrid"].active(global_index=gind + dic["rgrid"].nx):
@@ -173,9 +184,9 @@ def check_regional_neighbours(dic, gind, p):
         dic[f"ri{p}"].append(
             dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
         )
-        dic["fipn"][
+        dic["oprn"][
             gind + dic["rgrid"].nx
-        ] = f"{2 if int(dic['fipn'][gind+dic['rgrid'].nx])==2 else 3}"
+        ] = f"{2+n if int(dic['oprn'][gind+dic['rgrid'].nx])==2+n else 6}"
     if dic["rgrid"].get_active_index(global_index=gind - 1) not in dic[
         f"ri{p}"
     ] and dic["rgrid"].active(global_index=gind - 1):
@@ -183,7 +194,7 @@ def check_regional_neighbours(dic, gind, p):
         dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[1])
         dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind - 1)[2])
         dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind - 1))
-        dic["fipn"][gind - 1] = f"{2 if int(dic['fipn'][gind-1])==2 else 3}"
+        dic["oprn"][gind - 1] = f"{2+n if int(dic['oprn'][gind-1])==2+n else 6}"
     if dic["rgrid"].get_active_index(global_index=gind + 1) not in dic[
         f"ri{p}"
     ] and dic["rgrid"].active(global_index=gind + 1):
@@ -191,7 +202,7 @@ def check_regional_neighbours(dic, gind, p):
         dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[1])
         dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind + 1)[2])
         dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind + 1))
-        dic["fipn"][gind + 1] = f"{2 if int(dic['fipn'][gind+1])==2 else 3}"
+        dic["oprn"][gind + 1] = f"{2+n if int(dic['oprn'][gind+1])==2+n else 6}"
     if gind - dic["rnxy"] >= 0:
         if dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"]) not in dic[
             f"ri{p}"
@@ -208,9 +219,9 @@ def check_regional_neighbours(dic, gind, p):
             dic[f"ri{p}"].append(
                 dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])
             )
-            dic["fipn"][
+            dic["oprn"][
                 gind - dic["rnxy"]
-            ] = f"{2 if int(dic['fipn'][gind- dic['rnxy']])==2 else 3}"
+            ] = f"{2+n if int(dic['oprn'][gind- dic['rnxy']])==2+n else 6}"
     if gind + dic["rnxy"] < dic["rnxy"] * dic["rgrid"].nz:
         if dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"]) not in dic[
             f"ri{p}"
@@ -227,9 +238,9 @@ def check_regional_neighbours(dic, gind, p):
             dic[f"ri{p}"].append(
                 dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])
             )
-            dic["fipn"][
+            dic["oprn"][
                 gind + dic["rnxy"]
-            ] = f"{2 if int(dic['fipn'][gind+ dic['rnxy']])==2 else 3}"
+            ] = f"{2+n if int(dic['oprn'][gind+ dic['rnxy']])==2+n else 6}"
 
 
 def check_intersection(dic, ind, gind, i, n):
@@ -244,22 +255,9 @@ def check_intersection(dic, ind, gind, i, n):
         n (int): Position for the cardinal direction
 
     Returns:
-        dic (dict): Modified global dictionary
+        lines (list): Horizontal and vertical lines in the regional model
 
     """
-    shift = [dic["rgrid"].nx, 1, dic["rgrid"].nx, 1][n]
-    x_l, y_l, x_p, y_p = 0, 0, 0, 0
-    l_p = [0, 0]
-    x_m = dic["rgrid"].get_xyz(active_index=ind)[0]
-    y_m = dic["rgrid"].get_xyz(active_index=ind)[1]
-    if dic["rgrid"].active(global_index=gind - shift):
-        x_l = dic["rgrid"].get_xyz(global_index=gind - shift)[0]
-        y_l = dic["rgrid"].get_xyz(global_index=gind - shift)[1]
-        l_p[0] = 1
-    if dic["rgrid"].active(global_index=gind + shift):
-        x_p = dic["rgrid"].get_xyz(global_index=gind + shift)[0]
-        y_p = dic["rgrid"].get_xyz(global_index=gind + shift)[1]
-        l_p[1] = 1
     if i > [dic["sgrid"].nx, dic["sgrid"].ny, dic["sgrid"].nx, dic["sgrid"].nx][n]:
         lift = -1e-4
     else:
@@ -267,15 +265,32 @@ def check_intersection(dic, ind, gind, i, n):
     dic[f"rkg{['n', 'w', 's', 'e'][n]}"].append(
         (dic["rgrid"].get_xyz(active_index=ind)[2] + lift, ind)
     )
-    if sum(l_p) == 2:
-        xy = [x_l, y_l, x_p, y_p]
-    elif l_p[1] == 1:
-        xy = [x_m, y_m, x_p, y_p]
-    elif l_p[0] == 1:
-        xy = [x_l, y_l, x_m, y_m]
-    else:
-        return 0
-    return LineString([(xy[0], xy[1]), (xy[2], xy[3])])
+    lines = []
+    for shift in [dic["rgrid"].nx, 1]:
+        x_l, y_l, x_p, y_p = 0, 0, 0, 0
+        l_p = [0, 0]
+        x_m = dic["rgrid"].get_xyz(active_index=ind)[0]
+        y_m = dic["rgrid"].get_xyz(active_index=ind)[1]
+        if dic["rgrid"].active(global_index=gind - shift):
+            x_l = dic["rgrid"].get_xyz(global_index=gind - shift)[0]
+            y_l = dic["rgrid"].get_xyz(global_index=gind - shift)[1]
+            l_p[0] = 1
+        if dic["rgrid"].active(global_index=gind + shift):
+            x_p = dic["rgrid"].get_xyz(global_index=gind + shift)[0]
+            y_p = dic["rgrid"].get_xyz(global_index=gind + shift)[1]
+            l_p[1] = 1
+        if sum(l_p) == 2:
+            xy = [x_l, y_l, x_p, y_p]
+            lines.append(LineString([(xy[0], xy[1]), (xy[2], xy[3])]))
+        elif l_p[1] == 1:
+            xy = [x_m, y_m, x_p, y_p]
+            lines.append(LineString([(xy[0], xy[1]), (xy[2], xy[3])]))
+        elif l_p[0] == 1:
+            xy = [x_l, y_l, x_m, y_m]
+            lines.append(LineString([(xy[0], xy[1]), (xy[2], xy[3])]))
+        else:
+            lines.append(0)
+    return lines
 
 
 def find_regional_cells(dic):
@@ -310,8 +325,8 @@ def find_regional_cells(dic):
                 (abs(dic["c_x"] - x_c) + abs(dic["c_y"] - y_c) + abs(dic["c_z"] - z_c))
             ).argmin()
             gind = dic["rgrid"].global_index(ind)
-            line = check_intersection(dic, ind, gind, i, n)
-            if line == 0:
+            lines = check_intersection(dic, ind, gind, i, n)
+            if lines[0] == 0 and lines[1] == 0:
                 dic["sdel"].append(count)
                 dic[f"sd{p}"].append(i)
                 continue
@@ -321,14 +336,18 @@ def find_regional_cells(dic):
                     (dic["sbox"][n + 1][0], dic["sbox"][n + 1][1]),
                 ]
             )
-            if line.intersects(border):
+            if lines[0] == 0:
+                lines[0] = lines[1]
+            elif lines[1] == 0:
+                lines[1] = lines[0]
+            if lines[0].intersects(border) or lines[1].intersects(border):
                 dic["snum"].append(dic["sai"][count])
                 dic[f"rx{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[0])
                 dic[f"ry{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[1])
                 dic[f"rz{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[2])
                 dic[f"ri{p}"].append(ind)
-                dic["fipn"][gind] = "2"
-                check_regional_neighbours(dic, gind, p)
+                dic["oprn"][gind] = f"{n+2}"
+                check_regional_neighbours(dic, gind, p, n)
             else:
                 dic["sdel"].append(count)
                 dic[f"sd{p}"].append(i)
@@ -346,12 +365,22 @@ def find_regional_cells(dic):
     git = (
         "-- This file was generated by expreccs https://github.com/cssr-tools/expreccs"
     )
+    dic["oprn"].insert(0, "OPERNUM")
+    dic["oprn"].insert(0, git)
+    dic["oprn"].insert(0, "--Copyright (C) 2024 NORCE")
+    dic["oprn"].append("/")
+    with open(
+        f"{dic['exe']}/{dic['reg']}/OPERNUM_EXPRECCS.INC",
+        "w",
+        encoding="utf8",
+    ) as file:
+        file.write("\n".join(dic["oprn"]))
     dic["fipn"].insert(0, "FIPNUM")
     dic["fipn"].insert(0, git)
     dic["fipn"].insert(0, "--Copyright (C) 2024 NORCE")
     dic["fipn"].append("/")
     with open(
-        f"{dic['exe']}/{dic['reg']}/FIPNUM.INC",
+        f"{dic['exe']}/{dic['reg']}/FIPNUM_EXPRECCS.INC",
         "w",
         encoding="utf8",
     ) as file:
@@ -387,8 +416,10 @@ def project_pressures(dic, i):
         dic (dict): Modified global dictionary
 
     """
-    count, c_c = 0, 0
-    for p in ["n", "w", "s", "e"]:
+    count, c_c = 0, 1
+    for _, p in enumerate(["n", "w", "s", "e"]):
+        if len(dic[f"ri{p}"]) == 0:
+            continue
         z_p = np.array(dic["rrst"].iget_kw("PRESSURE")[i])[dic[f"ri{p}"]]
         w_d = np.array(dic["rrst"].iget_kw("WAT_DEN")[i])
         if dic["rgrid"].nz > 1:
@@ -408,20 +439,40 @@ def project_pressures(dic, i):
                             * 9.81
                             / 1e5
                         )
-                    dic[f"rp{p}"][
-                        i
-                    ] = f"{dic['sai'][count]+1} DIRICHLET WATER 1* {z_b} /\n"
-                    dic["rp"][i] += dic[f"rp{p}"][i]
-                c_c += 1
+                    if not np.isnan(z_b):
+                        dic[f"rp{p}"][i] = f"{c_c} DIRICHLET WATER 1* {z_b} /\n"
+                        dic["rp"][i] += dic[f"rp{p}"][i]
+                        for j, row in enumerate(dic["sbound"]):
+                            edit = row.split()
+                            if int(edit[0]) == dic["sai"][count] + 1:
+                                edit[0] = str(c_c)
+                                dic["sbound"][j] = " ".join(edit)
+                                dic["sopn"][
+                                    dic["sgrid"].get_global_index(
+                                        ijk=(
+                                            int(edit[1]) - 1,
+                                            int(edit[3]) - 1,
+                                            int(edit[5]) - 1,
+                                        )
+                                    )
+                                ] = "2"
+                                c_c += 1
+                                continue
+                    else:
+                        for j, row in enumerate(dic["sbound"]):
+                            if int(row.split()[0]) == dic["sai"][count] + 1:
+                                dic["sbound"].pop(j)
+                                continue
                 count += 1
         else:
             interp = LinearNDInterpolator(list(zip(dic[f"rx{p}"], dic[f"ry{p}"])), z_p)
             for x, y in zip(dic[f"sx{p}"], dic[f"sy{p}"]):
                 if dic["sai"][count] in dic["snum"]:
-                    dic[f"rp{p}"][
-                        i
-                    ] = f"{dic['sai'][count]+1} DIRICHLET WATER 1* {interp((x, y))} /\n"
-                    dic["rp"][i] += dic[f"rp{p}"][i]
+                    if not np.isnan(interp((x, y))):
+                        dic[f"rp{p}"][
+                            i
+                        ] = f"{dic['sai'][count]+1} DIRICHLET WATER 1* {interp((x, y))} /\n"
+                        dic["rp"][i] += dic[f"rp{p}"][i]
                 count += 1
                 c_c += 1
 
@@ -452,6 +503,9 @@ def write_files(dic):
             if lol[-1] == "GRID":
                 lol.append("INCLUDE")
                 lol.append("'BCCON.INC' /")
+            if lol[-1] == "REGIONS":
+                lol.append("INCLUDE")
+                lol.append("'OPERNUM_EXPRECCS.INC' /")
     count = 1
     with open(
         f"{dic['exe']}/{dic['fol']}/{dic['fol'].upper()}.DATA",
@@ -496,6 +550,16 @@ def write_files(dic):
             encoding="utf8",
         ) as file:
             file.write("".join(dic["rp"][i]))
+    dic["sopn"].insert(0, "OPERNUM")
+    dic["sopn"].insert(0, git)
+    dic["sopn"].insert(0, "--Copyright (C) 2024 NORCE")
+    dic["sopn"].append("/")
+    with open(
+        f"{dic['exe']}/{dic['fol']}/OPERNUM_EXPRECCS.INC",
+        "w",
+        encoding="utf8",
+    ) as file:
+        file.write("\n".join(dic["sopn"]))
 
 
 def find_ij_orientation(dic):
@@ -535,7 +599,7 @@ def extract_site_borders(dic):
 
     """
     for k in range(dic["sgrid"].nz):
-        j = 0
+        j = dic["boundaries"][0]
         for i in range(dic["sgrid"].nx):
             if dic["sgrid"].active(ijk=(i, j, k)):
                 dic["sai"].append(dic["gc"])
@@ -550,7 +614,7 @@ def extract_site_borders(dic):
                 dic["szn"].append(xyz[2])
             dic["gc"] += 1
     for k in range(dic["sgrid"].nz):
-        i = dic["sgrid"].nx - 1
+        i = dic["sgrid"].nx - 1 - dic["boundaries"][1]
         for j in range(dic["sgrid"].ny):
             if dic["sgrid"].active(ijk=(i, j, k)):
                 dic["sai"].append(dic["gc"])
@@ -565,7 +629,7 @@ def extract_site_borders(dic):
                 dic["szw"].append(xyz[2])
             dic["gc"] += 1
     for k in range(dic["sgrid"].nz):
-        j = dic["sgrid"].ny - 1
+        j = dic["sgrid"].ny - 1 - dic["boundaries"][2]
         for i in range(dic["sgrid"].nx):
             ii = dic["sgrid"].nx - i - 1
             if dic["sgrid"].active(ijk=(ii, j, k)):
@@ -581,7 +645,7 @@ def extract_site_borders(dic):
                 dic["szs"].append(xyz[2])
             dic["gc"] += 1
     for k in range(dic["sgrid"].nz):
-        i = 0
+        i = dic["boundaries"][3]
         for j in range(dic["sgrid"].ny):
             jj = dic["sgrid"].ny - j - 1
             if dic["sgrid"].active(ijk=(i, jj, k)):

@@ -26,5 +26,5 @@ def test_generic_deck():
     os.system("expreccs -o expreccs -e regional,site_closed -w 1")
     assert os.path.exists(f"{dirname}/configs/rotate/output/expreccs/BCCON.INC")
     os.chdir(f"{dirname}/configs/rotate/output/expreccs")
-    os.system("flow EXPRECCS.DATA --enable-tuning=true --linear-solver=cprw")
+    os.system("flow EXPRECCS.DATA --enable-tuning=true")
     assert os.path.exists(f"{dirname}/configs/rotate/output/expreccs/EXPRECCS.UNRST")
