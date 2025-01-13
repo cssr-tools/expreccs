@@ -24,7 +24,7 @@ def expreccs():
     cmdargs = load_parser()
     if int(cmdargs["warnings"]) == 0:
         warnings.warn = lambda *args, **kwargs: None
-    file = cmdargs["input"]  # Name of the input file
+    file = (cmdargs["input"].strip()).split(" ")  # Name of the input file
     dic = {"fol": cmdargs["output"]}  # Name for the output folder
     dic["pat"] = os.path.dirname(__file__)[:-5]  # Path to the expreccs folder
     dic["exe"] = os.getcwd()  # Path to the folder of the input.txt file
@@ -33,7 +33,10 @@ def expreccs():
     dic["co2store"] = cmdargs["use"]  # Implementation of co2store
     dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
     dic["rotate"] = int(cmdargs["transform"])  # Rotate the site model
-    dic["expreccs"] = str(cmdargs["expreccs"])  # Name of regional and site models
+    dic["freq"] = (cmdargs["frequency"].strip()).split(",")  # Frequency bc evaluations
+    dic["acoeff"] = (cmdargs["acoeff"].strip()).split(
+        ","
+    )  # Coefficient telescopic partition
     dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
     dic["boundaries"] = (cmdargs["boundaries"].strip()).split(",")  # Boundaries
     dic["boundaries"] = [int(val) for val in dic["boundaries"]]
@@ -46,14 +49,18 @@ def expreccs():
         return
 
     # For regional and site given decks, then we create a new deck with the proyected pressures
-    if dic["expreccs"]:
-        dic["reg"] = dic["expreccs"].split(",")[0]
-        dic["sit"] = dic["expreccs"].split(",")[1]
+    if len(file) > 1:
+        for i, name in enumerate(["reg", "sit"]):
+            dic[name] = file[i].split("/")[-1]
+            if "/" in file[i]:
+                dic[f"f{name}"] = "/".join(file[i].split("/")[:-1])
+            else:
+                dic[f"f{name}"] = dic["exe"]
         create_deck(dic)
         return
 
     # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
-    process_input(dic, file)
+    process_input(dic, file[0])
 
     # Make the output folders
     write_folders(dic)
@@ -83,7 +90,8 @@ def load_parser():
         "-i",
         "--input",
         default="input.txt",
-        help="The base name of the input file ('input.txt' by default).",
+        help="The base name of the configuration file; or paths (space between them and "
+        "quotation marks) to the regional and site models ('input.txt' by default).",
     )
     parser.add_argument(
         "-o",
@@ -131,12 +139,6 @@ def load_parser():
         help="Grades to rotate the site geological model ('0' by default).",
     )
     parser.add_argument(
-        "-e",
-        "--expreccs",
-        default="",
-        help="Name of the regional and site folders to project pressures.",
-    )
-    parser.add_argument(
         "-b",
         "--boundaries",
         default="0,0,0,0",
@@ -144,6 +146,23 @@ def load_parser():
         "the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells "
         "with i=nx and i=nx-1; this becomes handly for models where all cells in a "
         "given site are inactive along a side ('0,0,0,0' by default).",
+    )
+    parser.add_argument(
+        "-f",
+        "--frequency",
+        default="1",
+        help="Frequency to evaluate the boundary pressures on the site between "
+        "report steps in the site. Write an array, e.g., '2,7,3', to set the "
+        "frequency in each site report step ('1' by default).",
+    )
+    parser.add_argument(
+        "-a",
+        "--acoeff",
+        default="3.2",
+        help="Exponential 'a' coefficient for the telescopic time-discretization "
+        "for the given frequency '-f'. Write an array, e.g., '2.2,0,3.1', to set "
+        "the coefficient in each site report step ('3.2' by default, use 0 for an "
+        "equidistance partition).",
     )
     parser.add_argument(
         "-w",

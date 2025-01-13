@@ -1,6 +1,6 @@
-# SPDX-FileCopyrightText: 2024 NORCE
+# SPDX-FileCopyrightText: 2025 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=C0302,R0914,R1702,R0912
+# pylint: disable=C0302,R0914,R1702,R0912,R0915
 
 """
 Utiliy script for creating a deck with projected pressures from given
@@ -12,7 +12,7 @@ import csv
 import numpy as np
 import pandas as pd
 from shapely.geometry import LineString, Polygon, Point
-from scipy.interpolate import LinearNDInterpolator
+from scipy.interpolate import LinearNDInterpolator, interp1d
 from resdata.grid import Grid
 from resdata.resfile import ResdataFile
 
@@ -28,16 +28,12 @@ def create_deck(dic):
         dic (dict): Modified global dictionary
 
     """
-    if not os.path.exists(f"{dic['exe']}/{dic['fol']}"):
-        os.system(f"mkdir {dic['exe']}/{dic['fol']}")
-    if not os.path.exists(f"{dic['exe']}/{dic['fol']}/bc"):
-        os.system(f"mkdir {dic['exe']}/{dic['fol']}/bc")
-    case = f"{dic['exe']}/{dic['reg']}/{dic['reg'].upper()}"
+    case = f"{dic['freg']}/{dic['reg']}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     init = case + ".INIT"
     dic["rrst"], dic["rgrid"] = ResdataFile(rst), Grid(grid)
-    case = f"{dic['exe']}/{dic['sit']}/{dic['sit'].upper()}"
+    case = f"{dic['fsit']}/{dic['sit']}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     init = case + ".INIT"
@@ -47,6 +43,24 @@ def create_deck(dic):
         Grid(grid),
         ResdataFile(init),
     )
+    rdates = np.array(dic["rrst"].report_dates)
+    rdays = rdates - rdates[0]
+    dic["rdays"] = np.array([val.days for val in rdays])
+    sdates = np.array(dic["srst"].report_dates)
+    sdays = sdates - sdates[0]
+    dic["isdays"] = np.array([val.days for val in sdays])
+    if len(dic["freq"]) < len(dic["isdays"]) - 2:
+        dic["freq"] = np.array([int(dic["freq"][0])] * (len(dic["isdays"]) - 1))
+    else:
+        dic["freq"] = np.array([int(val) for val in dic["freq"]])
+    if len(dic["acoeff"]) < len(dic["isdays"]) - 2:
+        dic["acoeff"] = np.array([float(dic["acoeff"][0])] * (len(dic["isdays"]) - 1))
+    else:
+        dic["acoeff"] = np.array([float(val) for val in dic["acoeff"]])
+    if max(dic["freq"]) > 0:
+        dic["sdays"] = np.array([val.days for val in sdays])
+    else:
+        dic["sdays"] = []
     dic["sbound"], dic["sai"], dic["gc"] = [], [], 0
     dic["sxs"], dic["sxe"], dic["sxn"], dic["sxw"] = [], [], [], []
     dic["sys"], dic["sye"], dic["syn"], dic["syw"] = [], [], [], []
@@ -60,11 +74,17 @@ def create_deck(dic):
         [],
     )
     dic["sopn"] = ["1"] * (dic["sgrid"].nx * dic["sgrid"].ny * dic["sgrid"].nz)
+    if not os.path.exists(f"{dic['fol']}"):
+        os.system(f"mkdir {dic['fol']}")
+    if not os.path.exists(f"{dic['fol']}/bc") and max(dic["freq"]) > 0:
+        os.system(f"mkdir {dic['fol']}/bc")
     find_ij_orientation(dic)
     extract_site_borders(dic)
     find_regional_cells(dic)
-    dynamic_mapping(dic)
+    dynamic_interpolator(dic)
+    temporal_interpolation(dic)
     write_files(dic)
+    print(f"\nThe execution of ExpReCCS succeeded, see {dic['fol']}/.")
 
 
 def handle_grid_coord(dic):
@@ -367,27 +387,27 @@ def find_regional_cells(dic):
     )
     dic["oprn"].insert(0, "OPERNUM")
     dic["oprn"].insert(0, git)
-    dic["oprn"].insert(0, "--Copyright (C) 2024 NORCE")
+    dic["oprn"].insert(0, "--Copyright (C) 2025 NORCE")
     dic["oprn"].append("/")
     with open(
-        f"{dic['exe']}/{dic['reg']}/OPERNUM_EXPRECCS.INC",
+        f"{dic['exe']}/{dic['freg']}/OPERNUM_EXPRECCS.INC",
         "w",
         encoding="utf8",
     ) as file:
         file.write("\n".join(dic["oprn"]))
     dic["fipn"].insert(0, "FIPNUM")
     dic["fipn"].insert(0, git)
-    dic["fipn"].insert(0, "--Copyright (C) 2024 NORCE")
+    dic["fipn"].insert(0, "--Copyright (C) 2025 NORCE")
     dic["fipn"].append("/")
     with open(
-        f"{dic['exe']}/{dic['reg']}/FIPNUM_EXPRECCS.INC",
+        f"{dic['exe']}/{dic['freg']}/FIPNUM_EXPRECCS.INC",
         "w",
         encoding="utf8",
     ) as file:
         file.write("\n".join(dic["fipn"]))
 
 
-def dynamic_mapping(dic):
+def dynamic_interpolator(dic):
     """
     Project the pressures from the regional to the site over time
 
@@ -398,11 +418,66 @@ def dynamic_mapping(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["rp"] = ["" for _ in range(dic["rrst"].num_report_steps())]
+    dic["rp"] = [[] for _ in range(dic["rrst"].num_report_steps())]
     for p in ["n", "w", "s", "e"]:
         dic[f"rp{p}"] = [[] for _ in range(dic["rrst"].num_report_steps())]
     for i in range(dic["rrst"].num_report_steps()):
         project_pressures(dic, i)
+
+
+def temporal_interpolation(dic):
+    """
+    Function to interpolate BC pressure values in time
+
+    Args:
+        dic (dict): Global dictionary
+
+    Returns:
+        dic (dict): Modified global dictionary
+
+    """
+    if max(dic["freq"]) > 0:
+        dic["ddays"] = dic["sdays"][1:] - dic["sdays"][:-1]
+        idays = []
+        for i, day in enumerate(dic["sdays"][:-1]):
+            for n in range(dic["freq"][i]):
+                if dic["acoeff"][i] != 0:
+                    telsc = np.flip(
+                        (
+                            np.exp(
+                                np.flip(
+                                    np.linspace(0, dic["acoeff"][i], dic["freq"][i] + 1)
+                                )
+                            )
+                            - 1
+                        )
+                        / (np.exp(dic["acoeff"][i]) - 1)
+                    )
+                    idays += [day + 1.0 * dic["ddays"][i] * telsc[n]]
+                else:
+                    idays += [day + 1.0 * dic["ddays"][i] * n / dic["freq"][i]]
+        idays += [dic["sdays"][-1]]
+        dic["sdays"] = np.array(idays)
+        dic["ddays"] = dic["sdays"][1:] - dic["sdays"][:-1]
+    else:
+        dic["ddays"] = []
+    print(f"Input report steps regional (days, tot={len(dic['rdays'])}):")
+    print(dic["rdays"])
+    print(f"Input report steps site (days, tot={len(dic['isdays'])}):")
+    print(dic["isdays"])
+    print(f"Report steps site to write bc (days, tot={len(dic['sdays'])}):")
+    print([float(f"{val:.2f}") for val in dic["sdays"]])
+    dic["sbc"] = ["" for _ in range(len(dic["sdays"]))]
+    for i in range(len(dic["rp"][0])):
+        interp_func = interp1d(
+            dic["rdays"],
+            [dic["rp"][j][i][1] for j in range(len(dic["rdays"]))],
+            fill_value="extrapolate",
+        )
+        for j, time in enumerate(dic["sdays"]):
+            dic["sbc"][
+                j
+            ] += f"{dic['rp'][0][i][0]} DIRICHLET WATER 1* {interp_func(time)} /\n"
 
 
 def project_pressures(dic, i):
@@ -410,7 +485,8 @@ def project_pressures(dic, i):
     Project the pressures at restart number i
 
     Args:
-        dic (dict): Global dictionary
+        dic (dict): Global dictionary\n
+        i (int): Index of report step in the site
 
     Returns:
         dic (dict): Modified global dictionary
@@ -440,8 +516,7 @@ def project_pressures(dic, i):
                             / 1e5
                         )
                     if not np.isnan(z_b):
-                        dic[f"rp{p}"][i] = f"{c_c} DIRICHLET WATER 1* {z_b} /\n"
-                        dic["rp"][i] += dic[f"rp{p}"][i]
+                        dic["rp"][i].append([c_c, z_b])
                         for j, row in enumerate(dic["sbound"]):
                             edit = row.split()
                             if int(edit[0]) == dic["sai"][count] + 1:
@@ -469,12 +544,29 @@ def project_pressures(dic, i):
             for x, y in zip(dic[f"sx{p}"], dic[f"sy{p}"]):
                 if dic["sai"][count] in dic["snum"]:
                     if not np.isnan(interp((x, y))):
-                        dic[f"rp{p}"][
-                            i
-                        ] = f"{dic['sai'][count]+1} DIRICHLET WATER 1* {interp((x, y))} /\n"
-                        dic["rp"][i] += dic[f"rp{p}"][i]
+                        dic["rp"][i].append([dic["sai"][count] + 1, interp((x, y))])
+                        for j, row in enumerate(dic["sbound"]):
+                            edit = row.split()
+                            if int(edit[0]) == dic["sai"][count] + 1:
+                                edit[0] = str(c_c)
+                                dic["sbound"][j] = " ".join(edit)
+                                dic["sopn"][
+                                    dic["sgrid"].get_global_index(
+                                        ijk=(
+                                            int(edit[1]) - 1,
+                                            int(edit[3]) - 1,
+                                            int(edit[5]) - 1,
+                                        )
+                                    )
+                                ] = "2"
+                                c_c += 1
+                                continue
+                    else:
+                        for j, row in enumerate(dic["sbound"]):
+                            if int(row.split()[0]) == dic["sai"][count] + 1:
+                                dic["sbound"].pop(j)
+                                continue
                 count += 1
-                c_c += 1
 
 
 def write_files(dic):
@@ -488,11 +580,10 @@ def write_files(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["files"] = [
-        f for f in os.listdir(f"{dic['exe']}/{dic['sit']}") if f.endswith(".INC")
-    ]
-    for file in dic["files"]:
-        os.system(f"scp -r {dic['exe']}/{dic['sit']}/{file} {dic['exe']}/{dic['fol']}")
+    if dic["fsit"] != dic["fol"]:
+        dic["files"] = [f for f in os.listdir(f"{dic['fsit']}") if f.endswith(".INC")]
+        for file in dic["files"]:
+            os.system(f"scp -r {dic['fsit']}/{file} {dic['fol']}")
     lol = []
     with open(dic["sdata"], "r", encoding="utf8") as file:
         for row in csv.reader(file):
@@ -500,62 +591,76 @@ def write_files(dic):
             if 0 < nrwo.find("\\t"):
                 nrwo = nrwo.replace("\\t", " ")
             lol.append(nrwo)
-            if lol[-1] == "GRID":
+            if lol[-1] == "GRID" and max(dic["freq"]) > 0:
                 lol.append("INCLUDE")
                 lol.append("'BCCON.INC' /")
             if lol[-1] == "REGIONS":
                 lol.append("INCLUDE")
                 lol.append("'OPERNUM_EXPRECCS.INC' /")
     count = 1
+    fre = 0
+    tstep = 0
     with open(
-        f"{dic['exe']}/{dic['fol']}/{dic['fol'].upper()}.DATA",
+        f"{dic['fol']}/{dic['fol'].split('/')[-1].upper()}.DATA",
         "w",
         encoding="utf8",
     ) as file:
         for i, row in enumerate(lol):
+            edit = row.split()
             if i < len(lol) - 1:
-                if lol[i + 1] == "TSTEP":
+                if lol[i + 1] == "TSTEP" and max(dic["freq"]) > 0:
                     file.write(row)
                     file.write("\n")
-                    file.write("INCLUDE\n")
-                    file.write(f"'bc/BCPROP{count}.INC' /\n")
-                    count += 1
-                else:
+                    for _ in range(dic["freq"][fre]):
+                        file.write("INCLUDE\n")
+                        file.write(f"'bc/BCPROP{count}.INC' /\n")
+                        file.write("TSTEP\n")
+                        file.write(f"{dic['ddays'][count-1]} /\n")
+                        count += 1
+                        tstep = 1
+                    fre += 1
+                elif tstep == 0:
                     file.write(row)
                     file.write("\n")
+                elif edit and tstep == 1:
+                    if edit[-1] == "/" or edit[0] == "/":
+                        tstep = 0
             else:
-                file.write(row)
+                if tstep == 0:
+                    file.write(row)
     git = (
         "-- This file was generated by expreccs https://github.com/cssr-tools/expreccs"
     )
-    dic["sbound"].insert(0, "BCCON")
-    dic["sbound"].insert(0, git)
-    dic["sbound"].insert(0, "--Copyright (C) 2024 NORCE")
-    dic["sbound"].append("/")
-    with open(
-        f"{dic['exe']}/{dic['fol']}/BCCON.INC",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.write("\n".join(dic["sbound"]))
-    for i in range(dic["rrst"].num_report_steps()):
-        dic["rp"][i] = [dic["rp"][i]]
-        dic["rp"][i].insert(0, "BCPROP\n")
-        dic["rp"][i].insert(0, git + "\n")
-        dic["rp"][i].insert(0, "--Copyright (C) 2024 NORCE\n")
-        dic["rp"][i].append("/")
+    if max(dic["freq"]) > 0:
+        dic["sbound"].insert(0, "BCCON")
+        dic["sbound"].insert(0, git)
+        dic["sbound"].insert(0, "--Copyright (C) 2025 NORCE")
+        dic["sbound"].append("/")
         with open(
-            f"{dic['exe']}/{dic['fol']}/bc/BCPROP{i}.INC",
+            f"{dic['fol']}/BCCON.INC",
             "w",
             encoding="utf8",
         ) as file:
-            file.write("".join(dic["rp"][i]))
+            file.write("\n".join(dic["sbound"]))
+        for i in range(len(dic["sdays"])):
+            dic["sbc"][i] = [dic["sbc"][i]]
+            dic["sbc"][i].insert(0, "BCPROP\n")
+            dic["sbc"][i].insert(0, f"--No. days = {dic['sdays'][i]:.2f}\n")
+            dic["sbc"][i].insert(0, git + "\n")
+            dic["sbc"][i].insert(0, "--Copyright (C) 2025 NORCE\n")
+            dic["sbc"][i].append("/")
+            with open(
+                f"{dic['fol']}/bc/BCPROP{i}.INC",
+                "w",
+                encoding="utf8",
+            ) as file:
+                file.write("".join(dic["sbc"][i]))
     dic["sopn"].insert(0, "OPERNUM")
     dic["sopn"].insert(0, git)
-    dic["sopn"].insert(0, "--Copyright (C) 2024 NORCE")
+    dic["sopn"].insert(0, "--Copyright (C) 2025 NORCE")
     dic["sopn"].append("/")
     with open(
-        f"{dic['exe']}/{dic['fol']}/OPERNUM_EXPRECCS.INC",
+        f"{dic['fol']}/OPERNUM_EXPRECCS.INC",
         "w",
         encoding="utf8",
     ) as file:

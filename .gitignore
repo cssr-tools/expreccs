@@ -148,6 +148,7 @@ tests/configs/back
 tests/configs/compare
 tests/configs/output
 tests/configs/rotate
+tests/configs/rotate_2d
 examples/output
 developing
 playground

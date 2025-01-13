@@ -46,10 +46,10 @@ See the [_installation_](https://cssr-tools.github.io/exprecss/installation.html
 ## Running expreccs
 You can run _expreccs_ as a single command line:
 ```
-expreccs -i name_of_input_file
+expreccs -i name(s)_of_input_file(s)
 ```
 Run `expreccs --help` to see all possible command line argument options. Inside the `configuration_file.txt` file you provide the path to the
-flow executable and simulation parameters. See the .txt files in the [_examples_](https://github.com/cssr-tools/expreccs/tree/main/examples) and [_tests_](https://github.com/cssr-tools/expreccs/tree/main/tests/configs) folders.
+flow executable and simulation parameters. To write dynamic boundary conditions from a given regional model to a site model, this can be achieved by giving the path to the models (i.e., without a configuration file). See the [_examples_](https://github.com/cssr-tools/expreccs/tree/main/examples) and [_tests_](https://github.com/cssr-tools/expreccs/tree/main/tests/configs) folders.
 
 ## Getting started
 See the [_examples_](https://cssr-tools.github.io/expreccs/examples.html) in the [_documentation_](https://cssr-tools.github.io/expreccs/introduction.html).
@@ -66,6 +66,6 @@ The following is a list of manuscripts in which _expreccs_ is used:
 1. Gasda, S.E., et al., 2024. Quantifying the impact of regional-scale pressure interference on commercial CO2 storage targets for multiple licenses. http://dx.doi.org/10.2139/ssrn.5053633.
 
 ## About expreccs
-The _expreccs_ package is funded by Wintershall Dea, Equinor, Shell, and the Research Council of Norway [project number 336294].
+The _expreccs_ package is funded by Harbour Energy, Equinor, Shell, and the Research Council of Norway [project number 336294].
 This is work in progress. [_Here_](https://www.norceresearch.no/en/projects/expansion-of-resources-for-co2-storage-on-the-horda-platform-expreccs) is the link to the project details.
 Contributions are more than welcome using the fork and pull request approach. For new features, please request them raising an issue.

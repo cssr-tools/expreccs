@@ -30,7 +30,7 @@ executing **expreccs**, this corresponds to the `test_generic_deck.py <https://g
 
 .. code-block:: bash
 
-    expreccs -o expreccs -e regional,site_closed
+    expreccs -o expreccs -i 'regional/REGIONAL site_closed/SITE_CLOSED'
 
 .. figure:: figs/generic.png
 

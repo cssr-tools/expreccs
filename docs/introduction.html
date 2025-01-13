@@ -105,13 +105,13 @@ of the input decks to include the dynamic boundary updates.</p>
 <section id="overview">
 <span id="id1"></span><h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>The current implementation supports the following executable with the argument options:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>name_of_input_file
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>name<span class="o">(</span>s<span class="o">)</span>_of_input_file<span class="o">(</span>s<span class="o">)</span>
 </pre></div>
 </div>
 <p>where</p>
 <dl class="option-list">
 <dt><kbd><span class="option">-i</span></kbd></dt>
-<dd><p>The base name of the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> (‘input.txt’ by default).</p>
+<dd><p>The base name of the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a>; or paths (space between them and quotation marks) to the regional and site models (‘input.txt’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-o</span></kbd></dt>
 <dd><p>The base name of the <a class="reference internal" href="output_folder.html"><span class="doc">output folder</span></a> (‘output’ by default).</p>
@@ -134,11 +134,14 @@ of the input decks to include the dynamic boundary updates.</p>
 <dt><kbd><span class="option">-t</span></kbd></dt>
 <dd><p>Grades to rotate the site geological model (‘0’ by default).</p>
 </dd>
-<dt><kbd><span class="option">-e</span></kbd></dt>
-<dd><p>Name of the regional and site folders to project pressures (’’ by default).</p>
-</dd>
 <dt><kbd><span class="option">-b</span></kbd></dt>
 <dd><p>Set the number of entries to skip the bc projections on the site, where ‘j=0,i=nx,j=ny,i=0’, e.g., ‘0,2,0,0’ would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side (‘0,0,0,0’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-f</span></kbd></dt>
+<dd><p>Frequency to evaluate the boundary pressures on the site between report steps in the site. Write an array, e.g., ‘2,7,3’, to set the frequency in each site report step (‘1’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-a</span></kbd></dt>
+<dd><p>Exponential ‘a’ coefficient for the telescopic time-discretization for the given frequency ‘-f’. Write an array, e.g., ‘2.2,0,3.1’, to set the coefficient in each site report step (‘3.2’ by default, use 0 for an equidistance partition).</p>
 </dd>
 <dt><kbd><span class="option">-w</span></kbd></dt>
 <dd><p>Set to 1 to print warnings (‘0’ by default).</p>

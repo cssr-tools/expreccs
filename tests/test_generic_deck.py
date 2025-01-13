@@ -23,7 +23,9 @@ def test_generic_deck():
         f"{dirname}/configs/rotate/output/site_closed"
     )
     os.chdir(f"{dirname}/configs/rotate/output")
-    os.system("expreccs -o expreccs -e regional,site_closed -w 1")
+    os.system(
+        "expreccs -o expreccs -i 'regional/REGIONAL site_closed/SITE_CLOSED' -w 1"
+    )
     assert os.path.exists(f"{dirname}/configs/rotate/output/expreccs/BCCON.INC")
     os.chdir(f"{dirname}/configs/rotate/output/expreccs")
     os.system("flow EXPRECCS.DATA --enable-tuning=true")

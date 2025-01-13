@@ -131,8 +131,8 @@ regional and site decks.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.dynamic_mapping">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">dynamic_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.dynamic_mapping" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.dynamic_interpolator">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">dynamic_interpolator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.dynamic_interpolator" title="Link to this definition"></a></dt>
 <dd><p>Project the pressures from the regional to the site over time</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
@@ -194,6 +194,19 @@ regional and site decks.</p>
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.project_pressures">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">project_pressures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.project_pressures" title="Link to this definition"></a></dt>
 <dd><p>Project the pressures at restart number i</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>i (int): Index of report step in the site</p>
+</dd>
+<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.temporal_interpolation">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">temporal_interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.temporal_interpolation" title="Link to this definition"></a></dt>
+<dd><p>Function to interpolate BC pressure values in time</p>
 <dl class="simple">
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 </dd>
