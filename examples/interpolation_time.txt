@@ -14,7 +14,7 @@ free                        #Use free/closed/porv for the Regional aquifer (if p
 pres interp                 #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time
 11000 11000 1 1 0           #Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m]
 6565 7777 7979 8383 1.0 1.0 #Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
-5                           #Thicknes of the layers 
+5                           #Thicknes of the layers [m]
 2E7 40 40 0                 #Pressure on the reservoir top [Pa], top and bottom temperatures [C], and rock compressibility [1/Pa]
 7000 7000 0                 #Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
 0                           #The function for the reservoir surface

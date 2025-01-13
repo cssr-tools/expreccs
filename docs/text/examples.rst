@@ -131,7 +131,7 @@ the pressures are projected.
 
 .. code-block:: bash
 
-    expreccs -e name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
+    expreccs -i 'path_to_the_regional_model path_to_the_site_model'
 
 In the current implementation, the name of the decks need to match the name of the given folder (e.g., regional/REGIONAL.DATA).
 For example, to run the test, this can be achieved by executing:

@@ -1,14 +1,14 @@
 """Set the full path to the flow executable and flags"""
-flow --enable-opm-rst-file=true --newton-min-iterations=1 --enable-tuning=true
+flow --enable-opm-rst-file=true --newton-min-iterations=1 --enable-tuning=true 
 
 """Set the model parameters"""
 15000 15000 9               #Reginonal aquifer length, width, and depth [m]
 15                          #Variable array of x-refinment (Regional)
 15                          #Variable array of y-refinment (Regional)
-3                           #Variable array of z-refinment (Regional)
+1                           #Variable array of z-refinment (Regional)
 75                          #Variable array of x-refinment (Reference)
 75                          #Variable array of y-refinment (Reference)
-3,1,3                       #Variable array of z-refinment (Reference)
+1                           #Variable array of z-refinment (Reference)
 5000 5000 10000 10000       #Site xi, yi, xf, and yf box positions [m]
 porv 2e10 1 1 2e10          #Use free/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
 closed                      #Use free/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1)); for pres/flux, add 'interp' to use linear interpolation in time

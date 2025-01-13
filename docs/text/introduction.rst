@@ -28,11 +28,11 @@ The current implementation supports the following executable with the argument o
 
 .. code-block:: bash
 
-    expreccs -i name_of_input_file
+    expreccs -i name(s)_of_input_file(s)
 
 where 
 
--i  The base name of the :doc:`configuration file <./configuration_file>` ('input.txt' by default).
+-i  The base name of the :doc:`configuration file <./configuration_file>`; or paths (space between them and quotation marks) to the regional and site models ('input.txt' by default).
 -o  The base name of the :doc:`output folder <./output_folder>` ('output' by default).
 -m  Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
 -c  Generate metric plots for the current outputed folders ('compare') ('' by default).
@@ -40,8 +40,9 @@ where
 -r  Using the 'opm' or 'resdata' python package ('resdata' by default).
 -u  Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by default).
 -t  Grades to rotate the site geological model ('0' by default).
--e  Name of the regional and site folders to project pressures ('' by default).
 -b  Set the number of entries to skip the bc projections on the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side ('0,0,0,0' by default).
+-f  Frequency to evaluate the boundary pressures on the site between report steps in the site. Write an array, e.g., '2,7,3', to set the frequency in each site report step ('1' by default).
+-a  Exponential 'a' coefficient for the telescopic time-discretization for the given frequency '-f'. Write an array, e.g., '2.2,0,3.1', to set the coefficient in each site report step ('3.2' by default, use 0 for an equidistance partition).
 -w  Set to 1 to print warnings ('0' by default).
 -l  Set to 0 to not use LaTeX formatting ('1' by default).
 

@@ -200,7 +200,7 @@ iteration is set to 10 in line 22 of the <a class="reference external" href="htt
 for an example where <strong>expreccs</strong> is used in two given models (regional and site, in this case they are created using
 the <strong>expreccs</strong> package, but in general can be any given geological models), generating a new input deck where
 the pressures are projected.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-e<span class="w"> </span>name_of_folder_for_the_regional_model,name_of_folder_for_the_site_model
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;path_to_the_regional_model path_to_the_site_model&#39;</span>
 </pre></div>
 </div>
 <p>In the current implementation, the name of the decks need to match the name of the given folder (e.g., regional/REGIONAL.DATA).
