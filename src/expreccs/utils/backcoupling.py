@@ -41,7 +41,7 @@ def backcoupling(dic):
         dic (dict): Modified global dictionary
 
     """
-    for iteration in range(1, dic["iterations"]):
+    for iteration in range(1, int(dic["iterations"])):
         fil = ""
         if iteration > 1:
             fil = f"_{iteration-1}"
@@ -51,21 +51,21 @@ def backcoupling(dic):
         write_files(dic, f"regional_{iteration}")
         simulations(dic, f"regional_{iteration}")
 
-        if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
+        if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
             if dic["reading"] == "resdata":
                 aquaflux_resdata(dic, f"_{iteration}")
             else:
                 aquaflux_opm(dic, f"_{iteration}")
-            if dic["site_bctype"] == "flux":
+            if dic["site_bctype"][0] == "flux":
                 temporal_interpolation_flux(dic)
             else:
                 temporal_interpolation_pressure(dic)
-        elif dic["site_bctype"] == "porvproj":
+        elif dic["site_bctype"][0] == "porvproj":
             porv_projections(dic)
 
-        write_folder_iter(dic, f"site_{dic['site_bctype']}_{iteration}")
-        write_files(dic, f"site_{dic['site_bctype']}_{iteration}")
-        simulations(dic, f"site_{dic['site_bctype']}_{iteration}")
+        write_folder_iter(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
+        write_files(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
+        simulations(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
 
 
 def write_folder_iter(dic, fil):
@@ -80,10 +80,10 @@ def write_folder_iter(dic, fil):
         None
 
     """
-    if not os.path.exists(f"{dic['exe']}/{dic['fol']}/preprocessing/{fil}"):
-        os.system(f"mkdir {dic['exe']}/{dic['fol']}/preprocessing/{fil}")
-    if not os.path.exists(f"{dic['exe']}/{dic['fol']}/output/{fil}"):
-        os.system(f"mkdir {dic['exe']}/{dic['fol']}/output/{fil}")
+    if not os.path.exists(f"{dic['fol']}/preprocessing/{fil}"):
+        os.system(f"mkdir {dic['fol']}/preprocessing/{fil}")
+    if not os.path.exists(f"{dic['fol']}/output/{fil}"):
+        os.system(f"mkdir {dic['fol']}/output/{fil}")
 
 
 def init_multipliers(dic):
@@ -98,9 +98,9 @@ def init_multipliers(dic):
 
     """
     numcells = (
-        dic["regional_noCells"][0]
-        * dic["regional_noCells"][1]
-        * dic["regional_noCells"][2]
+        dic["regional_num_cells"][0]
+        * dic["regional_num_cells"][1]
+        * dic["regional_num_cells"][2]
     )
     for q in ["x", "x-", "y", "y-"]:
         dic["regional_mult" + q] = [1] * numcells
@@ -138,12 +138,12 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
         reading_opm(dic, False)
 
     # Check for refinement
-    numx = (int)(dic["site_noCells"][0])
-    numy = (int)(dic["site_noCells"][1])
-    numz = (int)(dic["site_noCells"][2])
-    dx = (int)(dic["reference_noCells"][0] / dic["regional_noCells"][0])
-    dy = (int)(dic["reference_noCells"][1] / dic["regional_noCells"][1])
-    dz = (int)(dic["reference_noCells"][2] / dic["regional_noCells"][2])
+    numx = (int)(dic["site_num_cells"][0])
+    numy = (int)(dic["site_num_cells"][1])
+    numz = (int)(dic["site_num_cells"][2])
+    dx = (int)(dic["reference_num_cells"][0] / dic["regional_num_cells"][0])
+    dy = (int)(dic["reference_num_cells"][1] / dic["regional_num_cells"][1])
+    dz = (int)(dic["reference_num_cells"][2] / dic["regional_num_cells"][2])
     # We dont support refinement in z
     assert dz == 1
     refine = dx > 1 or dy > 1

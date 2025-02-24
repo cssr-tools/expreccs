@@ -1,0 +1,48 @@
+# Set mpirun, the full path to the flow executable, and simulator flags (except --output-dir)
+flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1 --enable-tuning=true"
+
+# Set the model parameters
+regional_dims = [15000,15000,5] # Regional aquifer length, width, and depth [m]
+regional_x_n = [15] # Variable array of x-refinement (Regional)
+regional_y_n = [15] # Variable array of y-refinement (Regional)
+regional_z_n = [1] # Variable array of z-refinement (Regional)
+reference_x_n = [45] # Variable array of x-refinement (Reference)
+reference_y_n = [45] # Variable array of y-refinement (Reference)
+reference_z_n = [1] # Variable array of z-refinement (Reference)
+site_location = [5000,5000,0,10000,10000,5] # Site xi, yi, zi, xf, yf, and zf box positions [m]
+fault_regional = [11000,11000,1,1,0] # Regional fault x, and y positions [m], x and y multipliers for the trans, and height of the fault jump [m] 
+fault_site = [[6000,6000],[9000,9000],[0.01,0.01]] # Site fault x, and y positions [m] (initial and final) and x and y multipliers for the trans
+thickness = [5] # Thickness of the layers [m]
+pressure = 2E2  # Pressure on the reservoir top [Bar]
+temperature = [40,40] # Top and bottom temperatures [C]
+rock_comp = 4.934e-5 # Rock compressibility [1/Bar]
+sensor_coords = [7000,7000,0] # Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
+iterations = 3 # Number of interations for back-coupling
+
+# Set the boundary conditions
+# Use open/closed/porv for the Regional aquifer (if porv, enter the bottom, right, top, and left values (e.g, porv 1e8 1e7 1e6 1e5))
+regional_bctype = ["porv",1e9,1e9,1e9,1e9]
+# Use open/closed/porv/porvproj/flux/pres/pres2p/wells for the BC site (if porv; bottom, right, top, and left values (e.g, porv 1e4 1e3 1e2 1e1))
+# For pres/flux BC's, add 'interp' to use linear interpolation in time
+site_bctype = ["pres"]
+
+# Set the saturation functions
+krw = "krw * ((sw - swi) / (1.0 - sni -swi)) ** nkrw"        # Wetting rel perm saturation function [-]
+krn = "krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn" # Non-wetting rel perm saturation function [-]
+pcap = "pen * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npen))" # Capillary pressure saturation function [Bar]
+
+# Properties sat functions: 1) swi [-], 2) sni [-], 3) krw [-], 4) krn [-], 5) pen [Bar], 6) nkrw [-], 7) nkrn [-],
+# 8) npen [-], 9) threshold cP evaluation (entry per layer, if hysteresis, additional entries per layer)
+safu = [[0.12,0.10,1.0,1.0,0.0306,2,2,2,1e-4]]
+
+# Properties rock: 1) Kxy [mD], 2) Kz [mD], and 3) phi [-] (entry per layer)
+rock = [[1013.25,101.325,0.25]]
+
+# Wells position: 1) x, 2) y, 3) zi, and 4) zf positions [m] (entry per well)
+well_coords = [[7500,7500,0,5],[7500,12000,0,5]]
+
+# Define the injection values (entry per change in the schedule): 
+# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d], 4) maximum time step [d]
+# 1) fluid (0 wetting, 1 non-wetting) well 0, 2) injection rates [kg/day] well 0, 3) fluid ... well n, injection, ...well n (as many as num of wells) 
+# if 'wells' for site_bctype, then 1) bottom, 2) right, 3) top, and 4) left values (0(prod)/1(inj), pressure [Bar]))
+inj = [[[73,73,73,73],[1,3e5,1,0]],[[73,73,73,73],[1,3e5,1,0]],[[73,73,73,73],[1,3e5,1,0]],[[73,73,73,73],[1,3e5,1,0]]]

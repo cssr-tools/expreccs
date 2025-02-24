@@ -42,18 +42,18 @@ def mapping_properties(dic):
             dic[f"{res}_{name}_mid"] = 0.5 * (
                 dic[f"{res}_{name}"][1:] + dic[f"{res}_{name}"][:-1]
             )
-            dic[f"{res}_noCells"][i] = len(dic[f"{res}_{name}"]) - 1
+            dic[f"{res}_num_cells"][i] = len(dic[f"{res}_{name}"]) - 1
             np.save(
-                f"{dic['exe']}/{dic['fol']}/output/{res}/{res}_{name}",
+                f"{dic['fol']}/output/{res}/{res}_{name}",
                 dic[f"{res}_{name}"],
             )
-        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_noCells"][2], int)
-        for i, _ in enumerate(dic["thicknes"]):
+        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_num_cells"][2], int)
+        for i, _ in enumerate(dic["thickness"]):
             dic[f"{res}_layers"] += dic[f"{res}_zmz_mid"] > sum(
-                dic["thicknes"][: i + 1]
+                dic["thickness"][: i + 1]
             )
     for res in ["site"]:
-        dic[f"{res}_noCells"] = [0] * 3
+        dic[f"{res}_num_cells"] = [0] * 3
         for i, name in enumerate(["xmx", "ymy", "zmz"]):
             dic[f"{res}_{name}"] = dic[f"reference_{name}"][
                 (dic["site_location"][i] <= dic[f"reference_{name}"])
@@ -62,18 +62,18 @@ def mapping_properties(dic):
             dic[f"{res}_{name}_mid"] = 0.5 * (
                 dic[f"{res}_{name}"][1:] + dic[f"{res}_{name}"][:-1]
             )
-            dic[f"{res}_noCells"][i] = len(dic[f"{res}_{name}"]) - 1
+            dic[f"{res}_num_cells"][i] = len(dic[f"{res}_{name}"]) - 1
             np.save(
-                f"{dic['exe']}/{dic['fol']}/output/{res}_{dic['site_bctype']}/{res}_{name}",
+                f"{dic['fol']}/output/{res}_{dic['site_bctype'][0]}/{res}_{name}",
                 dic[f"{res}_{name}"],
             )
-        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_noCells"][2], int)
-        dic[f"{res}_zmaps"] = np.zeros(dic[f"{res}_noCells"][2], int)
-        for i, _ in enumerate(dic["thicknes"]):
+        dic[f"{res}_layers"] = np.zeros(dic[f"{res}_num_cells"][2], int)
+        dic[f"{res}_zmaps"] = np.zeros(dic[f"{res}_num_cells"][2], int)
+        for i, _ in enumerate(dic["thickness"]):
             dic[f"{res}_layers"] += dic[f"{res}_zmz_mid"] > sum(
-                dic["thicknes"][: i + 1]
+                dic["thickness"][: i + 1]
             )
-        for i in range(dic[f"{res}_noCells"][2]):
+        for i in range(dic[f"{res}_num_cells"][2]):
             dic[f"{res}_zmaps"][i] = pd.Series(
                 abs(dic["regional_zmz_mid"] - dic["site_zmz_mid"][i])
             ).argmin()
@@ -98,8 +98,8 @@ def rotate_grid(dic):
 
     """
     dic["site_xc"], dic["site_yc"] = [], []
-    for j in range(dic["site_noCells"][1] + 1):
-        for i in range(dic["site_noCells"][0] + 1):
+    for j in range(dic["site_num_cells"][1] + 1):
+        for i in range(dic["site_num_cells"][0] + 1):
             dic["site_xc"].append(
                 1.5 * dic["site_dims"][0]
                 + (dic["site_xmx"][i] - 1.5 * dic["site_dims"][0])
@@ -117,11 +117,11 @@ def rotate_grid(dic):
     dic["site_xc"] = np.array(dic["site_xc"])
     dic["site_yc"] = np.array(dic["site_yc"])
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/d2x",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/d2x",
         dic["site_xc"],
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/d2y",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/d2y",
         dic["site_yc"],
     )
 
@@ -162,17 +162,17 @@ def positions_regional(dic):
                 indx += 1
             if (
                 indc > 0
-                and min(dic["regional_fipnum"][-dic["regional_noCells"][0] :]) == 2
+                and min(dic["regional_fipnum"][-dic["regional_num_cells"][0] :]) == 2
             ):
                 dic["site_corners"][1] = [lasti, j - 1, 0]
                 indc = 0
-    dic["regional_wellijk"] = [[] for _ in range(len(dic["wellCoord"]))]
+    dic["regional_wellijk"] = [[] for _ in range(len(dic["well_coords"]))]
     dic["regional_fault"] = [0, 0, 0]
     dic["regional_sensor"] = [0, 0, 0]
     dic["regional_site_fault"] = [[0, 0, 0], [0, 0, 0]]
-    for j, _ in enumerate(dic["wellCoord"]):
+    for j, _ in enumerate(dic["well_coords"]):
         for _, (well_coord, cord) in enumerate(
-            zip(dic["wellCoord"][j], ["xmx", "ymy", "zmz", "zmz"])
+            zip(dic["well_coords"][j], ["xmx", "ymy", "zmz", "zmz"])
         ):
             midpoints = dic[f"regional_{cord}_mid"]
             dic["regional_wellijk"][j].append(
@@ -180,35 +180,36 @@ def positions_regional(dic):
             )
     for i, cord in enumerate(["xmx", "ymy", "zmz"]):
         midpoints = dic[f"regional_{cord}_mid"]
-        dic["regional_fault"][i] = pd.Series(
-            abs(dic["fault_location"][i] - midpoints)
-        ).argmin()
-        dic["regional_site_fault"][0][i] = pd.Series(
-            abs(dic["fault_site"][0][i] - midpoints)
-        ).argmin()
-        dic["regional_site_fault"][1][i] = pd.Series(
-            abs(dic["fault_site"][1][i] - midpoints)
-        ).argmin()
+        if i < 2:
+            dic["regional_fault"][i] = pd.Series(
+                abs(dic["fault_regional"][i] - midpoints)
+            ).argmin()
+            dic["regional_site_fault"][0][i] = pd.Series(
+                abs(dic["fault_site"][0][i] - midpoints)
+            ).argmin()
+            dic["regional_site_fault"][1][i] = pd.Series(
+                abs(dic["fault_site"][1][i] - midpoints)
+            ).argmin()
         dic["regional_sensor"][i] = pd.Series(
-            abs(dic["sensor_location"][i] - midpoints)
+            abs(dic["sensor_coords"][i] - midpoints)
         ).argmin()
     sensor_ind = (
         dic["regional_sensor"][0]
-        + dic["regional_sensor"][1] * dic["regional_noCells"][0]
+        + dic["regional_sensor"][1] * dic["regional_num_cells"][0]
         + dic["regional_sensor"][2]
-        * dic["regional_noCells"][0]
-        * dic["regional_noCells"][1]
+        * dic["regional_num_cells"][0]
+        * dic["regional_num_cells"][1]
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/regional/sensor",
+        f"{dic['fol']}/output/regional/sensor",
         sensor_ind,
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/regional/sensor_location",
-        dic["sensor_location"],
+        f"{dic['fol']}/output/regional/sensor_coords",
+        dic["sensor_coords"],
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/regional/sensorijk",
+        f"{dic['fol']}/output/regional/sensorijk",
         dic["regional_sensor"],
     )
 
@@ -225,28 +226,28 @@ def positions_rotation(dic):
 
     """
     dic["site_fipnum"] = [1] * (
-        dic["site_noCells"][0] * dic["site_noCells"][1] * dic["site_noCells"][2]
+        dic["site_num_cells"][0] * dic["site_num_cells"][1] * dic["site_num_cells"][2]
     )
     dic["site_wellijk"] = []
     dic["site_sensor"] = [0, 0, 0]
     dic["site_fault"] = [[0, 0, 0], [0, 0, 0]]
-    for j, _ in enumerate(dic["wellCoord"]):
-        if dic["wellCoord"][j][0] in pd.Interval(
+    for j, _ in enumerate(dic["well_coords"]):
+        if dic["well_coords"][j][0] in pd.Interval(
             dic["site_location"][0], dic["site_location"][3]
-        ) and dic["wellCoord"][j][1] in pd.Interval(
+        ) and dic["well_coords"][j][1] in pd.Interval(
             dic["site_location"][1], dic["site_location"][4]
         ):
             dic["site_wellijk"].append([])
             w_ij = pd.Series(
-                abs(dic["wellCoord"][j][0] - dic["site_xc"])
-                + abs(dic["wellCoord"][j][1] - dic["site_yc"])
+                abs(dic["well_coords"][j][0] - dic["site_xc"])
+                + abs(dic["well_coords"][j][1] - dic["site_yc"])
             ).argmin()
-            w_j = np.floor(w_ij / dic["site_noCells"][0])
-            w_i = 1 + dic["site_noCells"][0] - w_ij + (w_j) * dic["site_noCells"][0]
+            w_j = np.floor(w_ij / dic["site_num_cells"][0])
+            w_i = 1 + dic["site_num_cells"][0] - w_ij + (w_j) * dic["site_num_cells"][0]
             dic["site_wellijk"][j].append(int(w_i) + 2)
             dic["site_wellijk"][j].append(int(w_j))
             for _, (well_coord, cord) in enumerate(
-                zip(dic["wellCoord"][j], ["zmz", "zmz"])
+                zip(dic["well_coords"][j], ["zmz", "zmz"])
             ):
                 midpoints = dic[f"site_{cord}_mid"]
                 dic["site_wellijk"][j].append(
@@ -254,30 +255,31 @@ def positions_rotation(dic):
                 )
     for k, cord in enumerate(["xmx", "ymy", "zmz"]):
         midpoints = dic[f"site_{cord}_mid"]
-        dic["site_fault"][0][k] = pd.Series(
-            abs(dic["fault_site"][0][k] - midpoints)
-        ).argmin()
-        dic["site_fault"][1][k] = pd.Series(
-            abs(dic["fault_site"][1][k] - midpoints)
-        ).argmin()
+        if k < 2:
+            dic["site_fault"][0][k] = pd.Series(
+                abs(dic["fault_site"][0][k] - midpoints)
+            ).argmin()
+            dic["site_fault"][1][k] = pd.Series(
+                abs(dic["fault_site"][1][k] - midpoints)
+            ).argmin()
         dic["site_sensor"][k] = pd.Series(
-            abs(dic["sensor_location"][k] - midpoints)
+            abs(dic["sensor_coords"][k] - midpoints)
         ).argmin()
     sensor_ind = (
         dic["site_sensor"][0]
-        + dic["site_sensor"][1] * dic["site_noCells"][0]
-        + dic["site_sensor"][2] * dic["site_noCells"][0] * dic["site_noCells"][1]
+        + dic["site_sensor"][1] * dic["site_num_cells"][0]
+        + dic["site_sensor"][2] * dic["site_num_cells"][0] * dic["site_num_cells"][1]
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor",
         sensor_ind,
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor_location",
-        dic["sensor_location"],
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor_coords",
+        dic["sensor_coords"],
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensorijk",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensorijk",
         dic["site_sensor"],
     )
 
@@ -294,20 +296,20 @@ def positions_site(dic):
 
     """
     dic["site_fipnum"] = [1] * (
-        dic["site_noCells"][0] * dic["site_noCells"][1] * dic["site_noCells"][2]
+        dic["site_num_cells"][0] * dic["site_num_cells"][1] * dic["site_num_cells"][2]
     )
     dic["site_wellijk"] = []
     dic["site_sensor"] = [0, 0, 0]
     dic["site_fault"] = [[0, 0, 0], [0, 0, 0]]
-    for j, _ in enumerate(dic["wellCoord"]):
-        if dic["wellCoord"][j][0] in pd.Interval(
+    for j, _ in enumerate(dic["well_coords"]):
+        if dic["well_coords"][j][0] in pd.Interval(
             dic["site_location"][0], dic["site_location"][3]
-        ) and dic["wellCoord"][j][1] in pd.Interval(
+        ) and dic["well_coords"][j][1] in pd.Interval(
             dic["site_location"][1], dic["site_location"][4]
         ):
             dic["site_wellijk"].append([])
             for _, (well_coord, cord) in enumerate(
-                zip(dic["wellCoord"][j], ["xmx", "ymy", "zmz", "zmz"])
+                zip(dic["well_coords"][j], ["xmx", "ymy", "zmz", "zmz"])
             ):
                 midpoints = dic[f"site_{cord}_mid"]
                 dic["site_wellijk"][j].append(
@@ -315,30 +317,31 @@ def positions_site(dic):
                 )
     for k, cord in enumerate(["xmx", "ymy", "zmz"]):
         midpoints = dic[f"site_{cord}_mid"]
-        dic["site_fault"][0][k] = pd.Series(
-            abs(dic["fault_site"][0][k] - midpoints)
-        ).argmin()
-        dic["site_fault"][1][k] = pd.Series(
-            abs(dic["fault_site"][1][k] - midpoints)
-        ).argmin()
+        if k < 2:
+            dic["site_fault"][0][k] = pd.Series(
+                abs(dic["fault_site"][0][k] - midpoints)
+            ).argmin()
+            dic["site_fault"][1][k] = pd.Series(
+                abs(dic["fault_site"][1][k] - midpoints)
+            ).argmin()
         dic["site_sensor"][k] = pd.Series(
-            abs(dic["sensor_location"][k] - midpoints)
+            abs(dic["sensor_coords"][k] - midpoints)
         ).argmin()
     sensor_ind = (
         dic["site_sensor"][0]
-        + dic["site_sensor"][1] * dic["site_noCells"][0]
-        + dic["site_sensor"][2] * dic["site_noCells"][0] * dic["site_noCells"][1]
+        + dic["site_sensor"][1] * dic["site_num_cells"][0]
+        + dic["site_sensor"][2] * dic["site_num_cells"][0] * dic["site_num_cells"][1]
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor",
         sensor_ind,
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensor_location",
-        dic["sensor_location"],
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor_coords",
+        dic["sensor_coords"],
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/sensorijk",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensorijk",
         dic["site_sensor"],
     )
 
@@ -368,13 +371,13 @@ def positions_reference(dic):
                     dic["reference_fipnum"].append(1)
                 else:
                     dic["reference_fipnum"].append(2)
-    dic["reference_wellijk"] = [[] for _ in range(len(dic["wellCoord"]))]
+    dic["reference_wellijk"] = [[] for _ in range(len(dic["well_coords"]))]
     dic["reference_fault"] = [0, 0, 0]
     dic["reference_site_fault"] = [[0, 0, 0], [0, 0, 0]]
     dic["reference_sensor"] = [0, 0, 0]
-    for j, _ in enumerate(dic["wellCoord"]):
+    for j, _ in enumerate(dic["well_coords"]):
         for i, (well_coord, cord) in enumerate(
-            zip(dic["wellCoord"][j], ["xmx", "ymy", "zmz", "zmz"])
+            zip(dic["well_coords"][j], ["xmx", "ymy", "zmz", "zmz"])
         ):
             midpoints = dic[f"reference_{cord}_mid"]
             dic["reference_wellijk"][j].append(
@@ -382,34 +385,35 @@ def positions_reference(dic):
             )
     for i, cord in enumerate(["xmx", "ymy", "zmz"]):
         midpoints = dic[f"reference_{cord}_mid"]
-        dic["reference_fault"][i] = pd.Series(
-            abs(dic["fault_location"][i] - midpoints)
-        ).argmin()
-        dic["reference_site_fault"][0][i] = pd.Series(
-            abs(dic["fault_site"][0][i] - midpoints)
-        ).argmin()
-        dic["reference_site_fault"][1][i] = pd.Series(
-            abs(dic["fault_site"][1][i] - midpoints)
-        ).argmin()
+        if i < 2:
+            dic["reference_fault"][i] = pd.Series(
+                abs(dic["fault_regional"][i] - midpoints)
+            ).argmin()
+            dic["reference_site_fault"][0][i] = pd.Series(
+                abs(dic["fault_site"][0][i] - midpoints)
+            ).argmin()
+            dic["reference_site_fault"][1][i] = pd.Series(
+                abs(dic["fault_site"][1][i] - midpoints)
+            ).argmin()
         dic["reference_sensor"][i] = pd.Series(
-            abs(dic["sensor_location"][i] - midpoints)
+            abs(dic["sensor_coords"][i] - midpoints)
         ).argmin()
     sensor_ind = (
         dic["reference_sensor"][0]
-        + dic["reference_sensor"][1] * dic["reference_noCells"][0]
+        + dic["reference_sensor"][1] * dic["reference_num_cells"][0]
         + dic["reference_sensor"][2]
-        * dic["reference_noCells"][0]
-        * dic["reference_noCells"][1]
+        * dic["reference_num_cells"][0]
+        * dic["reference_num_cells"][1]
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/reference/sensor",
+        f"{dic['fol']}/output/reference/sensor",
         sensor_ind,
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/reference/sensor_location",
-        dic["sensor_location"],
+        f"{dic['fol']}/output/reference/sensor_coords",
+        dic["sensor_coords"],
     )
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/reference/sensorijk",
+        f"{dic['fol']}/output/reference/sensorijk",
         dic["reference_sensor"],
     )

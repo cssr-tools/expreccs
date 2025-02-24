@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'expreccs'
-copyright = '2025, NORCE Norwegian Research Centre AS'
+copyright = '2023-2025, NORCE Norwegian Research Centre AS'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

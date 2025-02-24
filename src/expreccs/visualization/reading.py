@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0912
 
-""""
+"""
 Script to read OPM Flow output files
 """
 
@@ -10,6 +10,9 @@ import os
 import datetime
 import numpy as np
 import pandas as pd
+from resdata.summary import Summary
+from resdata.grid import Grid
+from resdata.resfile import ResdataFile
 
 try:
     from opm.io.ecl import ESmry as OpmSmry
@@ -17,13 +20,7 @@ try:
     from opm.io.ecl import ERst as OpmRst
     from opm.io.ecl import EGrid as OpmGrid
 except ImportError:
-    print("The opm Python package was not found, using resdata")
-try:
-    from resdata.summary import Summary
-    from resdata.grid import Grid
-    from resdata.resfile import ResdataFile
-except ImportError:
-    print("The resdata Python package was not found, using opm")
+    pass
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
@@ -44,7 +41,7 @@ def reading_resdata(dic, loadnpy=True):
     """
     for fol in dic["folders"]:
         cwd = os.getcwd()
-        os.chdir(f"{dic['exe']}/{fol}/output")
+        os.chdir(f"{fol}/output")
         folders = sorted([name for name in os.listdir(".") if os.path.isdir(name)])
         dic[f"{fol}_sites"] = folders[2:]
         os.chdir(cwd)
@@ -67,7 +64,7 @@ def reading_resdata(dic, loadnpy=True):
                 name = res[:-2]
             else:
                 name = res
-            case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
+            case = fol + f"/output/{res}/{res.upper()}"
             dic[f"{fol}/{res}_rst"] = ResdataFile(case + ".UNRST")
             dic[f"{fol}/{res}_ini"] = ResdataFile(case + ".INIT")
             dic[f"{fol}/{res}_grid"] = Grid(case + ".EGRID")
@@ -112,24 +109,14 @@ def resdata_load_data(dic, fol, res, name):
         dic (dict): Modified global dictionary
 
     """
-    dic[f"{fol}/{res}_rst_seconds"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
+    dic[f"{fol}/{res}_rst_seconds"] = np.load(fol + f"/output/{name}/schedule.npy")
+    dic[f"{fol}/{res}_nowells"] = np.load(fol + f"/output/{name}/nowells.npy")
+    dic[f"{fol}/{res}_sensor"] = int(np.load(fol + f"/output/{name}/sensor.npy"))
+    dic[f"{fol}/{res}_sensor_coords"] = np.load(
+        fol + f"/output/{name}/sensor_coords.npy"
     )
-    dic[f"{fol}/{res}_nowells"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{name}/nowells.npy"
-    )
-    dic[f"{fol}/{res}_sensor"] = int(
-        np.load(dic["exe"] + "/" + fol + f"/output/{name}/sensor.npy")
-    )
-    dic[f"{fol}/{res}_sensor_location"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{name}/sensor_location.npy"
-    )
-    dic[f"{fol}/{res}_nowells_site"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{name}/nowells_site.npy"
-    )
-    dic[f"{fol}/{res}_sensorijk"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{name}/sensorijk.npy"
-    )
+    dic[f"{fol}/{res}_nowells_site"] = np.load(fol + f"/output/{name}/nowells_site.npy")
+    dic[f"{fol}/{res}_sensorijk"] = np.load(fol + f"/output/{name}/sensorijk.npy")
     dic[f"{fol}/{res}_dates"] = dic[f"{fol}/{res}_rst"].dates
     dic[f"{fol}/{res}_smsp_dates"] = dic[f"{fol}/{res}_smsp"].dates
     ini = dic[f"{fol}/{res}_smsp"].start_date
@@ -241,10 +228,10 @@ def resdata_arrays(dic, fol, res, loadnpy):
     )
     if loadnpy:
         dic[f"{fol}/{dic['namel']}_xmx"] = np.load(
-            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_xmx.npy"
+            fol + f"/output/{dic['namef']}/{dic['namel']}_xmx.npy"
         )
         dic[f"{fol}/{dic['namel']}_ymy"] = np.load(
-            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
+            fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
         )
         (
             dic[f"{fol}/{dic['namel']}_xcor"],
@@ -268,9 +255,7 @@ def handle_smsp_time(dic, fol, res, name):
         dic (dict): Modified global dictionary
 
     """
-    dic[f"{fol}/{res}_rst_seconds"] = np.load(
-        dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
-    )
+    dic[f"{fol}/{res}_rst_seconds"] = np.load(fol + f"/output/{name}/schedule.npy")
     dic[f"{fol}/{res}_smsp_report_step"] = dic[f"{fol}/{res}_smsp"][
         "WBHP:INJ0"
     ].report_step
@@ -316,7 +301,7 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
     """
     for fol in dic["folders"]:
         cwd = os.getcwd()
-        os.chdir(f"{dic['exe']}/{fol}/output")
+        os.chdir(f"{fol}/output")
         folders = sorted([name for name in os.listdir(".") if os.path.isdir(name)])
         dic[f"{fol}_sites"] = folders[2:]
         os.chdir(cwd)
@@ -342,24 +327,24 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
             if loadnpy:
                 define_cases(dic, fol, folders)
                 dic[f"{fol}/{res}_rst_seconds"] = np.load(
-                    dic["exe"] + "/" + fol + f"/output/{name}/schedule.npy"
+                    fol + f"/output/{name}/schedule.npy"
                 )
                 dic[f"{fol}/{res}_nowells"] = np.load(
-                    dic["exe"] + "/" + fol + f"/output/{name}/nowells.npy"
+                    fol + f"/output/{name}/nowells.npy"
                 )
                 dic[f"{fol}/{res}_nowells_site"] = np.load(
-                    dic["exe"] + "/" + fol + f"/output/{name}/nowells_site.npy"
+                    fol + f"/output/{name}/nowells_site.npy"
                 )
                 dic[f"{fol}/{res}_sensor"] = int(
-                    np.load(dic["exe"] + "/" + fol + f"/output/{name}/sensor.npy")
+                    np.load(fol + f"/output/{name}/sensor.npy")
                 )
-                dic[f"{fol}/{res}_sensor_location"] = np.load(
-                    dic["exe"] + "/" + fol + f"/output/{name}/sensor_location.npy"
+                dic[f"{fol}/{res}_sensor_coords"] = np.load(
+                    fol + f"/output/{name}/sensor_coords.npy"
                 )
                 dic[f"{fol}/{res}_sensorijk"] = np.load(
-                    dic["exe"] + "/" + fol + f"/output/{name}/sensorijk.npy"
+                    fol + f"/output/{name}/sensorijk.npy"
                 )
-            case = dic["exe"] + "/" + fol + f"/output/{res}/{res.upper()}"
+            case = fol + f"/output/{res}/{res.upper()}"
             dic[f"{fol}/{res}_rst"] = OpmRst(case + ".UNRST")
             dic[f"{fol}/{res}_ini"] = OpmFile(case + ".INIT")
             dic[f"{fol}/{res}_grid"] = OpmGrid(case + ".EGRID")
@@ -535,10 +520,10 @@ def opm_arrays(dic, fol, res, loadnpy):
     ]
     if loadnpy:
         dic[f"{fol}/{dic['namel']}_xmx"] = np.load(
-            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_xmx.npy"
+            fol + f"/output/{dic['namef']}/{dic['namel']}_xmx.npy"
         )
         dic[f"{fol}/{dic['namel']}_ymy"] = np.load(
-            dic["exe"] + "/" + fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
+            fol + f"/output/{dic['namef']}/{dic['namel']}_ymy.npy"
         )
         (
             dic[f"{fol}/{dic['namel']}_xcor"],

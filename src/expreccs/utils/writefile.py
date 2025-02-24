@@ -30,13 +30,13 @@ def write_files(dic, reservoir):
     var = {"dic": dic, "reservoir": name}
     filledtemplate = mytemplate.render(**var)
     with open(
-        f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/{reservoir.upper()}.DATA",
+        f"{dic['fol']}/preprocessing/{reservoir}/{reservoir.upper()}.DATA",
         "w",
         encoding="utf8",
     ) as file:
         file.write(filledtemplate)
     with open(
-        f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/FIPNUM_{name.upper()}.INC",
+        f"{dic['fol']}/preprocessing/{reservoir}/FIPNUM_{name.upper()}.INC",
         "w",
         encoding="utf8",
     ) as file:
@@ -46,7 +46,7 @@ def write_files(dic, reservoir):
         file.write("/\n")
     if name == "regional":
         with open(
-            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTX_{name.upper()}.INC",
+            f"{dic['fol']}/preprocessing/{reservoir}/MULTX_{name.upper()}.INC",
             "w",
             encoding="utf8",
         ) as file:
@@ -55,7 +55,7 @@ def write_files(dic, reservoir):
                 file.write(f"{multx} \n")
             file.write("/\n")
         with open(
-            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTY_{name.upper()}.INC",
+            f"{dic['fol']}/preprocessing/{reservoir}/MULTY_{name.upper()}.INC",
             "w",
             encoding="utf8",
         ) as file:
@@ -64,7 +64,7 @@ def write_files(dic, reservoir):
                 file.write(f"{multy} \n")
             file.write("/\n")
         with open(
-            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTX-_{name.upper()}.INC",
+            f"{dic['fol']}/preprocessing/{reservoir}/MULTX-_{name.upper()}.INC",
             "w",
             encoding="utf8",
         ) as file:
@@ -73,7 +73,7 @@ def write_files(dic, reservoir):
                 file.write(f"{multx} \n")
             file.write("/\n")
         with open(
-            f"{dic['exe']}/{dic['fol']}/preprocessing/{reservoir}/MULTY-_{name.upper()}.INC",
+            f"{dic['fol']}/preprocessing/{reservoir}/MULTY-_{name.upper()}.INC",
             "w",
             encoding="utf8",
         ) as file:
@@ -88,16 +88,16 @@ def write_files(dic, reservoir):
     var = {"dic": dic}
     filledtemplate = mytemplate.render(**var)
     with open(
-        f"{dic['exe']}/{dic['fol']}/jobs/saturation_functions.py",
+        f"{dic['fol']}/jobs/saturation_functions.py",
         "w",
         encoding="utf8",
     ) as file:
         file.write(filledtemplate)
-    os.system(f"chmod u+x {dic['exe']}/{dic['fol']}/jobs/saturation_functions.py")
+    os.system(f"chmod u+x {dic['fol']}/jobs/saturation_functions.py")
     prosc = subprocess.run(
         [
             "python",
-            f"{dic['exe']}/{dic['fol']}/jobs/saturation_functions.py",
+            f"{dic['fol']}/jobs/saturation_functions.py",
             "-r",
             f"{reservoir}",
         ],
@@ -114,7 +114,6 @@ def write_files(dic, reservoir):
         filledtemplate = mytemplate.render(**var)
         with open(
             os.path.join(
-                dic["exe"],
                 dic["fol"],
                 "preprocessing",
                 reservoir,
@@ -127,7 +126,6 @@ def write_files(dic, reservoir):
     filledtemplate = dic["gridtemplate"].render(**var)
     with open(
         os.path.join(
-            dic["exe"],
             dic["fol"],
             "preprocessing",
             reservoir,
@@ -153,28 +151,29 @@ def write_properties(dic):
     dic["schedule_r"] = [0]
     dic["schedule_s"] = [0]
     for nrst in dic["inj"]:
-        for _ in range(round(nrst[0] / nrst[1])):
-            dic["schedule_r"].append(dic["schedule_r"][-1] + nrst[1] * 86400.0)
-        for _ in range(round(nrst[0] / nrst[2])):
-            dic["schedule_s"].append(dic["schedule_s"][-1] + nrst[2] * 86400.0)
-    np.save(f"{dic['exe']}/{dic['fol']}/output/regional/schedule", dic["schedule_r"])
-    np.save(f"{dic['exe']}/{dic['fol']}/output/reference/schedule", dic["schedule_s"])
+        for _ in range(round(nrst[0][0] / nrst[0][1])):
+            dic["schedule_r"].append(dic["schedule_r"][-1] + nrst[0][1] * 86400.0)
+        for _ in range(round(nrst[0][0] / nrst[0][2])):
+            dic["schedule_s"].append(dic["schedule_s"][-1] + nrst[0][2] * 86400.0)
+    np.save(f"{dic['fol']}/output/regional/schedule", dic["schedule_r"])
+    np.save(f"{dic['fol']}/output/reference/schedule", dic["schedule_s"])
     np.save(
-        f"{dic['exe']}/{dic['fol']}/output/site_{dic['site_bctype']}/schedule",
+        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/schedule",
         dic["schedule_s"],
     )
-    for fil in ["reference", "regional", f"site_{dic['site_bctype']}"]:
-        if fil == f"site_{dic['site_bctype']}":
+    for fil in ["reference", "regional", f"site_{dic['site_bctype'][0]}"]:
+        if fil == f"site_{dic['site_bctype'][0]}":
             np.save(
-                f"{dic['exe']}/{dic['fol']}/output/{fil}/nowells",
+                f"{dic['fol']}/output/{fil}/nowells",
                 len(dic["site_wellijk"]),
             )
         else:
             np.save(
-                f"{dic['exe']}/{dic['fol']}/output/{fil}/nowells", len(dic["wellCoord"])
+                f"{dic['fol']}/output/{fil}/nowells",
+                len(dic["well_coords"]),
             )
         np.save(
-            f"{dic['exe']}/{dic['fol']}/output/{fil}/nowells_site",
+            f"{dic['fol']}/output/{fil}/nowells_site",
             len(dic["site_wellijk"]),
         )
 
@@ -214,14 +213,14 @@ def write_folders(dic):
         None
 
     """
-    if not os.path.exists(f"{dic['exe']}/{dic['fol']}"):
-        os.system(f"mkdir {dic['exe']}/{dic['fol']}")
+    if not os.path.exists(f"{dic['fol']}"):
+        os.system(f"mkdir {dic['fol']}")
     for fil in ["preprocessing", "jobs", "output", "postprocessing"]:
-        if not os.path.exists(f"{dic['exe']}/{dic['fol']}/{fil}"):
-            os.system(f"mkdir {dic['exe']}/{dic['fol']}/{fil}")
-    for fil in ["reference", "regional", f"site_{dic['site_bctype']}"]:
-        if not os.path.exists(f"{dic['exe']}/{dic['fol']}/preprocessing/{fil}"):
-            os.system(f"mkdir {dic['exe']}/{dic['fol']}/preprocessing/{fil}")
-        if not os.path.exists(f"{dic['exe']}/{dic['fol']}/output/{fil}"):
-            os.system(f"mkdir {dic['exe']}/{dic['fol']}/output/{fil}")
-    os.chdir(f"{dic['exe']}/{dic['fol']}")
+        if not os.path.exists(f"{dic['fol']}/{fil}"):
+            os.system(f"mkdir {dic['fol']}/{fil}")
+    for fil in ["reference", "regional", f"site_{dic['site_bctype'][0]}"]:
+        if not os.path.exists(f"{dic['fol']}/preprocessing/{fil}"):
+            os.system(f"mkdir {dic['fol']}/preprocessing/{fil}")
+        if not os.path.exists(f"{dic['fol']}/output/{fil}"):
+            os.system(f"mkdir {dic['fol']}/output/{fil}")
+    os.chdir(f"{dic['fol']}")

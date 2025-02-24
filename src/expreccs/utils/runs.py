@@ -30,8 +30,8 @@ def simulations(dic, name):
 
     """
     os.system(
-        f"{dic['flow']} --output-dir={dic['exe']}/{dic['fol']}/output/{name} "
-        f"{dic['exe']}/{dic['fol']}/preprocessing/{name}/{name.upper()}.DATA & wait\n"
+        f"{dic['flow']} --output-dir={dic['fol']}/output/{name} "
+        f"{dic['fol']}/preprocessing/{name}/{name.upper()}.DATA & wait\n"
     )
 
 
@@ -49,7 +49,7 @@ def plotting(dic, time):
     """
     dic["folders"] = [dic["fol"]]
     dic["time"] = time
-    os.chdir(f"{dic['exe']}/{dic['fol']}/postprocessing")
+    os.chdir(f"{dic['fol']}/postprocessing")
     plot_exe = [
         "python3",
         f"{dic['pat']}/visualization/plotting.py",
@@ -83,16 +83,16 @@ def run_models(dic):
         write_files(dic, "regional")
         simulations(dic, "regional")
     if dic["mode"] in ["all", "site", "noreference"]:
-        if dic["site_bctype"] in ["flux", "pres", "pres2p"]:
+        if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
             if dic["reading"] == "resdata":
                 aquaflux_resdata(dic)
             else:
                 aquaflux_opm(dic)
-            if dic["site_bctype"] in ["pres", "pres2p"]:
+            if dic["site_bctype"][0] in ["pres", "pres2p"]:
                 temporal_interpolation_pressure(dic)
             else:
                 temporal_interpolation_flux(dic)
-        elif dic["site_bctype"] == "porvproj":
+        elif dic["site_bctype"][0] == "porvproj":
             porv_projections(dic)
-        write_files(dic, f"site_{dic['site_bctype']}")
-        simulations(dic, f"site_{dic['site_bctype']}")
+        write_files(dic, f"site_{dic['site_bctype'][0]}")
+        simulations(dic, f"site_{dic['site_bctype'][0]}")
