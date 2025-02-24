@@ -3,7 +3,9 @@ Installation
 ============
 
 The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
-While using package managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.
+While using package managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.  In addition, the current 
+supported Python versions are 3.11 to 3.12. We will update the documentation when Python3.13 is supported (e.g., the resdata Python 
+package is not yet available via pip install in Python 3.13).
 
 Python package
 --------------
@@ -148,9 +150,6 @@ package (see the `prerequisites <https://opm-project.org/?page_id=239>`_, which 
 
 
 This builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH. Then after execution, deactivate and activate the Python virtual environment.
-
-Regarding the resdata Python package, it might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10).
-Then, for macOS users, you need to use a Python version equal or higher than 3.10.
 
 For macOS, the LaTeX dependency can be installed from https://www.tug.org/mactex/. If after installation you still face an error due to LaTeX 
 when executing expreccs, then add the flag **-latex 0** to expreccs.

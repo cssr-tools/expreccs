@@ -111,7 +111,7 @@ of the input decks to include the dynamic boundary updates.</p>
 <p>where</p>
 <dl class="option-list">
 <dt><kbd><span class="option">-i</span></kbd></dt>
-<dd><p>The base name of the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a>; or paths (space between them and quotation marks) to the regional and site models (‘input.txt’ by default).</p>
+<dd><p>The base name of the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a>; or paths (space between them and quotation marks) to the regional and site models (‘input.toml’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-o</span></kbd></dt>
 <dd><p>The base name of the <a class="reference internal" href="output_folder.html"><span class="doc">output folder</span></a> (‘output’ by default).</p>
@@ -125,11 +125,11 @@ of the input decks to include the dynamic boundary updates.</p>
 <dt><kbd><span class="option">-p</span></kbd></dt>
 <dd><p>Create nice figures in the postprocessing folder (‘no’ by default).</p>
 </dd>
-<dt><kbd><span class="option">-r</span></kbd></dt>
-<dd><p>Using the ‘opm’ or ‘resdata’ python package (‘resdata’ by default).</p>
-</dd>
 <dt><kbd><span class="option">-u</span></kbd></dt>
 <dd><p>Using ‘gasoil’ or ‘gaswater’ co2store implementation (‘gaswater’ by default).</p>
+</dd>
+<dt><kbd><span class="option">-r</span></kbd></dt>
+<dd><p>Using the ‘opm’ or ‘resdata’ python package (‘resdata’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-t</span></kbd></dt>
 <dd><p>Grades to rotate the site geological model (‘0’ by default).</p>
@@ -150,8 +150,10 @@ of the input decks to include the dynamic boundary updates.</p>
 <dd><p>Set to 0 to not use LaTeX formatting (‘1’ by default).</p>
 </dd>
 </dl>
+<p>The valid flags for toml <strong>configuration file</strong> are -i, -o, -m, -c, -p, -u, -r, -t, -w, and -l.
+The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, and -w.</p>
 <p>In the <strong>configuration file</strong> the geological model is defined by generation
-of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults), wells, and defining schedules for the
+of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults, hysteresis), wells, and defining schedules for the
 operations (see the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> section).</p>
 </section>
 </section>
@@ -167,7 +169,7 @@ operations (see the <a class="reference internal" href="configuration_file.html"
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NORCE Norwegian Research Centre AS.</p>
+    <p>&#169; Copyright 2023-2025, NORCE Norwegian Research Centre AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

@@ -32,13 +32,13 @@ The current implementation supports the following executable with the argument o
 
 where 
 
--i  The base name of the :doc:`configuration file <./configuration_file>`; or paths (space between them and quotation marks) to the regional and site models ('input.txt' by default).
+-i  The base name of the :doc:`configuration file <./configuration_file>`; or paths (space between them and quotation marks) to the regional and site models ('input.toml' by default).
 -o  The base name of the :doc:`output folder <./output_folder>` ('output' by default).
 -m  Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
 -c  Generate metric plots for the current outputed folders ('compare') ('' by default).
 -p  Create nice figures in the postprocessing folder ('no' by default).
--r  Using the 'opm' or 'resdata' python package ('resdata' by default).
 -u  Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by default).
+-r  Using the 'opm' or 'resdata' python package ('resdata' by default).
 -t  Grades to rotate the site geological model ('0' by default).
 -b  Set the number of entries to skip the bc projections on the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side ('0,0,0,0' by default).
 -f  Frequency to evaluate the boundary pressures on the site between report steps in the site. Write an array, e.g., '2,7,3', to set the frequency in each site report step ('1' by default).
@@ -46,6 +46,9 @@ where
 -w  Set to 1 to print warnings ('0' by default).
 -l  Set to 0 to not use LaTeX formatting ('1' by default).
 
+The valid flags for toml **configuration file** are -i, -o, -m, -c, -p, -u, -r, -t, -w, and -l. 
+The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, and -w.
+
 In the **configuration file** the geological model is defined by generation
-of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults), wells, and defining schedules for the
+of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults, hysteresis), wells, and defining schedules for the
 operations (see the :doc:`configuration file <./configuration_file>` section).

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0914,C0302
 
-""""
+"""
 Script to plot the top surface for the reference, regional, and site reservoirs.
 """
 
@@ -71,7 +71,6 @@ def main():
     dic = {"folders": [cmdargs["folder"].strip()]}
     dic["compare"] = cmdargs["compare"]  # No empty, then the create compare folder
     dic["time"] = float(cmdargs["time"])
-    dic["exe"] = os.getcwd()  # Path to the folder of the configuration file
     dic["plot"] = cmdargs["plot"]  # Parts of the workflow to plot
     dic["reading"] = cmdargs["reading"]  # Res or opm python package
     dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
@@ -109,17 +108,17 @@ def plot_results(dic):
     if dic["compare"]:
         dic["where"] = "compare/"
         dic["folders"] = sorted(
-            [name for name in os.listdir(".") if os.path.isdir(name)]
+            [os.path.abspath(name) for name in os.listdir(".") if os.path.isdir(name)]
         )
         if "compare" not in dic["folders"]:
-            os.system(f"mkdir {dic['exe']}/compare")
+            os.system("mkdir compare")
         else:
             dic["folders"].remove("compare")
-        dic["id"] = "compare" + dic["folders"][0] + "_"
+        dic["id"] = "compare" + dic["folders"][0].split("/")[-1] + "_"
     else:
-        dic["where"] = f"{dic['exe']}/{dic['folders'][0]}/postprocessing"
-        dic["id"] = dic["folders"][0] + "_"
-    dic["lfolders"] = [name.replace("_", " ") for name in dic["folders"]]
+        dic["where"] = f"{dic['folders'][0]}/postprocessing"
+        dic["id"] = dic["folders"][0].split("/")[-1] + "_"
+    dic["lfolders"] = [name.split("/")[-1].replace("_", " ") for name in dic["folders"]]
     plotting_settings(dic)
     if dic["reading"] == "resdata":
         reading_resdata(dic)
@@ -974,9 +973,9 @@ def over_time_sensor(dic, nqua, quantity):
                     linestyle=dic["linestyle"][-1 - j],
                     label=dic[f"l{res}"],
                 )
-            location = f"({dic[f'{fol}/{res}_sensor_location'][0]/1000.}, "
-            location += f"{dic[f'{fol}/{res}_sensor_location'][1]/1000.}, "
-            location += f"{dic[f'{fol}/{res}_sensor_location'][2]/1000.})"
+            location = f"({dic[f'{fol}/{res}_sensor_coords'][0]/1000.}, "
+            location += f"{dic[f'{fol}/{res}_sensor_coords'][1]/1000.}, "
+            location += f"{dic[f'{fol}/{res}_sensor_coords'][2]/1000.})"
     dic["axiss"][nqua].set_title(f"Sensor location {location} [km]")
     dic["axiss"][nqua].set_ylabel(f"{dic['units'][nqua]}")
     dic["axiss"][nqua].set_xlabel("Time")

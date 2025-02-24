@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "expreccs"
-description = "A framework to simulate regional and site reservoirs for CO2 storage"
+description = "A Python framework using OPM Flow to simulate regional and site reservoirs for CO2 storage"
 authors = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" },
 { name = "Tor Harald Sandve", email = "tosa@norceresearch.no" }]
 maintainers = [{ name = "David Landa-Marbán", email = "dmar@norceresearch.no" },
@@ -19,9 +19,6 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering",
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent"
@@ -34,7 +31,7 @@ dependencies = [
     "shapely",
     "matplotlib",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 
 [tool.setuptools.dynamic]
 version = {attr = "expreccs.__version__"}
@@ -49,3 +46,6 @@ Repository = "https://github.com/cssr-tools/expreccs"
 [tool.setuptools]
 packages.find.where = ["src"]
 platforms = ["all"]
+
+[project.optional-dependencies]
+opm = ["opm"]

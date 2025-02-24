@@ -390,7 +390,7 @@ def find_regional_cells(dic):
     dic["oprn"].insert(0, "--Copyright (C) 2025 NORCE")
     dic["oprn"].append("/")
     with open(
-        f"{dic['exe']}/{dic['freg']}/OPERNUM_EXPRECCS.INC",
+        f"{dic['freg']}/OPERNUM_EXPRECCS.INC",
         "w",
         encoding="utf8",
     ) as file:
@@ -400,7 +400,7 @@ def find_regional_cells(dic):
     dic["fipn"].insert(0, "--Copyright (C) 2025 NORCE")
     dic["fipn"].append("/")
     with open(
-        f"{dic['exe']}/{dic['freg']}/FIPNUM_EXPRECCS.INC",
+        f"{dic['freg']}/FIPNUM_EXPRECCS.INC",
         "w",
         encoding="utf8",
     ) as file:

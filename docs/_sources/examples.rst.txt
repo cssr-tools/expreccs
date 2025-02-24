@@ -9,34 +9,34 @@ Via configuration files
 Hello world
 -----------
 
-We consider the configuration file `example1.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1.txt>`_ in the 
+We consider the configuration file `example1.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/example1.toml>`_ in the 
 examples folder (the animation in the `GitHub home page <https://github.com/cssr-tools/expreccs>`_ was based on this configuration file). 
 If the results are to be saved in a folder called 'hello_world', this is achieved by the following command: 
 
 .. code-block:: bash
 
-    expreccs -i example1.txt -o hello_world
+    expreccs -i example1.toml -o hello_world
 
-Then we can change in line 14 the BC projections from the regional simulations from
+Then we can change in line 25 the BC type for the site from
 'flux' to 'pres', and run the following command to only simulate the site model:
 
 .. code-block:: bash
 
-    expreccs -i example1_pres.txt -o hello_world -m site
+    expreccs -i example1_pres.toml -o hello_world -m site
 
-We can do the same to add the pore volumes from the regional reservoir on the site boundaries by setting in line 14
-'porvproj', and to also visualize the results in PNGs figures, we run the following command:
+We can do the same to add the pore volumes from the regional reservoir on the site boundaries by setting in line 25
+'porvproj':
 
 .. code-block:: bash
 
-    expreccs -i example1_porvproj.txt -o hello_world -m site
+    expreccs -i example1_porvproj.toml -o hello_world -m site
 
 Finally, we consider the case where we add injector/producers on the site boundary, and to also visualize the results 
 in PNGs figures, we run the following command:
 
 .. code-block:: bash
 
-    expreccs -i example1_wells.txt -o hello_world -m site -p yes
+    expreccs -i example1_wells.toml -o hello_world -m site -p yes
 
 Below are some of the figures generated inside the postprocessing folder:
 
@@ -64,39 +64,39 @@ Below are some of the figures generated inside the postprocessing folder:
 Layered model 
 -------------
 
-The configuration file example2.txt set a more complex geological model with more grid cells (1 417 500). This was used
+The configuration file example2.toml set a more complex geological model with more grid cells (1 417 500). This was used
 to generate the animation (using ResInsight) in the :doc:`introduction section <./introduction>` by running
 
 .. code-block:: bash
 
-    expreccs -i example2.txt -m reference
+    expreccs -i example2.toml -m reference
 
 .. tip::
 
     This example shows how **expreccs** can be used to generate the requiered input files to run OPM Flow for heterogenous
     layered models at different grid sizes, which can be used for further studies such as optimization. Regarding the configuration 
-    files in `examples/newcases <https://github.com/cssr-tools/expreccs/tree/main/examples/newcases>`_, these are explained in 
-    `this manuscript <https://papers.ssrn.com/sol3/papers.cfm?abstract_id=5005237>`_.
+    files in `examples/paper_2025 <https://github.com/cssr-tools/expreccs/tree/main/examples/paper_2025>`_, these are explained in 
+    `this manuscript <https://doi.org/10.1016/j.geoen.2025.213733>`_.
 
 .. _back_coupling:
 
 Back-coupling (under development)
 ---------------------------------
 
-We consider the configuration file `example1_back.txt <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt>`_ in the examples folder.
+We consider the configuration file `example1_back.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.toml>`_ in the examples folder.
 The plan is to update properties (e.g., transmissibility multipliers) in the regional model from features (e.g., faults) in the site model (i.e., not included in the regional model).
 By running:
 
 .. code-block:: bash
 
-    expreccs -i example1_back.txt -o back-coupling -m all -p yes
+    expreccs -i example1_back.toml -o back-coupling -m all -p yes
 
 This is one of the generated figures in the back-coupling/postprocessing folder (named as back-coupling_summary_BPR_regional_reference.png):
 
 .. image:: ./figs/back-coupling_summary_BPR_regional_reference.png
 
 The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of 
-iteration is set to 10 in line 22 of the `configuration_file <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.txt>`_).
+iteration is set to 10 in the `configuration_file <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.toml>`_, "iterations = 10" in line 20).
 
 For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this can be achieved using 
 `plopm <https://github.com/cssr-tools/plopm>`_ by executing:
@@ -124,7 +124,7 @@ and to show the comparison for the summary vector FPR for iterations 1, 5, 7, an
 Via OPM Flow decks 
 ==================
 
-See/run the `test_generic_deck.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_generic_deck.py>`_ 
+See/run the `test_2_generic_deck.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_2_generic_deck.py>`_ 
 for an example where **expreccs** is used in two given models (regional and site, in this case they are created using
 the **expreccs** package, but in general can be any given geological models), generating a new input deck where
 the pressures are projected.
@@ -138,7 +138,7 @@ For example, to run the test, this can be achieved by executing:
 
 .. code-block:: bash
 
-    pytest --cov=expreccs --cov-report term-missing tests/test_generic_deck.py
+    pytest --cov=expreccs --cov-report term-missing tests/test_2_generic_deck.py
 
 To visualize/compare results between the model with static (input) and dynamic (generated by expreccs) boundary conditions, 
 we can use our friend `plopm <https://github.com/cssr-tools/plopm>`_: 

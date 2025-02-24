@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/cssr-tools/expreccs/actions/workflows/CI.yml/badge.svg)](https://github.com/cssr-tools/expreccs/actions/workflows/CI.yml)
-<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20to%203.12-blue.svg"></a>
+<a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.11%20to%203.12-blue.svg"></a>
 [![Code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![DOI](https://zenodo.org/badge/760077220.svg)](https://zenodo.org/doi/10.5281/zenodo.12100600)
@@ -48,22 +48,20 @@ You can run _expreccs_ as a single command line:
 ```
 expreccs -i name(s)_of_input_file(s)
 ```
-Run `expreccs --help` to see all possible command line argument options. Inside the `configuration_file.txt` file you provide the path to the
+Run `expreccs --help` to see all possible command line argument options. Inside the `configuration_file.toml` file you provide the path to the
 flow executable and simulation parameters. To write dynamic boundary conditions from a given regional model to a site model, this can be achieved by giving the path to the models (i.e., without a configuration file). See the [_examples_](https://github.com/cssr-tools/expreccs/tree/main/examples) and [_tests_](https://github.com/cssr-tools/expreccs/tree/main/tests/configs) folders.
 
 ## Getting started
 See the [_examples_](https://cssr-tools.github.io/expreccs/examples.html) in the [_documentation_](https://cssr-tools.github.io/expreccs/introduction.html).
 
 ## Citing
-If you would like to cite this repository:
-
 * Landa-Marbán, D. 2024. expreccs: A Python framework using OPM Flow to simulate regional and site reservoirs for CO2 storage. https://doi.org/10.5281/zenodo.12100600.
 
 ## Publications
 The following is a list of manuscripts in which _expreccs_ is used:
 
-1. Tveit, S., Gasda, S.E., Landa-Marbán, D., Sandve, T.H., submitted. A hierarchical approach for modeling regional pressure interference in multi-site CO2 operations. http://dx.doi.org/10.2139/ssrn.5005237.
-1. Gasda, S.E., et al., 2024. Quantifying the impact of regional-scale pressure interference on commercial CO2 storage targets for multiple licenses. http://dx.doi.org/10.2139/ssrn.5053633.
+1. Tveit, S., Gasda, S.E., Landa-Marbán, D., Sandve, T.H., 2025. A hierarchical approach for modeling regional pressure interference in multi-site CO2 operations. Geoenergy Science and Engineering 248, 13733. https://doi.org/10.1016/j.geoen.2025.213733.
+1. Gasda, S., Sandve, T.H., Tveit, S., Landa-Marbán, D., Pettersson, P., Krumscheid, S., Mykkeltvedt, T.S., Dahle, H., 2024. Quantifying the impact of regional-scale pressure interference on commercial CO2 storage targets for multiple licenses. Proceedings of the 17th Greenhouse Gas Control Technologies Conference (GHGT-17) 20-24 October 2024. http://dx.doi.org/10.2139/ssrn.5053633.
 
 ## About expreccs
 The _expreccs_ package is funded by Harbour Energy, Equinor, Shell, and the Research Council of Norway [project number 336294].

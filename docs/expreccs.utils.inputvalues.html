@@ -87,40 +87,24 @@
 <span id="expreccs-utils-inputvalues-module"></span><h1>expreccs.utils.inputvalues module<a class="headerlink" href="#module-expreccs.utils.inputvalues" title="Link to this heading"></a></h1>
 <p>Utiliy functions to set the requiried input values by expreccs.</p>
 <dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.inputvalues.check_entries">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">check_entries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.check_entries" title="Link to this definition"></a></dt>
+<dd><p>Check the entries from the toml configuration file</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.inputvalues.process_input">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">process_input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_file</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.process_input" title="Link to this definition"></a></dt>
-<dd><p>Function to process the input file</p>
+<dd><p>Function to process the configuration file</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>in_file (str): Name of the input text file</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.inputvalues.readthefirstpart">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">readthefirstpart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.readthefirstpart" title="Link to this definition"></a></dt>
-<dd><p>Function to process the lines in the configuration file.</p>
-<dl>
-<dt>Args:</dt><dd><p>lol (list): List of lines read from the input file</p>
-<p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-<p>inc (int): Number of line in the input file before the first injection value</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="expreccs.utils.inputvalues.readthesecondpart">
-<span class="sig-prename descclassname"><span class="pre">expreccs.utils.inputvalues.</span></span><span class="sig-name descname"><span class="pre">readthesecondpart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.inputvalues.readthesecondpart" title="Link to this definition"></a></dt>
-<dd><p>Function to process the remaining lines in the configuration file</p>
-<dl>
-<dt>Args:</dt><dd><p>lol (list): List of lines read from the input file</p>
-<p>dic (dict): Global dictionary</p>
-<p>index (int): Number of line in the input file</p>
+<p>in_file (str): Name of the input toml file</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
@@ -140,7 +124,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NORCE Norwegian Research Centre AS.</p>
+    <p>&#169; Copyright 2023-2025, NORCE Norwegian Research Centre AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

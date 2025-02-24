@@ -3,6 +3,7 @@
 
 """Main script for expreccs"""
 import os
+import sys
 import time
 import argparse
 import warnings
@@ -22,12 +23,12 @@ def expreccs():
     """Main function for the expreccs executable"""
     start_time = time.monotonic()
     cmdargs = load_parser()
+    check_cmdargs(cmdargs)
     if int(cmdargs["warnings"]) == 0:
         warnings.warn = lambda *args, **kwargs: None
     file = (cmdargs["input"].strip()).split(" ")  # Name of the input file
-    dic = {"fol": cmdargs["output"]}  # Name for the output folder
+    dic = {"fol": os.path.abspath(cmdargs["output"])}  # Name for the output folder
     dic["pat"] = os.path.dirname(__file__)[:-5]  # Path to the expreccs folder
-    dic["exe"] = os.getcwd()  # Path to the folder of the input.txt file
     dic["mode"] = cmdargs["mode"]  # Parts of the workflow to run
     dic["plot"] = cmdargs["plot"]  # Generate some nice plots
     dic["co2store"] = cmdargs["use"]  # Implementation of co2store
@@ -53,12 +54,11 @@ def expreccs():
         for i, name in enumerate(["reg", "sit"]):
             dic[name] = file[i].split("/")[-1]
             if "/" in file[i]:
-                dic[f"f{name}"] = "/".join(file[i].split("/")[:-1])
+                dic[f"f{name}"] = os.path.abspath("/".join(file[i].split("/")[:-1]))
             else:
-                dic[f"f{name}"] = dic["exe"]
+                dic[f"f{name}"] = os.path.abspath(".")
         create_deck(dic)
         return
-
     # Process the input file (open expreccs.utils.inputvalues to see the abbreviations meaning)
     process_input(dic, file[0])
 
@@ -84,14 +84,17 @@ def expreccs():
 def load_parser():
     """Argument options"""
     parser = argparse.ArgumentParser(
-        description="Main method to simulate regional and site reservoirs for CO2 storage."
+        description="Main method to simulate regional and site reservoirs for CO2 storage. "
+        "The valid flags for toml configuration files are -i, -o, -m, -c, -p, -u, -r, -t, "
+        "-w, -l. The valid flags for paths to the regional and site folders are -i, -o, -b, "
+        "-f, -a, -w",
     )
     parser.add_argument(
         "-i",
         "--input",
-        default="input.txt",
+        default="input.toml",
         help="The base name of the configuration file; or paths (space between them and "
-        "quotation marks) to the regional and site models ('input.txt' by default).",
+        "quotation marks) to the regional and site models ('input.toml' by default).",
     )
     parser.add_argument(
         "-o",
@@ -177,6 +180,27 @@ def load_parser():
         help="Set to 0 to not use LaTeX formatting (1' by default).",
     )
     return vars(parser.parse_known_args()[0])
+
+
+def check_cmdargs(cmdargs):
+    """
+    Check for invalid combinations of command arguments
+
+    Args:
+        cmdargs (dict): Command flags
+
+    Returns:
+        None
+
+    """
+    if len((cmdargs["input"].strip()).split(" ")) == 1:
+        if not (cmdargs["input"].strip()).endswith(".toml"):
+            print(
+                f"\nInvalid extension for '-i {cmdargs['input'].strip()}', "
+                "the valid extension is .toml, or give the path to the "
+                "two folders to apply the dynamic pressure bcs.\n"
+            )
+            sys.exit()
 
 
 def main():

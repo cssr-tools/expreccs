@@ -13,6 +13,23 @@ pyopmspe11
 
 `A Python framework using OPM Flow for the CSP SPE11 benchmark project <https://github.com/OPM/pyopmspe11>`_.
 
+******
+pycopm
+******
+
+.. image:: ./figs/pycopm.png
+    :scale: 32%
+
+`An open-source tool to tailor OPM Flow geological models <https://github.com/cssr-tools/pycopm>`_.
+
+*****
+plopm
+*****
+
+.. image:: ./figs/plopm.png
+
+`Quick generation of PNGs, GIFs, and VTKs from a OPM Flow type model <https://github.com/cssr-tools/plopm>`_.
+
 *************
 pyopmnearwell
 *************
@@ -21,23 +38,6 @@ pyopmnearwell
     :scale: 50%
 
 `A framework to simulate near well dynamics using OPM Flow <https://github.com/cssr-tools/pyopmnearwell>`_.
-
-******
-pycopm
-******
-
-.. image:: ./figs/pycopm.gif
-    :scale: 60%
-
-`Simplified and flexible framework for coarsening geological models <https://github.com/cssr-tools/pycopm>`_.
-
-*****
-plopm
-*****
-
-.. image:: ./figs/plopm.png
-
-`Quick generation of PNG figures from a simulation model given any 2D slide <https://github.com/cssr-tools/plopm>`_.
 
 *******
 ad-micp

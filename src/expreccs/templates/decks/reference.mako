@@ -6,7 +6,7 @@ import math as mt
 RUNSPEC
 ----------------------------------------------------------------------------
 DIMENS 
-${dic['reference_noCells'][0]} ${dic['reference_noCells'][1]} ${dic['reference_noCells'][2]} /
+${dic['reference_num_cells'][0]} ${dic['reference_num_cells'][1]} ${dic['reference_num_cells'][2]} /
 
 EQLDIMS
 /
@@ -35,7 +35,7 @@ HYSTER  /
 % endif
 
 WELLDIMS
-${len(dic['reference_wellijk'])} ${dic['reference_noCells'][2]} ${len(dic['reference_wellijk'])} ${len(dic['reference_wellijk'])} /
+${len(dic['reference_wellijk'])} ${dic['reference_num_cells'][2]} ${len(dic['reference_wellijk'])} ${len(dic['reference_wellijk'])} /
 
 UNIFIN
 UNIFOUT
@@ -45,23 +45,23 @@ GRID
 INCLUDE
 'GEOLOGY_${reservoir.upper()}.INC' /
 
-% if dic['reference_bctype'] == 'free':
+% if dic['regional_bctype'][0] == 'open':
 BCCON 
-1 1 ${dic[f'{reservoir}_noCells'][0]} 1 1 1* 1* Y- /
-2 1 ${dic[f'{reservoir}_noCells'][0]} ${dic[f'{reservoir}_noCells'][1]} ${dic[f'{reservoir}_noCells'][1]} 1* 1* Y /
-3 1 1 1 ${dic[f'{reservoir}_noCells'][1]} 1* 1* X- /
-4 ${dic[f'{reservoir}_noCells'][0]} ${dic[f'{reservoir}_noCells'][0]} 1 ${dic[f'{reservoir}_noCells'][1]} 1* 1* X /
+1 1 ${dic[f'{reservoir}_num_cells'][0]} 1 1 1* 1* Y- /
+2 1 ${dic[f'{reservoir}_num_cells'][0]} ${dic[f'{reservoir}_num_cells'][1]} ${dic[f'{reservoir}_num_cells'][1]} 1* 1* Y /
+3 1 1 1 ${dic[f'{reservoir}_num_cells'][1]} 1* 1* X- /
+4 ${dic[f'{reservoir}_num_cells'][0]} ${dic[f'{reservoir}_num_cells'][0]} 1 ${dic[f'{reservoir}_num_cells'][1]} 1* 1* X /
 /
 % endif
-% if dic['reference_bctype'] == 'porv':
+% if dic['regional_bctype'][0] == 'porv':
 ----------------------------------------------------------------------------
 EDIT
 ----------------------------------------------------------------------------
 OPERATE
-PORV 1 ${dic['reference_noCells'][0]} 1 1 1* 1* ADDX PORV ${dic["reference_porv"][0]/(dic['reference_noCells'][0]*dic['reference_noCells'][2])}/
-PORV ${dic['reference_noCells'][0]} ${dic['reference_noCells'][0]} 1 ${dic['reference_noCells'][1]} 1* 1* ADDX PORV ${dic["reference_porv"][1]/(dic['reference_noCells'][1]*dic['reference_noCells'][2])} /
-PORV 1 ${dic['reference_noCells'][0]} ${dic['reference_noCells'][1]} ${dic['reference_noCells'][1]} 1* 1* ADDX PORV ${dic["reference_porv"][2]/(dic['reference_noCells'][0]*dic['reference_noCells'][2])} /
-PORV 1 1 1 ${dic['reference_noCells'][1]} 1* 1* ADDX PORV ${dic["reference_porv"][3]/(dic['reference_noCells'][1]*dic['reference_noCells'][2])} /
+PORV 1 ${dic['reference_num_cells'][0]} 1 1 1* 1* ADDX PORV ${1.*dic["regional_bctype"][1]/(dic['reference_num_cells'][0]*dic['reference_num_cells'][2])}/
+PORV ${dic['reference_num_cells'][0]} ${dic['reference_num_cells'][0]} 1 ${dic['reference_num_cells'][1]} 1* 1* ADDX PORV ${1.*dic["regional_bctype"][2]/(dic['reference_num_cells'][1]*dic['reference_num_cells'][2])} /
+PORV 1 ${dic['reference_num_cells'][0]} ${dic['reference_num_cells'][1]} ${dic['reference_num_cells'][1]} 1* 1* ADDX PORV ${1.*dic["regional_bctype"][3]/(dic['reference_num_cells'][0]*dic['reference_num_cells'][2])} /
+PORV 1 1 1 ${dic['reference_num_cells'][1]} 1* 1* ADDX PORV ${1.*dic["regional_bctype"][4]/(dic['reference_num_cells'][1]*dic['reference_num_cells'][2])} /
 / 
 % endif
 ----------------------------------------------------------------------------
@@ -81,8 +81,8 @@ EQUIL
 0 ${dic['pressure']} ${1000 if dic["co2store"] == "gasoil" else 0} 0 0 0 1 1 0 /
 
 RTEMPVD
-0   ${dic['temp_top']}
-${dic[f'{reservoir}_zmz'][-1]} ${dic['temp_bottom']} /
+0   ${dic['temperature'][0]}
+${dic[f'{reservoir}_zmz'][-1]} ${dic['temperature'][1]} /
 
 % if dic["co2store"] == "gasoil":
 RSVD
@@ -157,21 +157,21 @@ COMPDAT
 /
 % for j in range(len(dic['inj'])):
 TUNING
-${min(1, dic['inj'][j][3])} ${dic['inj'][j][3]} 1e-10 2* 1e-12/
+${min(1, dic['inj'][j][0][3])} ${dic['inj'][j][0][3]} 1e-10 2* 1e-12/
 /
 /
 WCONINJE
 % for i in range(len(dic['reference_wellijk'])):
-% if dic['inj'][j][4+2*i] > 0:
-'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 1.86843 : E}"}  1* 480/
+% if dic['inj'][j][1][2*i] > 0:
+'INJ${i}' 'GAS' ${'OPEN' if dic['inj'][j][1][2*i+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][1][2*i+1] / 1.86843 : E}"}  1* 480/
 % else:
-'INJ${i}' ${dic["liq"]} ${'OPEN' if dic['inj'][j][2*(i+2)+1] > 0 else 'SHUT'}
-'RATE' ${f"{dic['inj'][j][2*(i+2)+1] / 998.108 : E}"}  1* 480/
+'INJ${i}' ${dic["liq"]} ${'OPEN' if dic['inj'][j][1][2*i+1] > 0 else 'SHUT'}
+'RATE' ${f"{dic['inj'][j][1][2*i+1] / 998.108 : E}"}  1* 480/
 %endif
 % endfor
 /
-%if dic['reference_bctype'] == 'free':
+%if dic['regional_bctype'][0] == 'open':
 BCPROP 
 1 FREE /
 2 FREE /
@@ -180,6 +180,6 @@ BCPROP
 /
 %endif
 TSTEP
-${round(dic['inj'][j][0]/dic['inj'][j][2])}*${dic['inj'][j][2]}
+${round(dic['inj'][j][0][0]/dic['inj'][j][0][2])}*${dic['inj'][j][0][2]}
 /
 % endfor

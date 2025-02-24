@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
 
-""""
+"""
 Script to plot the 2D top surfaces
 """
 
@@ -48,15 +48,11 @@ def final_time_maps(dic):
                             * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1) : (i + 1)
                             * (len(dic[f"{fol}/{dic['name']}_xmx"]) - 1)
                         ]
-                    dic["xcor"] = np.load(
-                        dic["exe"] + "/" + fol + f"/output/{rwh}/d2x.npy"
-                    ).reshape(
+                    dic["xcor"] = np.load(fol + f"/output/{rwh}/d2x.npy").reshape(
                         len(dic[f"{fol}/{dic['name']}_ymy"]),
                         len(dic[f"{fol}/{dic['name']}_xmx"]),
                     )
-                    dic["ycor"] = np.load(
-                        dic["exe"] + "/" + fol + f"/output/{rwh}/d2y.npy"
-                    ).reshape(
+                    dic["ycor"] = np.load(fol + f"/output/{rwh}/d2y.npy").reshape(
                         len(dic[f"{fol}/{dic['name']}_ymy"]),
                         len(dic[f"{fol}/{dic['name']}_xmx"]),
                     )

@@ -91,7 +91,9 @@
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <p>The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
-While using package managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.</p>
+While using package managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.  In addition, the current
+supported Python versions are 3.11 to 3.12. We will update the documentation when Python3.13 is supported (e.g., the resdata Python
+package is not yet available via pip install in Python 3.13).</p>
 <section id="python-package">
 <h2>Python package<a class="headerlink" href="#python-package" title="Link to this heading"></a></h2>
 <p>To install the <strong>expreccs</strong> executable from the development version in an existing Python environment:</p>
@@ -220,8 +222,6 @@ package (see the <a class="reference external" href="https://opm-project.org/?pa
 </pre></div>
 </div>
 <p>This builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH. Then after execution, deactivate and activate the Python virtual environment.</p>
-<p>Regarding the resdata Python package, it might not be available depending on the Python version (e.g., it is not found using Python 3.9, but it is installed using Python 3.10).
-Then, for macOS users, you need to use a Python version equal or higher than 3.10.</p>
 <p>For macOS, the LaTeX dependency can be installed from <a class="reference external" href="https://www.tug.org/mactex/">https://www.tug.org/mactex/</a>. If after installation you still face an error due to LaTeX
 when executing expreccs, then add the flag <strong>-latex 0</strong> to expreccs.</p>
 </section>
@@ -239,7 +239,7 @@ when executing expreccs, then add the flag <strong>-latex 0</strong> to expreccs
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, NORCE Norwegian Research Centre AS.</p>
+    <p>&#169; Copyright 2023-2025, NORCE Norwegian Research Centre AS.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
