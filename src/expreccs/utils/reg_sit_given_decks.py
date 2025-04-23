@@ -28,11 +28,14 @@ def create_deck(dic):
         dic (dict): Modified global dictionary
 
     """
+    if dic["zones"]:
+        dic["explicit"] = False
     case = f"{dic['freg']}/{dic['reg']}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     init = case + ".INIT"
     dic["rrst"], dic["rgrid"] = ResdataFile(rst), Grid(grid)
+    dic["rinit"] = ResdataFile(init)
     case = f"{dic['fsit']}/{dic['sit']}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
@@ -43,6 +46,13 @@ def create_deck(dic):
         Grid(grid),
         ResdataFile(init),
     )
+    dic["rfip"] = [1] * (dic["rgrid"].nx * dic["rgrid"].ny * dic["rgrid"].nz)
+    dic["sfip"] = [1] * (dic["sgrid"].nx * dic["sgrid"].ny * dic["sgrid"].nz)
+    dic["ufip"] = [1]
+    if dic["zones"]:
+        dic["rfip"] = np.array(dic["rinit"].iget_kw("FIPNUM")[0])
+        dic["sfip"] = np.array(dic["sinit"].iget_kw("FIPNUM")[0])
+        dic["ufip"] = np.intersect1d(np.unique(dic["rfip"]), np.unique(dic["sfip"]))
     rdates = np.array(dic["rrst"].report_dates)
     rdays = rdates - rdates[0]
     dic["rdays"] = np.array([val.days for val in rdays])
@@ -65,6 +75,8 @@ def create_deck(dic):
     dic["sxs"], dic["sxe"], dic["sxn"], dic["sxw"] = [], [], [], []
     dic["sys"], dic["sye"], dic["syn"], dic["syw"] = [], [], [], []
     dic["szs"], dic["sze"], dic["szn"], dic["szw"] = [], [], [], []
+    dic["sfs"], dic["sfe"], dic["sfn"], dic["sfw"] = [], [], [], []
+    dic["sts"], dic["ste"], dic["stn"], dic["stw"] = [], [], [], []
     dic["rbound"], dic["rcoord"], dic["sdel"], dic["snum"], dic["fipn"], dic["oprn"] = (
         [],
         [],
@@ -151,9 +163,10 @@ def handle_grid_coord(dic):
     dic["c_y"] = np.array(c_y)
     dic["c_z"] = np.array(c_z)
     dic["rnxy"] = dic["rgrid"].nx * dic["rgrid"].ny
+    dic["rnxyz"] = dic["rgrid"].nx * dic["rgrid"].ny * dic["rgrid"].nz
 
 
-def check_regional_neighbours(dic, gind, p, n):
+def check_regional_neighbours(dic, gind, p, n, d_z):
     """
     Add to the interpolator neighbouring regional cells
 
@@ -161,68 +174,118 @@ def check_regional_neighbours(dic, gind, p, n):
         dic (dict): Global dictionary\n
         gind (int): Global cell index\n
         p (str): Cardinal direction\n
-        n (int): Side number
+        n (int): Side number\n
+        d_z (float): Thickness regional cell
 
     Returns:
         dic (dict): Modified global dictionary
 
     """
+    ijk = dic["rgrid"].get_ijk(global_index=gind)
     if dic["rgrid"].nz > 1:
         noise = -1e-4 * np.random.rand()
     else:
         noise = 0
-    if dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx) not in dic[
-        f"ri{p}"
-    ] and dic["rgrid"].active(global_index=gind - dic["rgrid"].nx):
-        dic[f"rx{p}"].append(
-            dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[0]
-        )
-        dic[f"ry{p}"].append(
-            dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[1]
-        )
-        dic[f"rz{p}"].append(
-            noise + dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[2]
-        )
-        dic[f"ri{p}"].append(
-            dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
-        )
-        dic["oprn"][
-            gind - dic["rgrid"].nx
-        ] = f"{2+n if int(dic['oprn'][gind-dic['rgrid'].nx])==2+n else 6}"
-    if dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx) not in dic[
-        f"ri{p}"
-    ] and dic["rgrid"].active(global_index=gind + dic["rgrid"].nx):
-        dic[f"rx{p}"].append(
-            dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[0]
-        )
-        dic[f"ry{p}"].append(
-            dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[1]
-        )
-        dic[f"rz{p}"].append(
-            noise + dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[2]
-        )
-        dic[f"ri{p}"].append(
-            dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
-        )
-        dic["oprn"][
-            gind + dic["rgrid"].nx
-        ] = f"{2+n if int(dic['oprn'][gind+dic['rgrid'].nx])==2+n else 6}"
-    if dic["rgrid"].get_active_index(global_index=gind - 1) not in dic[
-        f"ri{p}"
-    ] and dic["rgrid"].active(global_index=gind - 1):
-        dic[f"rx{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[0])
-        dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[1])
-        dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind - 1)[2])
-        dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind - 1))
-        dic["oprn"][gind - 1] = f"{2+n if int(dic['oprn'][gind-1])==2+n else 6}"
-    if dic["rgrid"].get_active_index(global_index=gind + 1) not in dic[
-        f"ri{p}"
-    ] and dic["rgrid"].active(global_index=gind + 1):
-        dic[f"rx{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[0])
-        dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[1])
-        dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind + 1)[2])
-        dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind + 1))
-        dic["oprn"][gind + 1] = f"{2+n if int(dic['oprn'][gind+1])==2+n else 6}"
+    if ijk[1] - 1 >= 0:
+        if dic["rgrid"].get_active_index(
+            global_index=gind - dic["rgrid"].nx
+        ) not in dic[f"ri{p}"] and dic["rgrid"].active(
+            global_index=gind - dic["rgrid"].nx
+        ):
+            dic[f"rx{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[0]
+            )
+            dic[f"ry{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[1]
+            )
+            dic[f"rz{p}"].append(
+                noise + dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[2]
+            )
+            dic[f"ri{p}"].append(
+                dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
+            )
+            dic[f"rk{p}"].append(ijk[2])
+            dic[f"rf{p}"].append(
+                dic["rfip"][
+                    dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
+                ]
+            )
+            dic[f"rt{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[2]
+                - d_z[
+                    dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
+                ]
+            )
+            dic["oprn"][
+                gind - dic["rgrid"].nx
+            ] = f"{2+n if int(dic['oprn'][gind-dic['rgrid'].nx])==2+n else 6}"
+    if ijk[1] + 1 < dic["rgrid"].ny:
+        if dic["rgrid"].get_active_index(
+            global_index=gind + dic["rgrid"].nx
+        ) not in dic[f"ri{p}"] and dic["rgrid"].active(
+            global_index=gind + dic["rgrid"].nx
+        ):
+            dic[f"rx{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[0]
+            )
+            dic[f"ry{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[1]
+            )
+            dic[f"rz{p}"].append(
+                noise + dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[2]
+            )
+            dic[f"ri{p}"].append(
+                dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
+            )
+            dic[f"rk{p}"].append(ijk[2])
+            dic[f"rf{p}"].append(
+                dic["rfip"][
+                    dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
+                ]
+            )
+            dic[f"rt{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[2]
+                - d_z[
+                    dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
+                ]
+            )
+            dic["oprn"][
+                gind + dic["rgrid"].nx
+            ] = f"{2+n if int(dic['oprn'][gind+dic['rgrid'].nx])==2+n else 6}"
+    if ijk[0] - 1 >= 0:
+        if dic["rgrid"].get_active_index(global_index=gind - 1) not in dic[
+            f"ri{p}"
+        ] and dic["rgrid"].active(global_index=gind - 1):
+            dic[f"rx{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[0])
+            dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[1])
+            dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind - 1)[2])
+            dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind - 1))
+            dic[f"rk{p}"].append(ijk[2])
+            dic[f"rf{p}"].append(
+                dic["rfip"][dic["rgrid"].get_active_index(global_index=gind - 1)]
+            )
+            dic[f"rt{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind - 1)[2]
+                - d_z[dic["rgrid"].get_active_index(global_index=gind - 1)]
+            )
+            dic["oprn"][gind - 1] = f"{2+n if int(dic['oprn'][gind-1])==2+n else 6}"
+    if ijk[0] + 1 < dic["rgrid"].nx:
+        if dic["rgrid"].get_active_index(global_index=gind + 1) not in dic[
+            f"ri{p}"
+        ] and dic["rgrid"].active(global_index=gind + 1):
+            dic[f"rx{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[0])
+            dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[1])
+            dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind + 1)[2])
+            dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind + 1))
+            dic[f"rk{p}"].append(ijk[2])
+            dic[f"rf{p}"].append(
+                dic["rfip"][dic["rgrid"].get_active_index(global_index=gind + 1)]
+            )
+            dic[f"rt{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind + 1)[2]
+                - d_z[dic["rgrid"].get_active_index(global_index=gind + 1)]
+            )
+            dic["oprn"][gind + 1] = f"{2+n if int(dic['oprn'][gind+1])==2+n else 6}"
     if gind - dic["rnxy"] >= 0:
         if dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"]) not in dic[
             f"ri{p}"
@@ -238,6 +301,16 @@ def check_regional_neighbours(dic, gind, p, n):
             )
             dic[f"ri{p}"].append(
                 dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])
+            )
+            dic[f"rk{p}"].append(ijk[2] - 1)
+            dic[f"rf{p}"].append(
+                dic["rfip"][
+                    dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])
+                ]
+            )
+            dic[f"rt{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind - dic["rnxy"])[2]
+                - d_z[dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])]
             )
             dic["oprn"][
                 gind - dic["rnxy"]
@@ -257,6 +330,16 @@ def check_regional_neighbours(dic, gind, p, n):
             )
             dic[f"ri{p}"].append(
                 dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])
+            )
+            dic[f"rk{p}"].append(ijk[2] + 1)
+            dic[f"rf{p}"].append(
+                dic["rfip"][
+                    dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])
+                ]
+            )
+            dic[f"rt{p}"].append(
+                dic["rgrid"].get_xyz(global_index=gind + dic["rnxy"])[2]
+                - d_z[dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])]
             )
             dic["oprn"][
                 gind + dic["rnxy"]
@@ -291,14 +374,16 @@ def check_intersection(dic, ind, gind, i, n):
         l_p = [0, 0]
         x_m = dic["rgrid"].get_xyz(active_index=ind)[0]
         y_m = dic["rgrid"].get_xyz(active_index=ind)[1]
-        if dic["rgrid"].active(global_index=gind - shift):
-            x_l = dic["rgrid"].get_xyz(global_index=gind - shift)[0]
-            y_l = dic["rgrid"].get_xyz(global_index=gind - shift)[1]
-            l_p[0] = 1
-        if dic["rgrid"].active(global_index=gind + shift):
-            x_p = dic["rgrid"].get_xyz(global_index=gind + shift)[0]
-            y_p = dic["rgrid"].get_xyz(global_index=gind + shift)[1]
-            l_p[1] = 1
+        if gind - shift >= 0:
+            if dic["rgrid"].active(global_index=gind - shift):
+                x_l = dic["rgrid"].get_xyz(global_index=gind - shift)[0]
+                y_l = dic["rgrid"].get_xyz(global_index=gind - shift)[1]
+                l_p[0] = 1
+        if gind + shift < dic["rnxyz"]:
+            if dic["rgrid"].active(global_index=gind + shift):
+                x_p = dic["rgrid"].get_xyz(global_index=gind + shift)[0]
+                y_p = dic["rgrid"].get_xyz(global_index=gind + shift)[1]
+                l_p[1] = 1
         if sum(l_p) == 2:
             xy = [x_l, y_l, x_p, y_p]
             lines.append(LineString([(xy[0], xy[1]), (xy[2], xy[3])]))
@@ -326,10 +411,23 @@ def find_regional_cells(dic):
     """
     handle_grid_coord(dic)
     count = -1
+    d_z = 0.5 * dic["rinit"].iget_kw("DZ")[0]
     for n, p in enumerate(
         ["n", "w", "s", "e"],
     ):
-        dic[f"rx{p}"], dic[f"ry{p}"], dic[f"rz{p}"], dic[f"ri{p}"], dic[f"sd{p}"] = (
+        (
+            dic[f"rx{p}"],
+            dic[f"ry{p}"],
+            dic[f"rz{p}"],
+            dic[f"ri{p}"],
+            dic[f"sd{p}"],
+            dic[f"rf{p}"],
+            dic[f"rt{p}"],
+            dic[f"rk{p}"],
+        ) = (
+            [],
+            [],
+            [],
             [],
             [],
             [],
@@ -361,25 +459,34 @@ def find_regional_cells(dic):
             elif lines[1] == 0:
                 lines[1] = lines[0]
             if lines[0].intersects(border) or lines[1].intersects(border):
+                ijk = dic["rgrid"].get_ijk(global_index=gind)
                 dic["snum"].append(dic["sai"][count])
                 dic[f"rx{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[0])
                 dic[f"ry{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[1])
                 dic[f"rz{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[2])
                 dic[f"ri{p}"].append(ind)
+                dic[f"rf{p}"].append(dic["rfip"][ind])
+                dic[f"rt{p}"].append(dic[f"rz{p}"][-1] - d_z[int(ind)])
+                dic[f"rk{p}"].append(ijk[2])
                 dic["oprn"][gind] = f"{n+2}"
-                check_regional_neighbours(dic, gind, p, n)
+                check_regional_neighbours(dic, gind, p, n, d_z)
             else:
                 dic["sdel"].append(count)
                 dic[f"sd{p}"].append(i)
-        dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"] = (
+        dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"], dic[f"sf{p}"], dic[f"st{p}"] = (
             np.array(dic[f"sx{p}"]),
             np.array(dic[f"sy{p}"]),
             np.array(dic[f"sz{p}"]),
+            np.array(dic[f"sf{p}"]),
+            np.array(dic[f"st{p}"]),
         )
         dic[f"ri{p}"] = np.array(dic[f"ri{p}"])
         dic[f"rx{p}"] = np.array(dic[f"rx{p}"])
         dic[f"ry{p}"] = np.array(dic[f"ry{p}"])
         dic[f"rz{p}"] = np.array(dic[f"rz{p}"])
+        dic[f"rf{p}"] = np.array(dic[f"rf{p}"])
+        dic[f"rt{p}"] = np.array(dic[f"rt{p}"])
+        dic[f"rk{p}"] = np.array(dic[f"rk{p}"])
     for rem in reversed(dic["sdel"]):
         del dic["sbound"][rem]
     git = (
@@ -475,9 +582,13 @@ def temporal_interpolation(dic):
             fill_value="extrapolate",
         )
         for j, time in enumerate(dic["sdays"]):
-            dic["sbc"][
-                j
-            ] += f"{dic['rp'][0][i][0]} DIRICHLET WATER 1* {interp_func(time)} /\n"
+            if dic["explicit"]:
+                dic["sbc"][
+                    j
+                ] += f"{dic['rp'][0][i][0]} DIRICHLET WATER 1* {interp_func(time)} /\n"
+            else:
+                pres = interp_func(time) + dic["spres"][dic["rp"][0][i][0] - 1]
+                dic["sbc"][j] += f"{dic['rp'][0][i][0]} DIRICHLET WATER 1* {pres} /\n"
 
 
 def project_pressures(dic, i):
@@ -492,52 +603,102 @@ def project_pressures(dic, i):
         dic (dict): Modified global dictionary
 
     """
-    count, c_c = 0, 1
+    count, c_c, s_s = 0, 1, 0
     for _, p in enumerate(["n", "w", "s", "e"]):
         if len(dic[f"ri{p}"]) == 0:
+            count += len(dic[f"sx{p}"])
+            c_c += len(dic[f"sx{p}"]) + s_s
+            s_s = 0
             continue
         z_p = np.array(dic["rrst"].iget_kw("PRESSURE")[i])[dic[f"ri{p}"]]
         w_d = np.array(dic["rrst"].iget_kw("WAT_DEN")[i])
+        if not dic["explicit"]:
+            z_p -= np.array(dic["rrst"].iget_kw("PRESSURE")[0])[dic[f"ri{p}"]]
         if dic["rgrid"].nz > 1:
-            interp = LinearNDInterpolator(
-                list(zip(dic[f"rx{p}"], dic[f"ry{p}"], dic[f"rz{p}"])), z_p
-            )
+            if not dic["zones"]:
+                interp = LinearNDInterpolator(
+                    list(zip(dic[f"rx{p}"], dic[f"ry{p}"], dic[f"rz{p}"])), z_p
+                )
             for k, (x, y, z) in enumerate(
                 zip(dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"])
             ):
                 if dic["sai"][count] in dic["snum"]:
-                    z_b = interp((x, y, z))
-                    if np.isnan(z_b):
-                        z_b = (
-                            interp((x, y, dic[f"rkg{p}"][k][0]))
-                            + (z - dic[f"rkg{p}"][k][0])
-                            * w_d[dic[f"rkg{p}"][k][1]]
-                            * 9.81
-                            / 1e5
-                        )
+                    if dic["zones"]:
+                        n = dic[f"sf{p}"][k]
+                        if n in dic["ufip"]:
+                            whr = dic[f"rf{p}"] == n
+                            if len(np.unique(dic[f"rk{p}"][whr])) == 1:
+                                interp = LinearNDInterpolator(
+                                    list(zip(dic[f"rx{p}"][whr], dic[f"ry{p}"][whr])),
+                                    z_p[whr],
+                                )
+                                z_b = interp((x, y))
+                            else:
+                                whs = dic[f"sf{p}"] == n
+                                d_t = np.round(
+                                    min(dic[f"rt{p}"][whr]) - min(dic[f"st{p}"][whs]), 2
+                                )
+                                interp = LinearNDInterpolator(
+                                    list(
+                                        zip(
+                                            dic[f"rx{p}"][whr],
+                                            dic[f"ry{p}"][whr],
+                                            dic[f"rz{p}"][whr],
+                                        )
+                                    ),
+                                    z_p[whr],
+                                )
+                                z_b = interp((x, y, z + d_t))
+                                if np.isnan(z_b):
+                                    z_b = interp((x, y, dic[f"rkg{p}"][k][0]))
+                        else:
+                            if i == 0:
+                                for j, row in enumerate(dic["sbound"]):
+                                    if int(row.split()[0]) == dic["sai"][count] + 1:
+                                        dic["sbound"].pop(j)
+                                        s_s += 1
+                                        continue
+                            count += 1
+                            continue
+                    else:
+                        z_b = interp((x, y, z))
+                        if np.isnan(z_b):
+                            if not dic["explicit"]:
+                                z_b = interp((x, y, dic[f"rkg{p}"][k][0]))
+                            else:
+                                z_b = (
+                                    interp((x, y, dic[f"rkg{p}"][k][0]))
+                                    + (z - dic[f"rkg{p}"][k][0])
+                                    * w_d[dic[f"rkg{p}"][k][1]]
+                                    * 9.81
+                                    / 1e5
+                                )
                     if not np.isnan(z_b):
-                        dic["rp"][i].append([c_c, z_b])
+                        dic["rp"][i].append([dic["sai"][count] + 1, z_b])
                         for j, row in enumerate(dic["sbound"]):
                             edit = row.split()
                             if int(edit[0]) == dic["sai"][count] + 1:
-                                edit[0] = str(c_c)
-                                dic["sbound"][j] = " ".join(edit)
-                                dic["sopn"][
-                                    dic["sgrid"].get_global_index(
-                                        ijk=(
-                                            int(edit[1]) - 1,
-                                            int(edit[3]) - 1,
-                                            int(edit[5]) - 1,
+                                if i == 0:
+                                    edit[0] = str(dic["sai"][count] + 1)
+                                    dic["sbound"][j] = " ".join(edit)
+                                    dic["sopn"][
+                                        dic["sgrid"].get_global_index(
+                                            ijk=(
+                                                int(edit[1]) - 1,
+                                                int(edit[3]) - 1,
+                                                int(edit[5]) - 1,
+                                            )
                                         )
-                                    )
-                                ] = "2"
+                                    ] = "2"
                                 c_c += 1
                                 continue
                     else:
-                        for j, row in enumerate(dic["sbound"]):
-                            if int(row.split()[0]) == dic["sai"][count] + 1:
-                                dic["sbound"].pop(j)
-                                continue
+                        if i == 0:
+                            for j, row in enumerate(dic["sbound"]):
+                                if int(row.split()[0]) == dic["sai"][count] + 1:
+                                    dic["sbound"].pop(j)
+                                    s_s += 1
+                                    continue
                 count += 1
         else:
             interp = LinearNDInterpolator(list(zip(dic[f"rx{p}"], dic[f"ry{p}"])), z_p)
@@ -548,24 +709,27 @@ def project_pressures(dic, i):
                         for j, row in enumerate(dic["sbound"]):
                             edit = row.split()
                             if int(edit[0]) == dic["sai"][count] + 1:
-                                edit[0] = str(c_c)
-                                dic["sbound"][j] = " ".join(edit)
-                                dic["sopn"][
-                                    dic["sgrid"].get_global_index(
-                                        ijk=(
-                                            int(edit[1]) - 1,
-                                            int(edit[3]) - 1,
-                                            int(edit[5]) - 1,
+                                if i == 0:
+                                    edit[0] = str(c_c + s_s)
+                                    dic["sbound"][j] = " ".join(edit)
+                                    dic["sopn"][
+                                        dic["sgrid"].get_global_index(
+                                            ijk=(
+                                                int(edit[1]) - 1,
+                                                int(edit[3]) - 1,
+                                                int(edit[5]) - 1,
+                                            )
                                         )
-                                    )
-                                ] = "2"
+                                    ] = "2"
                                 c_c += 1
                                 continue
                     else:
-                        for j, row in enumerate(dic["sbound"]):
-                            if int(row.split()[0]) == dic["sai"][count] + 1:
-                                dic["sbound"].pop(j)
-                                continue
+                        if i == 0:
+                            for j, row in enumerate(dic["sbound"]):
+                                if int(row.split()[0]) == dic["sai"][count] + 1:
+                                    dic["sbound"].pop(j)
+                                    s_s += 1
+                                    continue
                 count += 1
 
 
@@ -703,65 +867,87 @@ def extract_site_borders(dic):
         dic (dict): Modified global dictionary
 
     """
-    for k in range(dic["sgrid"].nz):
-        j = dic["boundaries"][0]
-        for i in range(dic["sgrid"].nx):
-            if dic["sgrid"].active(ijk=(i, j, k)):
-                dic["sai"].append(dic["gc"])
+    dic["spres"] = []
+    d_z = 0.5 * dic["sinit"].iget_kw("DZ")[0]
+    if dic["boundaries"][0] > -1:
+        for k in range(dic["sgrid"].nz):
+            j = dic["boundaries"][0]
+            for i in range(dic["sgrid"].nx):
                 ind = dic["sgrid"].get_active_index(ijk=(i, j, k))
-                xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, j, k)))
-                d_y = 0.5 * dic["sinit"].iget_kw("DY")[0][ind]
-                dic["sbound"].append(
-                    f"{dic['gc'] + 1} {i + 1} {i + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'J-' /"
-                )
-                dic["sxn"].append(xyz[0])
-                dic["syn"].append(xyz[1] + dic["mly"] * d_y)
-                dic["szn"].append(xyz[2])
-            dic["gc"] += 1
-    for k in range(dic["sgrid"].nz):
-        i = dic["sgrid"].nx - 1 - dic["boundaries"][1]
-        for j in range(dic["sgrid"].ny):
-            if dic["sgrid"].active(ijk=(i, j, k)):
-                dic["sai"].append(dic["gc"])
+                if dic["sgrid"].active(ijk=(i, j, k)):
+                    dic["sai"].append(dic["gc"])
+                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, j, k)))
+                    d_y = 0.5 * dic["sinit"].iget_kw("DY")[0][ind]
+                    dic["sbound"].append(
+                        f"{dic['gc'] + 1} {i + 1} {i + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'J-' /"
+                    )
+                    dic["sxn"].append(xyz[0])
+                    dic["syn"].append(xyz[1] + dic["mly"] * d_y)
+                    dic["szn"].append(xyz[2])
+                    dic["sfn"].append(dic["sfip"][ind])
+                    dic["stn"].append(xyz[2] - d_z[ind])
+                if not dic["explicit"]:
+                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                dic["gc"] += 1
+    if dic["boundaries"][1] > -1:
+        for k in range(dic["sgrid"].nz):
+            i = dic["sgrid"].nx - 1 - dic["boundaries"][1]
+            for j in range(dic["sgrid"].ny):
                 ind = dic["sgrid"].get_active_index(ijk=(i, j, k))
-                xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, j, k)))
-                d_x = 0.5 * dic["sinit"].iget_kw("DX")[0][ind]
-                dic["sbound"].append(
-                    f"{dic['gc'] + 1} {i + 1} {i + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'I' /"
-                )
-                dic["sxw"].append(xyz[0] + dic["mlx"] * d_x * (-1))
-                dic["syw"].append(xyz[1])
-                dic["szw"].append(xyz[2])
-            dic["gc"] += 1
-    for k in range(dic["sgrid"].nz):
-        j = dic["sgrid"].ny - 1 - dic["boundaries"][2]
-        for i in range(dic["sgrid"].nx):
-            ii = dic["sgrid"].nx - i - 1
-            if dic["sgrid"].active(ijk=(ii, j, k)):
-                dic["sai"].append(dic["gc"])
+                if dic["sgrid"].active(ijk=(i, j, k)):
+                    dic["sai"].append(dic["gc"])
+                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, j, k)))
+                    d_x = 0.5 * dic["sinit"].iget_kw("DX")[0][ind]
+                    dic["sbound"].append(
+                        f"{dic['gc'] + 1} {i + 1} {i + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'I' /"
+                    )
+                    dic["sxw"].append(xyz[0] + dic["mlx"] * d_x * (-1))
+                    dic["syw"].append(xyz[1])
+                    dic["szw"].append(xyz[2])
+                    dic["sfw"].append(dic["sfip"][ind])
+                    dic["stw"].append(xyz[2] - d_z[ind])
+                if not dic["explicit"]:
+                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                dic["gc"] += 1
+    if dic["boundaries"][2] > -1:
+        for k in range(dic["sgrid"].nz):
+            j = dic["sgrid"].ny - 1 - dic["boundaries"][2]
+            for i in range(dic["sgrid"].nx):
+                ii = dic["sgrid"].nx - i - 1
                 ind = dic["sgrid"].get_active_index(ijk=(ii, j, k))
-                xyz = np.array(dic["sgrid"].get_xyz(ijk=(ii, j, k)))
-                d_y = 0.5 * dic["sinit"].iget_kw("DY")[0][ind]
-                dic["sbound"].append(
-                    f"{dic['gc'] + 1} {ii + 1} {ii + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'J' /"
-                )
-                dic["sxs"].append(xyz[0])
-                dic["sys"].append(xyz[1] + dic["mly"] * d_y * (-1))
-                dic["szs"].append(xyz[2])
-            dic["gc"] += 1
-    for k in range(dic["sgrid"].nz):
-        i = dic["boundaries"][3]
-        for j in range(dic["sgrid"].ny):
-            jj = dic["sgrid"].ny - j - 1
-            if dic["sgrid"].active(ijk=(i, jj, k)):
-                dic["sai"].append(dic["gc"])
+                if dic["sgrid"].active(ijk=(ii, j, k)):
+                    dic["sai"].append(dic["gc"])
+                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(ii, j, k)))
+                    d_y = 0.5 * dic["sinit"].iget_kw("DY")[0][ind]
+                    dic["sbound"].append(
+                        f"{dic['gc'] + 1} {ii + 1} {ii + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'J' /"
+                    )
+                    dic["sxs"].append(xyz[0])
+                    dic["sys"].append(xyz[1] + dic["mly"] * d_y * (-1))
+                    dic["szs"].append(xyz[2])
+                    dic["sfs"].append(dic["sfip"][ind])
+                    dic["sts"].append(xyz[2] - d_z[ind])
+                if not dic["explicit"]:
+                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                dic["gc"] += 1
+    if dic["boundaries"][3] > -1:
+        for k in range(dic["sgrid"].nz):
+            i = dic["boundaries"][3]
+            for j in range(dic["sgrid"].ny):
+                jj = dic["sgrid"].ny - j - 1
                 ind = dic["sgrid"].get_active_index(ijk=(i, jj, k))
-                xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, jj, k)))
-                d_x = 0.5 * dic["sinit"].iget_kw("DX")[0][ind]
-                dic["sbound"].append(
-                    f"{dic['gc'] + 1} {i + 1} {i + 1} {jj + 1} {jj + 1} {k + 1} {k + 1} 'I-' /"
-                )
-                dic["sxe"].append(xyz[0] + dic["mlx"] * d_x)
-                dic["sye"].append(xyz[1])
-                dic["sze"].append(xyz[2])
-            dic["gc"] += 1
+                if dic["sgrid"].active(ijk=(i, jj, k)):
+                    dic["sai"].append(dic["gc"])
+                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, jj, k)))
+                    d_x = 0.5 * dic["sinit"].iget_kw("DX")[0][ind]
+                    dic["sbound"].append(
+                        f"{dic['gc'] + 1} {i + 1} {i + 1} {jj + 1} {jj + 1} {k + 1} {k + 1} 'I-' /"
+                    )
+                    dic["sxe"].append(xyz[0] + dic["mlx"] * d_x)
+                    dic["sye"].append(xyz[1])
+                    dic["sze"].append(xyz[2])
+                    dic["sfe"].append(dic["sfip"][ind])
+                    dic["ste"].append(xyz[2] - d_z[ind])
+                if not dic["explicit"]:
+                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                dic["gc"] += 1

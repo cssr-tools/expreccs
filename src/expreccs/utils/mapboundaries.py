@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=C0302
+# pylint: disable=C0302, R0912
 
 """
 Utiliy script for mapping to the site boundaries
@@ -165,6 +165,22 @@ def aquaflux_resdata(dic, iteration=""):
         dic (dict): Modified global dictionary
 
     """
+    case = f"{dic['fol']}/output/regional/REGIONAL"
+    dic["regza"] = [False] * len(dic["regional_zmz_mid"])
+    ini = ResdataFile(case + ".INIT")
+    dic["porvr"] = np.array(ini.iget_kw("PORV")[0])
+    # fipnum = np.array(ini.iget_kw("FIPNUM")[0])
+    dic["actindr"] = dic["porvr"] > 0
+    for k in range(len(dic["regional_zmz_mid"])):
+        for j in range(len(dic["regional_ymy_mid"])):
+            for i in range(len(dic["regional_xmx_mid"])):
+                ind = (
+                    i
+                    + j * len(dic["regional_xmx_mid"])
+                    + k * len(dic["regional_xmx_mid"]) * len(dic["regional_ymy_mid"])
+                )
+                if dic["porvr"][ind] > 0:
+                    dic["regza"][k] = True
     case = f"{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
@@ -241,7 +257,10 @@ def aquaflux_resdata(dic, iteration=""):
             "PRESSURE",
             "WAT_DEN",
         ]:
-            dic[keyword][i].append(np.array(dic["rst"].iget_kw(keyword)[i]))
+            dic[keyword][i] = [dic["porvr"] * 0]
+            dic[keyword][i][0][dic["actindr"]] = np.array(
+                dic["rst"].iget_kw(keyword)[i]
+            )
         if dic["site_bctype"][0] == "flux":
             n_xy = dic["regional_num_cells"][0] * dic["regional_num_cells"][1]
             dic["R_AQUFLUX_bottom"][i].append(
@@ -307,6 +326,21 @@ def aquaflux_opm(dic, iteration=""):
         dic (dict): Modified global dictionary
 
     """
+    case = f"{dic['fol']}/output/regional/REGIONAL"
+    dic["regza"] = [False] * len(dic["regional_zmz_mid"])
+    ini = OpmFile(case + ".INIT")
+    dic["porvr"] = np.array(ini["PORV"])
+    dic["actindr"] = dic["porvr"] > 0
+    for k in range(len(dic["regional_zmz_mid"])):
+        for j in range(len(dic["regional_ymy_mid"])):
+            for i in range(len(dic["regional_xmx_mid"])):
+                ind = (
+                    i
+                    + j * len(dic["regional_xmx_mid"])
+                    + k * len(dic["regional_xmx_mid"]) * len(dic["regional_ymy_mid"])
+                )
+                if dic["porvr"][ind] > 0:
+                    dic["regza"][k] = True
     case = f"{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
@@ -418,7 +452,8 @@ def aquaflux_opm(dic, iteration=""):
             "PRESSURE",
             "WAT_DEN",
         ]:
-            dic[keyword][i].append(np.array(dic["rst"][keyword, i]))
+            dic[keyword][i] = [dic["porvr"] * 0]
+            dic[keyword][i][0][dic["actindr"]] = np.array(dic["rst"][keyword, i])
         if dic["site_bctype"][0] == "flux":
             n_xy = dic["regional_num_cells"][0] * dic["regional_num_cells"][1]
             dic["R_AQUFLUX_bottom"][i].append(
@@ -488,6 +523,8 @@ def handle_pressure_correction(dic):
         for k, z_p in enumerate(dic["site_zmz_mid"]):
             for j in range(dic["site_num_cells"][0]):
                 for name in ["bottom", "top"]:
+                    if not dic[f"as{name}"]:
+                        continue
                     corr = (
                         (z_p - dic["regional_zmz_mid"][dic["site_zmaps"][k]])
                         * dic[f"R_WAT_DEN_{name}"][i][0][
@@ -504,6 +541,8 @@ def handle_pressure_correction(dic):
                     )
             for j in range(dic["site_num_cells"][1]):
                 for name in ["left", "right"]:
+                    if not dic[f"as{name}"]:
+                        continue
                     corr = (
                         (z_p - dic["regional_zmz_mid"][dic["site_zmaps"][k]])
                         * dic[f"R_WAT_DEN_{name}"][i][0][
@@ -543,11 +582,18 @@ def handle_stencil_resdata(dic, i):
     dic["yc"] = 0.5 * (dic["yc"][1:] + dic["yc"][:-1])
     for quan in ["PRESSURE", "WAT_DEN"]:
         for ndir, name in enumerate(["bottom", "top"]):
+            if not dic[f"as{name}"]:
+                continue
             temp = np.array([])
             for k in range(dic["regional_num_cells"][2]):
+                if not dic["regza"][k]:
+                    temp = np.hstack((temp, np.zeros(len(dic["xc"]))))
+                    continue
                 x_a = [
                     dic["grid"].get_xyz(
-                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        global_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        - dic["asleft"]
+                        + j
                     )[0]
                     for j in range(
                         len(
@@ -555,21 +601,22 @@ def handle_stencil_resdata(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + dic["asleft"]
+                        + dic["asright"]
                     )
                 ]
                 y_a = [
                     dic["grid"].get_xyz(
-                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        global_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
                     )[1],
                     dic["grid"].get_xyz(
-                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        global_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
                         + dic["regional_num_cells"][0]
                     )[1],
                 ]
                 z_0 = [
                     dic[f"{quan}"][i][0][
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        dic[f"cells_{name}"][k * dic["ncellsh"]] - dic["asleft"] + j
                     ]
                     for j in range(
                         len(
@@ -577,13 +624,14 @@ def handle_stencil_resdata(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + dic["asleft"]
+                        + dic["asright"]
                     )
                 ]
                 z_1 = [
                     dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        - 1
+                        - dic["asleft"]
                         + j
                         + dic["regional_num_cells"][0]
                     ]
@@ -593,7 +641,8 @@ def handle_stencil_resdata(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + dic["asleft"]
+                        + dic["asright"]
                     )
                 ]
                 z_a = np.stack(
@@ -609,12 +658,17 @@ def handle_stencil_resdata(dic, i):
             dic[f"R_{quan}_{name}"][i].append(temp)
         dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_num_cells"][2])
         for ndir, name in enumerate(["left", "right"]):
+            if not dic[f"as{name}"]:
+                continue
             temp = np.array([])
             for k in range(dic["regional_num_cells"][2]):
+                if not dic["regza"][k]:
+                    temp = np.hstack((temp, np.zeros(len(dic["yc"]))))
+                    continue
                 x_a = [
                     dic["grid"].get_xyz(
-                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        + dic["regional_num_cells"][0] * (-1 + j)
+                        global_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        + dic["regional_num_cells"][0] * (-int(dic["asbottom"]) + j)
                     )[1]
                     for j in range(
                         len(
@@ -622,21 +676,22 @@ def handle_stencil_resdata(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + int(dic["astop"])
+                        + int(dic["asbottom"])
                     )
                 ]
                 y_a = [
                     dic["grid"].get_xyz(
-                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        global_index=dic[f"cells_{name}"][k * dic["ncellsh"]]
                     )[0],
                     dic["grid"].get_xyz(
-                        active_index=dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        global_index=dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
                     )[0],
                 ]
                 z_0 = [
                     dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        + dic["regional_num_cells"][0] * (-1 + j)
+                        + dic["regional_num_cells"][0] * (-int(dic["asbottom"]) + j)
                     ]
                     for j in range(
                         len(
@@ -644,14 +699,15 @@ def handle_stencil_resdata(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + int(dic["astop"])
+                        + int(dic["asbottom"])
                     )
                 ]
                 z_1 = [
                     dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
                         + 1
-                        + dic["regional_num_cells"][0] * (-1 + j)
+                        + dic["regional_num_cells"][0] * (-int(dic["asbottom"]) + j)
                     ]
                     for j in range(
                         len(
@@ -659,7 +715,8 @@ def handle_stencil_resdata(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + int(dic["astop"])
+                        + int(dic["asbottom"])
                     )
                 ]
                 z_a = np.stack(
@@ -698,20 +755,61 @@ def handle_stencil_opm(dic, i):
     dic["yc"] = 0.5 * (dic["yc"][1:] + dic["yc"][:-1])
     for quan in ["PRESSURE", "WAT_DEN"]:
         for ndir, name in enumerate(["bottom", "top"]):
+            if not dic[f"as{name}"]:
+                continue
             temp = np.array([])
             for k in range(dic["regional_num_cells"][2]):
+                if not dic["regza"][k]:
+                    temp = np.hstack((temp, np.zeros(len(dic["xc"]))))
+                    continue
                 x_a = [
                     0.5
                     * (
-                        dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                - dic["asleft"]
+                                + j
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                - dic["asleft"]
+                                + j
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                - dic["asleft"]
+                                + j
+                            )[2],
                         )[0][1]
-                        - dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        - dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                - dic["asleft"]
+                                + j
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                - dic["asleft"]
+                                + j
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                - dic["asleft"]
+                                + j
+                            )[2],
                         )[0][0]
                     )
-                    + dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                    + dic["grid"].xyz_from_ijk(
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] - dic["asleft"] + j
+                        )[0],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] - dic["asleft"] + j
+                        )[1],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] - dic["asleft"] + j
+                        )[2],
                     )[0][0]
                     for j in range(
                         len(
@@ -719,41 +817,96 @@ def handle_stencil_opm(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + dic["asleft"]
+                        + dic["asright"]
                     )
                 ]
                 y_a = [
                     0.5
                     * (
-                        dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[2],
                         )[1][-1]
-                        - dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        - dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[2],
                         )[1][0]
                     )
-                    + dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                    + dic["grid"].xyz_from_ijk(
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[0],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[1],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[2],
                     )[1][0],
                     0.5
                     * (
-                        dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
-                            + dic["regional_num_cells"][0]
+                        dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0]
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0]
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0]
+                            )[2],
                         )[1][-1]
-                        - dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
-                            + dic["regional_num_cells"][0]
+                        - dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0]
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0]
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0]
+                            )[2],
                         )[1][0]
                     )
-                    + dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        + dic["regional_num_cells"][0]
+                    + dic["grid"].xyz_from_ijk(
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_num_cells"][0]
+                        )[0],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_num_cells"][0]
+                        )[1],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_num_cells"][0]
+                        )[2],
                     )[1][0],
                 ]
                 z_0 = [
                     dic[f"{quan}"][i][0][
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] - 1 + j
+                        dic[f"cells_{name}"][k * dic["ncellsh"]] - dic["asleft"] + j
                     ]
                     for j in range(
                         len(
@@ -761,13 +914,14 @@ def handle_stencil_opm(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + dic["asleft"]
+                        + dic["asright"]
                     )
                 ]
                 z_1 = [
                     dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        - 1
+                        - dic["asleft"]
                         + j
                         + dic["regional_num_cells"][0]
                     ]
@@ -777,7 +931,8 @@ def handle_stencil_opm(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + dic["asleft"]
+                        + dic["asright"]
                     )
                 ]
                 z_a = np.stack(
@@ -793,23 +948,58 @@ def handle_stencil_opm(dic, i):
             dic[f"R_{quan}_{name}"][i].append(temp)
         dic["ncellsh"] = mt.floor(len(dic["cells_left"]) / dic["regional_num_cells"][2])
         for ndir, name in enumerate(["left", "right"]):
+            if not dic[f"as{name}"]:
+                continue
             temp = np.array([])
             for k in range(dic["regional_num_cells"][2]):
+                if not dic["regza"][k]:
+                    temp = np.hstack((temp, np.zeros(len(dic["yc"]))))
+                    continue
                 x_a = [
                     0.5
                     * (
-                        dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
-                            + dic["regional_num_cells"][0] * (-1 + j)
+                        dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                            )[2],
                         )[1][-1]
-                        - dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
-                            + dic["regional_num_cells"][0] * (-1 + j)
+                        - dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                                + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                            )[2],
                         )[1][0]
                     )
-                    + dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        + dic["regional_num_cells"][0] * (-1 + j)
+                    + dic["grid"].xyz_from_ijk(
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                        )[0],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                        )[1],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
+                        )[2],
                     )[1][0]
                     for j in range(
                         len(
@@ -817,39 +1007,88 @@ def handle_stencil_opm(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + int(dic["astop"])
+                        + int(dic["asbottom"])
                     )
                 ]
                 y_a = [
                     0.5
                     * (
-                        dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[2],
                         )[0][-1]
-                        - dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        - dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]]
+                            )[2],
                         )[0][0]
                     )
-                    + dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]]
+                    + dic["grid"].xyz_from_ijk(
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[0],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[1],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]]
+                        )[2],
                     )[0][0],
                     0.5
                     * (
-                        dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                            )[2],
                         )[0][-1]
-                        - dic["grid"].xyz_from_active_index(
-                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        - dic["grid"].xyz_from_ijk(
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                            )[0],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                            )[1],
+                            dic["grid"].ijk_from_global_index(
+                                dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                            )[2],
                         )[0][0]
                     )
-                    + dic["grid"].xyz_from_active_index(
-                        dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                    + dic["grid"].xyz_from_ijk(
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        )[0],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        )[1],
+                        dic["grid"].ijk_from_global_index(
+                            dic[f"cells_{name}"][k * dic["ncellsh"]] + 1
+                        )[2],
                     )[0][0],
                 ]
                 z_0 = [
                     dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
-                        + dic["regional_num_cells"][0] * (-1 + j)
+                        + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
                     ]
                     for j in range(
                         len(
@@ -857,14 +1096,15 @@ def handle_stencil_opm(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + int(dic["astop"])
+                        + int(dic["asbottom"])
                     )
                 ]
                 z_1 = [
                     dic[f"{quan}"][i][0][
                         dic[f"cells_{name}"][k * dic["ncellsh"]]
                         + 1
-                        + dic["regional_num_cells"][0] * (-1 + j)
+                        + dic["regional_num_cells"][0] * (-dic["asbottom"] + j)
                     ]
                     for j in range(
                         len(
@@ -872,7 +1112,8 @@ def handle_stencil_opm(dic, i):
                                 k * dic["ncellsh"] : (k + 1) * dic["ncellsh"]
                             ]
                         )
-                        + 2
+                        + int(dic["astop"])
+                        + int(dic["asbottom"])
                     )
                 ]
                 z_a = np.stack(

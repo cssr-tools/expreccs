@@ -219,6 +219,21 @@ we can use our friend <a class="reference external" href="https://github.com/css
 <p><span class="caption-text">Comparison of the gas saturation on the top cells at the end of the simulations.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+<p>See also the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_4_site_regional.py">test_4_site_regional.py</a>, where the
+two-stage approach is demonstrated in a site and regional deck generated using <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/sandwich.toml">sandwich.toml</a>. In this test
+the functionality to select if the bc mappings are written per fipnums, i.e., if there is an offset between the site and regional models along the z direction, then
+using <strong>-z 1</strong> builds the interpolators per corresponding fipnums in the regional and site models. In addition, the flag <strong>-e 0</strong> set the interpolators to be defined by pressure increase and
+not by pressure values. If you run that test, then using plopm:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;regional/REGIONAL expreccs/EXPRECCS expreccs_dpincrease/EXPRECCS_DPINCREASE expreccs_perfipnum/EXPRECCS_PERFIPNUM&#39;</span><span class="w"> </span>-v<span class="w"> </span>rpr:3
+</pre></div>
+</div>
+<figure class="align-default" id="id6">
+<img alt="_images/regional_rpr3.png" src="_images/regional_rpr3.png" />
+<figcaption>
+<p><span class="caption-text">Comparison of the different functionality to mapp the dynamic boundary conditions. Here, rpr:3 (fipnum equal to 3) corresponds to the top part of the sandwich (three layers with the middel layer inactive)
+in the regional model, while to the bottom part in the site model.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
+</figcaption>
+</figure>
 </section>
 </section>
 
