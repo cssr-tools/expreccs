@@ -45,9 +45,11 @@ where
 -a  Exponential 'a' coefficient for the telescopic time-discretization for the given frequency '-f'. Write an array, e.g., '2.2,0,3.1', to set the coefficient in each site report step ('3.2' by default, use 0 for an equidistance partition).
 -w  Set to 1 to print warnings ('0' by default).
 -l  Set to 0 to not use LaTeX formatting ('1' by default).
+-e  Set to 0 to write the pressure increase on the site bc from the regional values ('1' by default, i.e., the pressure values on the boundaries correspond to the explicit values on the regional simulations).
+-z  Set to 1 to project the regional pressures per fipnum zones, i.e., the pressure maps to the site bcs are written for equal fipnum numbers in the whole xy layer ('0' by default, i.e., the projections include the z location offset between regional and site models).
 
 The valid flags for toml **configuration file** are -i, -o, -m, -c, -p, -u, -r, -t, -w, and -l. 
-The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, and -w.
+The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, -w, -e, and -z.
 
 In the **configuration file** the geological model is defined by generation
 of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults, hysteresis), wells, and defining schedules for the

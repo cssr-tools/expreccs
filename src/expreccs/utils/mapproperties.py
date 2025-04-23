@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=R0912,R0915
 
 """
 Utiliy function for mapping quantities in the different sites.
@@ -30,11 +31,22 @@ def mapping_properties(dic):
             dic[f"{res}_{name}"] = [0.0]
             for j, num in enumerate(dic[f"{res}_{arr}"]):
                 for k in range(num):
-                    dic[f"{res}_{name}"].append(
-                        (j + (k + 1.0) / num)
-                        * dic[f"{res}_dims"][i]
-                        / len(dic[f"{res}_{arr}"])
-                    )
+                    if (
+                        i == 2
+                        and len(dic[f"{res}_{arr}"]) > 1
+                        and len(dic["thickness"]) > 1
+                        and len(dic["thickness"]) == len(dic[f"{res}_{arr}"])
+                    ):
+                        dic[f"{res}_{name}"].append(
+                            ((k + 1.0) / num) * dic["thickness"][j]
+                            + sum(dic["thickness"][:j])
+                        )
+                    else:
+                        dic[f"{res}_{name}"].append(
+                            (j + (k + 1.0) / num)
+                            * dic[f"{res}_dims"][i]
+                            / len(dic[f"{res}_{arr}"])
+                        )
             dic[f"{res}_{name}"] = np.array(dic[f"{res}_{name}"])
             dic[f"{res}_{name}_dsize"] = (
                 dic[f"{res}_{name}"][1:] - dic[f"{res}_{name}"][:-1]
@@ -138,7 +150,13 @@ def positions_regional(dic):
 
     """
     dic["regional_fipnum"] = []
-    dic["site_corners"] = [[0, 0, 0], [0, 0, 0]]
+    dic["site_corners"] = [[-1, -1, 0], [-1, -1, 0]]
+    dic["asleft"], dic["asright"], dic["asbottom"], dic["astop"] = (
+        True,
+        True,
+        True,
+        True,
+    )  # active side
     indx = 0
     indc = 0
     lasti = 0
@@ -166,6 +184,28 @@ def positions_regional(dic):
             ):
                 dic["site_corners"][1] = [lasti, j - 1, 0]
                 indc = 0
+    if dic["site_corners"][0][0] == 0:
+        dic["asleft"] = False
+    if dic["site_corners"][0][1] == 1:
+        dic["asbottom"] = False
+    if dic["site_corners"][1][0] == dic["regional_num_cells"][0] - 1:
+        dic["asright"] = False
+    if dic["site_corners"][1][0] == -1:
+        if (
+            min(dic["regional_fipnum"][-dic["regional_num_cells"][0] :]) == 1
+            and dic["regional_fipnum"][-1] != 1
+        ):
+            for val in dic["regional_fipnum"][-dic["regional_num_cells"][0] :]:
+                if val == 2:
+                    continue
+                dic["site_corners"][1][0] += 1
+        else:
+            dic["asright"] = False
+            dic["site_corners"][1][0] = dic["regional_num_cells"][0] - 1
+    if dic["site_corners"][1][1] == -1:
+        dic["astop"] = False
+        dic["site_corners"][1][1] = dic["regional_num_cells"][1] - 1
+    # print(dic["astop"],dic["asbottom"],dic["asright"],dic["asleft"])
     dic["regional_wellijk"] = [[] for _ in range(len(dic["well_coords"]))]
     dic["regional_fault"] = [0, 0, 0]
     dic["regional_sensor"] = [0, 0, 0]

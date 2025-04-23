@@ -34,6 +34,8 @@ def expreccs():
     dic["co2store"] = cmdargs["use"]  # Implementation of co2store
     dic["reading"] = cmdargs["reading"]  # Resdata or opm python package
     dic["rotate"] = int(cmdargs["transform"])  # Rotate the site model
+    dic["explicit"] = int(cmdargs["explicit"]) == 1  # Explicit regional pressure bc
+    dic["zones"] = int(cmdargs["zones"]) == 1  # Pressure projections per fipnum
     dic["freq"] = (cmdargs["frequency"].strip()).split(",")  # Frequency bc evaluations
     dic["acoeff"] = (cmdargs["acoeff"].strip()).split(
         ","
@@ -87,7 +89,7 @@ def load_parser():
         description="Main method to simulate regional and site reservoirs for CO2 storage. "
         "The valid flags for toml configuration files are -i, -o, -m, -c, -p, -u, -r, -t, "
         "-w, -l. The valid flags for paths to the regional and site folders are -i, -o, -b, "
-        "-f, -a, -w",
+        "-f, -a, -w, -e, -z",
     )
     parser.add_argument(
         "-i",
@@ -178,6 +180,23 @@ def load_parser():
         "--latex",
         default=1,
         help="Set to 0 to not use LaTeX formatting (1' by default).",
+    )
+    parser.add_argument(
+        "-e",
+        "--explicit",
+        default=1,
+        help="Set to 0 to write the pressure increase on the site bc from "
+        "the regional values ('1' by default, i.e., the pressure values on the "
+        "boundaries correspond to the explicit values on the regional simulations).",
+    )
+    parser.add_argument(
+        "-z",
+        "--zones",
+        default=0,
+        help="Set to 1 to project the regional pressures per fipnum zones, i.e., "
+        "the pressure maps to the site bcs are written for equal fipnum numbers in "
+        "the whole xy layer ('0' by default, i.e., the projections include the z "
+        "location offset between regional and site models).",
     )
     return vars(parser.parse_known_args()[0])
 

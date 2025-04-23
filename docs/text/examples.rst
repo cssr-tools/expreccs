@@ -150,3 +150,18 @@ we can use our friend `plopm <https://github.com/cssr-tools/plopm>`_:
 .. figure:: figs/reference_sgas.png
     
     Comparison of the gas saturation on the top cells at the end of the simulations.
+
+See also the `test_4_site_regional.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_4_site_regional.py>`_, where the 
+two-stage approach is demonstrated in a site and regional deck generated using `sandwich.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/sandwich.toml>`_. In this test 
+the functionality to select if the bc mappings are written per fipnums, i.e., if there is an offset between the site and regional models along the z direction, then 
+using **-z 1** builds the interpolators per corresponding fipnums in the regional and site models. In addition, the flag **-e 0** set the interpolators to be defined by pressure increase and
+not by pressure values. If you run that test, then using plopm:
+
+.. code-block:: bash
+
+    plopm -i 'regional/REGIONAL expreccs/EXPRECCS expreccs_dpincrease/EXPRECCS_DPINCREASE expreccs_perfipnum/EXPRECCS_PERFIPNUM' -v rpr:3
+
+.. figure:: figs/regional_rpr3.png
+    
+    Comparison of the different functionality to mapp the dynamic boundary conditions. Here, rpr:3 (fipnum equal to 3) corresponds to the top part of the sandwich (three layers with the middel layer inactive) 
+    in the regional model, while to the bottom part in the site model.
