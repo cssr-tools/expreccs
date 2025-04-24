@@ -1,5 +1,5 @@
 # Set mpirun, the full path to the flow executable, and simulator flags (except --output-dir)
-flow = "mpirun -np 8 flow --enable-opm-rst-file=true --newton-min-iterations=1 --solver-max-time-step-in-days=3650" 
+flow = "mpirun -np 8 flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1 --solver-max-time-step-in-days=3650" 
 
 # Set the model parameters
 regional_dims = [15000,15000,9] # Regional aquifer length, width, and depth [m]

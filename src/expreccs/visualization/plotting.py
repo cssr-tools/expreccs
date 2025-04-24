@@ -142,9 +142,9 @@ def plot_results(dic):
         "BGIPG",
     ]
     # quantites += ["BFLOWI" "BFLOWJ"]
+    over_time_distance(dic)
     for i, quantity in enumerate(quantites):
         summary_plot(dic, i, quantity)
-    over_time_distance(dic)
     dic["fig"], dic["axis"], dic["figs"], dic["axiss"] = [], [], [], []
     for nqua, quantity in enumerate(dic["quantity"]):
         over_time_max_difference(dic, nqua, quantity)
@@ -227,7 +227,7 @@ def plotting_settings(dic):
     dic["lsite_porvproj"] = r"S$_{pore\;volume}$"
     dic["lsite_wells"] = r"S$_{wells}$"
     dic["lsite_closed"] = r"S$_{closed}$"
-    dic["lsite_free"] = r"S$_{open}$"
+    dic["lsite_open"] = r"S$_{open}$"
     dic["cmaps"] = [
         "jet",
         "brg",
@@ -765,11 +765,10 @@ def positions_resdata(dic, fol, res, nrst):
         points (list): x,y,z coordinates
 
     """
-    points = dic[f"{fol}/{res}_grid"].export_position(
-        dic[f"{fol}/{res}_grid"].export_index()[dic[f"{fol}/{res}_indicator_array"][1]]
-    )
+    points = []
     if res == "reference":
-        indx = [
+        indx = dic[f"{fol}/{res}_phiv"] < 0
+        indx[dic[f"{fol}/{res}_mask"]] = [
             dic[f"{fol}/{res}_indicator_array"][nrst][k]
             and dic[f"{fol}/reference_fipn"][k] == 1
             for k in range(len(dic[f"{fol}/reference_fipn"]))

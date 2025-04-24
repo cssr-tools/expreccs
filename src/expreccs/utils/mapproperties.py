@@ -85,10 +85,12 @@ def mapping_properties(dic):
             dic[f"{res}_layers"] += dic[f"{res}_zmz_mid"] > sum(
                 dic["thickness"][: i + 1]
             )
+        dic[f"{res}ka"] = [True] * dic[f"{res}_num_cells"][2]
         for i in range(dic[f"{res}_num_cells"][2]):
             dic[f"{res}_zmaps"][i] = pd.Series(
                 abs(dic["regional_zmz_mid"] - dic["site_zmz_mid"][i])
             ).argmin()
+            dic[f"{res}ka"][i] = dic["rock"][int(dic[f"{res}_layers"][i])][2] > 0
     positions_reference(dic)
     positions_regional(dic)
     rotate_grid(dic)

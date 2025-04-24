@@ -156,3 +156,21 @@ vexpreccs
 workshop
 results
 cssr
+
+# Extra files
+/tests/regional/FIPNUM_EXPRECCS.INC
+/tests/regional/OPERNUM_EXPRECCS.INC
+/tests/regional/REGIONAL.DBG
+/tests/regional/REGIONAL.EGRID
+/tests/regional/REGIONAL.INIT
+/tests/regional/REGIONAL.PRT
+/tests/regional/REGIONAL.SMSPEC
+/tests/regional/REGIONAL.UNRST
+/tests/regional/REGIONAL.UNSMRY
+/tests/site/SITE.DBG
+/tests/site/SITE.EGRID
+/tests/site/SITE.INIT
+/tests/site/SITE.PRT
+/tests/site/SITE.SMSPEC
+/tests/site/SITE.UNRST
+/tests/site/SITE.UNSMRY

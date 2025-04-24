@@ -16,9 +16,14 @@ def test_site_regional():
         os.chdir(f"{dirname}/{name}")
         os.system(f"{flow} {name.upper()}.DATA")
     base = "expreccs -i 'regional/REGIONAL site/SITE' -o expreccs"
-    for name, flag in zip(["", "_dpincrease", "_perfipnum"], ["", " -e 0", " -z 1"]):
+    for name, flag, nlines in zip(
+        ["", "_dpincrease", "_perfipnum"], ["", " -e 0", " -z 1"], [65, 65, 35]
+    ):
         os.chdir(f"{dirname}")
         os.system(f"{base}{name}{flag}")
         os.chdir(f"{dirname}/expreccs{name}")
         os.system(f"{flow} EXPRECCS{name.upper()}.DATA")
-        assert os.path.exists(f"{dirname}/expreccs{name}/EXPRECCS{name.upper()}.UNRST")
+        with open(
+            f"{dirname}/expreccs{name}/bc/BCPROP6.INC", "r", encoding="utf8"
+        ) as file:
+            assert len(file.readlines()) == nlines

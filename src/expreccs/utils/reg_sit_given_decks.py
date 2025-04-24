@@ -412,6 +412,7 @@ def find_regional_cells(dic):
     handle_grid_coord(dic)
     count = -1
     d_z = 0.5 * dic["rinit"].iget_kw("DZ")[0]
+    whr = [True] * len(dic["c_y"])
     for n, p in enumerate(
         ["n", "w", "s", "e"],
     ):
@@ -424,6 +425,7 @@ def find_regional_cells(dic):
             dic[f"rf{p}"],
             dic[f"rt{p}"],
             dic[f"rk{p}"],
+            dic[f"rkg{p}"],
         ) = (
             [],
             [],
@@ -433,15 +435,34 @@ def find_regional_cells(dic):
             [],
             [],
             [],
+            [],
         )
-        dic[f"rkg{p}"] = []
+        fin = 0
         for i, (x_c, y_c, z_c) in enumerate(
             zip(dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"])
         ):
+            if dic["zones"]:
+                if fin != dic[f"sf{p}"][i]:
+                    fin = dic[f"sf{p}"][i]
+                    whr = dic["rfip"] != fin
+                    c_x, c_y, c_z = (
+                        dic["c_x"].copy(),
+                        dic["c_y"].copy(),
+                        dic["c_z"].copy(),
+                    )
+                    c_x[whr], c_y[whr], c_z[whr] = np.inf, np.inf, np.inf
+                ind = pd.Series(
+                    (abs(c_x - x_c) + abs(c_y - y_c) + abs(c_z - z_c))
+                ).argmin()
+            else:
+                ind = pd.Series(
+                    (
+                        abs(dic["c_x"] - x_c)
+                        + abs(dic["c_y"] - y_c)
+                        + abs(dic["c_z"] - z_c)
+                    )
+                ).argmin()
             count += 1
-            ind = pd.Series(
-                (abs(dic["c_x"] - x_c) + abs(dic["c_y"] - y_c) + abs(dic["c_z"] - z_c))
-            ).argmin()
             gind = dic["rgrid"].global_index(ind)
             lines = check_intersection(dic, ind, gind, i, n)
             if lines[0] == 0 and lines[1] == 0:
@@ -603,8 +624,9 @@ def project_pressures(dic, i):
         dic (dict): Modified global dictionary
 
     """
-    count, c_c, s_s = 0, 1, 0
+    count, c_c, s_s, d_t, whr = 0, 1, 0, 0, 0
     for _, p in enumerate(["n", "w", "s", "e"]):
+        n = 0
         if len(dic[f"ri{p}"]) == 0:
             count += len(dic[f"sx{p}"])
             c_c += len(dic[f"sx{p}"]) + s_s
@@ -624,30 +646,37 @@ def project_pressures(dic, i):
             ):
                 if dic["sai"][count] in dic["snum"]:
                     if dic["zones"]:
-                        n = dic[f"sf{p}"][k]
-                        if n in dic["ufip"]:
-                            whr = dic[f"rf{p}"] == n
+                        if dic[f"sf{p}"][k] in dic["ufip"]:
+                            if n != dic[f"sf{p}"][k]:
+                                n = dic[f"sf{p}"][k]
+                                whr = dic[f"rf{p}"] == n
+                                if len(np.unique(dic[f"rk{p}"][whr])) == 1:
+                                    interp = LinearNDInterpolator(
+                                        list(
+                                            zip(dic[f"rx{p}"][whr], dic[f"ry{p}"][whr])
+                                        ),
+                                        z_p[whr],
+                                    )
+                                else:
+                                    whs = dic[f"sf{p}"] == n
+                                    d_t = np.round(
+                                        min(dic[f"rt{p}"][whr])
+                                        - min(dic[f"st{p}"][whs]),
+                                        2,
+                                    )
+                                    interp = LinearNDInterpolator(
+                                        list(
+                                            zip(
+                                                dic[f"rx{p}"][whr],
+                                                dic[f"ry{p}"][whr],
+                                                dic[f"rz{p}"][whr],
+                                            )
+                                        ),
+                                        z_p[whr],
+                                    )
                             if len(np.unique(dic[f"rk{p}"][whr])) == 1:
-                                interp = LinearNDInterpolator(
-                                    list(zip(dic[f"rx{p}"][whr], dic[f"ry{p}"][whr])),
-                                    z_p[whr],
-                                )
                                 z_b = interp((x, y))
                             else:
-                                whs = dic[f"sf{p}"] == n
-                                d_t = np.round(
-                                    min(dic[f"rt{p}"][whr]) - min(dic[f"st{p}"][whs]), 2
-                                )
-                                interp = LinearNDInterpolator(
-                                    list(
-                                        zip(
-                                            dic[f"rx{p}"][whr],
-                                            dic[f"ry{p}"][whr],
-                                            dic[f"rz{p}"][whr],
-                                        )
-                                    ),
-                                    z_p[whr],
-                                )
                                 z_b = interp((x, y, z + d_t))
                                 if np.isnan(z_b):
                                     z_b = interp((x, y, dic[f"rkg{p}"][k][0]))

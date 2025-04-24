@@ -132,25 +132,26 @@ def porv_projections(dic):
         ini = OpmFile(case + ".INIT")
         porv = np.array(ini["PORV"])
         fipnum = np.array(ini["FIPNUM"])
+    mask = porv > 0
     dic["pv_bottom"] = (
-        porv[fipnum == 2].sum()
-        + 0.5 * porv[fipnum == 9].sum()
-        + 0.5 * porv[fipnum == 6].sum()
+        porv[mask][fipnum == 2].sum()
+        + 0.5 * porv[mask][fipnum == 9].sum()
+        + 0.5 * porv[mask][fipnum == 6].sum()
     )
     dic["pv_right"] = (
-        porv[fipnum == 3].sum()
-        + 0.5 * porv[fipnum == 6].sum()
-        + 0.5 * porv[fipnum == 7].sum()
+        porv[mask][fipnum == 3].sum()
+        + 0.5 * porv[mask][fipnum == 6].sum()
+        + 0.5 * porv[mask][fipnum == 7].sum()
     )
     dic["pv_top"] = (
-        porv[fipnum == 4].sum()
-        + 0.5 * porv[fipnum == 7].sum()
-        + 0.5 * porv[fipnum == 8].sum()
+        porv[mask][fipnum == 4].sum()
+        + 0.5 * porv[mask][fipnum == 7].sum()
+        + 0.5 * porv[mask][fipnum == 8].sum()
     )
     dic["pv_left"] = (
-        porv[fipnum == 5].sum()
-        + 0.5 * porv[fipnum == 8].sum()
-        + 0.5 * porv[fipnum == 9].sum()
+        porv[mask][fipnum == 5].sum()
+        + 0.5 * porv[mask][fipnum == 8].sum()
+        + 0.5 * porv[mask][fipnum == 9].sum()
     )
 
 
@@ -169,7 +170,6 @@ def aquaflux_resdata(dic, iteration=""):
     dic["regza"] = [False] * len(dic["regional_zmz_mid"])
     ini = ResdataFile(case + ".INIT")
     dic["porvr"] = np.array(ini.iget_kw("PORV")[0])
-    # fipnum = np.array(ini.iget_kw("FIPNUM")[0])
     dic["actindr"] = dic["porvr"] > 0
     for k in range(len(dic["regional_zmz_mid"])):
         for j in range(len(dic["regional_ymy_mid"])):
@@ -571,7 +571,6 @@ def handle_stencil_resdata(dic, i):
         dic (dict): Modified global dictionary
 
     """
-    dic["ncellsh"] = mt.floor(len(dic["cells_bottom"]) / dic["regional_num_cells"][2])
     dic["xc"] = np.linspace(
         dic["site_location"][0], dic["site_location"][3], dic["site_num_cells"][0] + 1
     )
@@ -581,6 +580,9 @@ def handle_stencil_resdata(dic, i):
     )
     dic["yc"] = 0.5 * (dic["yc"][1:] + dic["yc"][:-1])
     for quan in ["PRESSURE", "WAT_DEN"]:
+        dic["ncellsh"] = mt.floor(
+            len(dic["cells_bottom"]) / dic["regional_num_cells"][2]
+        )
         for ndir, name in enumerate(["bottom", "top"]):
             if not dic[f"as{name}"]:
                 continue
