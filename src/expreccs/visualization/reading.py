@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0912
+# pylint: disable=R0912,R0915
 
 """
 Script to read OPM Flow output files
@@ -73,7 +73,10 @@ def reading_resdata(dic, loadnpy=True):
             if loadnpy:
                 define_cases(dic, fol, folders)
                 resdata_load_data(dic, fol, res, name)
-            dic[f"{fol}/{res}_phiv"] = dic[f"{fol}/{res}_ini"].iget_kw("PORV")[0]
+            dic[f"{fol}/{res}_phiv"] = np.array(
+                dic[f"{fol}/{res}_ini"].iget_kw("PORV")[0]
+            )
+            dic[f"{fol}/{res}_mask"] = dic[f"{fol}/{res}_phiv"] > 0
             dic[f"{fol}/{res}_poro"] = dic[f"{fol}/{res}_ini"].iget_kw("PORO")[0]
             dic[f"{fol}/{res}_fipn"] = np.array(
                 dic[f"{fol}/{res}_ini"].iget_kw("FIPNUM")
@@ -146,6 +149,7 @@ def resdata_arrays(dic, fol, res, loadnpy):
     """
     phiva = np.array([porv for porv in dic[f"{fol}/{res}_phiv"] if porv > 0])
     for i in range(dic[f"{fol}/{res}_num_rst"]):
+        temp = dic[f"{fol}/{res}_phiv"] < 0
         sgas = np.array(dic[f"{fol}/{res}_rst"]["SGAS"][i])
         rhog = np.array(dic[f"{fol}/{res}_rst"]["GAS_DEN"][i])
         rhow = np.array(dic[f"{fol}/{res}_rst"][f"{dic[f'{fol}/{res}liq']}_DEN"][i])
@@ -155,7 +159,8 @@ def resdata_arrays(dic, fol, res, loadnpy):
         for quantity in dic["quantity"]:
             if quantity == "saturation":
                 dic[f"{fol}/{res}_{quantity}_array"].append(sgas)
-                dic[f"{fol}/{res}_indicator_array"].append(sgas > dic["sat_thr"])
+                temp[dic[f"{fol}/{res}_mask"]] = sgas > dic["sat_thr"]
+                dic[f"{fol}/{res}_indicator_array"].append(temp)
             elif quantity == "mass":
                 dic[f"{fol}/{res}_{quantity}_array"].append((co2_g + co2_d) * KG_TO_KT)
             elif quantity == "diss":
@@ -373,6 +378,7 @@ def reading_opm(dic, loadnpy=True):  # pylint: disable=R0915, R0912
                 ]
 
             dic[f"{fol}/{res}_phiv"] = np.array(dic[f"{fol}/{res}_ini"]["PORV"])
+            dic[f"{fol}/{res}_mask"] = dic[f"{fol}/{res}_phiv"] > 0
             dic[f"{fol}/{res}_poro"] = np.array(dic[f"{fol}/{res}_ini"]["PORO"])
             dic[f"{fol}/{res}_fipn"] = np.array(dic[f"{fol}/{res}_ini"]["FIPNUM"])
             dic[f"{fol}/{res}_dx"] = np.array(dic[f"{fol}/{res}_ini"]["DX"])
@@ -432,6 +438,7 @@ def opm_arrays(dic, fol, res, loadnpy):
     """
     phiva = np.array([porv for porv in dic[f"{fol}/{res}_phiv"] if porv > 0])
     for i in range(dic[f"{fol}/{res}_num_rst"]):
+        temp = dic[f"{fol}/{res}_phiv"] < 0
         sgas = np.array(dic[f"{fol}/{res}_rst"]["SGAS", i])
         rhog = np.array(dic[f"{fol}/{res}_rst"]["GAS_DEN", i])
         rhow = np.array(dic[f"{fol}/{res}_rst"][f"{dic[f'{fol}/{res}liq']}_DEN", i])
@@ -441,7 +448,8 @@ def opm_arrays(dic, fol, res, loadnpy):
         for quantity in dic["quantity"]:
             if quantity == "saturation":
                 dic[f"{fol}/{res}_{quantity}_array"].append(sgas)
-                dic[f"{fol}/{res}_indicator_array"].append(sgas > dic["sat_thr"])
+                temp[dic[f"{fol}/{res}_mask"]] = sgas > dic["sat_thr"]
+                dic[f"{fol}/{res}_indicator_array"].append(temp)
             elif quantity == "mass":
                 dic[f"{fol}/{res}_{quantity}_array"].append((co2_g + co2_d) * KG_TO_KT)
             elif quantity == "diss":
