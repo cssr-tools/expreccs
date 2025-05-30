@@ -6,6 +6,8 @@ Examples
 Via configuration files
 =======================
 
+.. _hello_world:
+
 Hello world
 -----------
 
@@ -78,46 +80,6 @@ to generate the animation (using ResInsight) in the :doc:`introduction section <
     files in `examples/paper_2025 <https://github.com/cssr-tools/expreccs/tree/main/examples/paper_2025>`_, these are explained in 
     `this manuscript <https://doi.org/10.1016/j.geoen.2025.213733>`_.
 
-.. _back_coupling:
-
-Back-coupling (under development)
----------------------------------
-
-We consider the configuration file `example1_back.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.toml>`_ in the examples folder.
-The plan is to update properties (e.g., transmissibility multipliers) in the regional model from features (e.g., faults) in the site model (i.e., not included in the regional model).
-By running:
-
-.. code-block:: bash
-
-    expreccs -i example1_back.toml -o back-coupling -m all -p yes
-
-This is one of the generated figures in the back-coupling/postprocessing folder (named as back-coupling_summary_BPR_regional_reference.png):
-
-.. image:: ./figs/back-coupling_summary_BPR_regional_reference.png
-
-The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of 
-iteration is set to 10 in the `configuration_file <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.toml>`_, "iterations = 10" in line 20).
-
-For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this can be achieved using 
-`plopm <https://github.com/cssr-tools/plopm>`_ by executing:
-
-.. code-block:: bash
-
-    plopm -i back-coupling/output/regional_7/regional_7 -diff back-coupling/output/regional_4/regional_4 -v pressure -r 3 -s ,,1 -c rainbow -cformat .2f -d 5,5
-
-.. image:: ./figs/pressure_plopm.png
-
-and to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:
-
-.. code-block:: bash
-
-    plopm -i 'back-coupling/output/regional_1/regional_1 back-coupling/output/regional_5/regional_5 back-coupling/output/regional_7/regional_7 back-coupling/output/regional_9/regional_9' -v fpr -d 5,5 -f 10
-
-.. image:: ./figs/fpr_plopm.png
-
-.. tip::
-    You can install `plopm <https://github.com/cssr-tools/plopm>`_ by executing in the terminal: **pip install git+https://github.com/cssr-tools/plopm.git**.
-
 .. _generic:
 
 ==================
@@ -145,11 +107,14 @@ we can use our friend `plopm <https://github.com/cssr-tools/plopm>`_:
 
 .. code-block:: bash
 
-    plopm -i 'tests/configs/rotate/output/site_closed/SITE_CLOSED tests/configs/rotate/output/expreccs/EXPRECCS tests/configs/rotate/output/reference/REFERENCE' -v sgas -s ',,1 ,,1 ,,1' -subfigs 1,3 -suptitle 0 -cbsfax 0.2,0.95,0.6,0.02 -d 24,8 -cformat .1f -f 20 -xunits km -yunits km -xformat .0f -yformat .0f -x '[0,15000]' -y '[0,15000]' -delax 1
+    plopm -i 'tests/configs/rotate/simulations/site_closed/SITE_CLOSED tests/configs/rotate/simulations/expreccs/EXPRECCS tests/configs/rotate/simulations/reference/REFERENCE' -v sgas -s ',,1 ,,1 ,,1' -subfigs 1,3 -suptitle 0 -cbsfax 0.2,0.95,0.6,0.02 -d 24,8 -cformat .1f -f 20 -xunits km -yunits km -xformat .0f -yformat .0f -x '[0,15000]' -y '[0,15000]' -delax 1
 
 .. figure:: figs/reference_sgas.png
     
     Comparison of the gas saturation on the top cells at the end of the simulations.
+
+.. tip::
+    You can install `plopm <https://github.com/cssr-tools/plopm>`_ by executing in the terminal: **pip install git+https://github.com/cssr-tools/plopm.git**.
 
 See also the `test_4_site_regional.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_4_site_regional.py>`_, where the 
 two-stage approach is demonstrated in a site and regional deck generated using `sandwich.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/sandwich.toml>`_. In this test 
@@ -159,7 +124,7 @@ not by pressure values. If you run that test, then using plopm:
 
 .. code-block:: bash
 
-    plopm -i 'regional/REGIONAL expreccs/EXPRECCS expreccs_dpincrease/EXPRECCS_DPINCREASE expreccs_perfipnum/EXPRECCS_PERFIPNUM' -v rpr:3
+    plopm -i 'tests/regional/REGIONAL tests/expreccs/EXPRECCS tests/expreccs_dpincrease/EXPRECCS_DPINCREASE tests/expreccs_perfipnum/EXPRECCS_PERFIPNUM' -v rpr:3
 
 .. figure:: figs/regional_rpr3.png
     

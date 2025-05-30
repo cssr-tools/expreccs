@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=R0912
 
 """
 Utiliy functions for necessary files and variables to run OPM Flow.
@@ -8,11 +9,10 @@ Utiliy functions for necessary files and variables to run OPM Flow.
 import os
 import csv
 import subprocess
-import numpy as np
 from mako.template import Template
 
 
-def write_files(dic, reservoir):
+def write_files(dic, reservoir, iteration=0):
     """
     Function to write opm-related reference files by running mako templates
 
@@ -26,78 +26,61 @@ def write_files(dic, reservoir):
     """
     name = "site" if "site" in reservoir else reservoir
     name = "regional" if "regional" in name else name
+    relpath = ""
+    if iteration > 0:
+        relpath = "../regional/"
     mytemplate = Template(filename=f"{dic['pat']}/templates/decks/{name}.mako")
-    var = {"dic": dic, "reservoir": name}
+    var = {"dic": dic, "reservoir": name, "inc": reservoir, "relpath": relpath}
     filledtemplate = mytemplate.render(**var)
     with open(
-        f"{dic['fol']}/preprocessing/{reservoir}/{reservoir.upper()}.DATA",
+        f"{dic[f'fpre{reservoir}']}{reservoir.upper()}.DATA",
         "w",
         encoding="utf8",
     ) as file:
         file.write(filledtemplate)
-    with open(
-        f"{dic['fol']}/preprocessing/{reservoir}/FIPNUM_{name.upper()}.INC",
-        "w",
-        encoding="utf8",
-    ) as file:
-        file.write("FIPNUM\n")
-        for fipnum in dic[f"{name}_fipnum"]:
-            file.write(f"{fipnum} \n")
-        file.write("/\n")
-    if name == "regional":
-        with open(
-            f"{dic['fol']}/preprocessing/{reservoir}/MULTX_{name.upper()}.INC",
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write("MULTX\n")
-            for multx in dic[f"{name}_multx"]:
-                file.write(f"{multx} \n")
-            file.write("/\n")
-        with open(
-            f"{dic['fol']}/preprocessing/{reservoir}/MULTY_{name.upper()}.INC",
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write("MULTY\n")
-            for multy in dic[f"{name}_multy"]:
-                file.write(f"{multy} \n")
-            file.write("/\n")
-        with open(
-            f"{dic['fol']}/preprocessing/{reservoir}/MULTX-_{name.upper()}.INC",
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write("MULTX-\n")
-            for multx in dic[f"{name}_multx-"]:
-                file.write(f"{multx} \n")
-            file.write("/\n")
-        with open(
-            f"{dic['fol']}/preprocessing/{reservoir}/MULTY-_{name.upper()}.INC",
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write("MULTY-\n")
-            for multy in dic[f"{name}_multy-"]:
-                file.write(f"{multy} \n")
-            file.write("/\n")
-
+    if name == "regional" and dic["iterations"] > 0:
+        for mlt in ["X", "Y", "X-", "Y-"]:
+            with open(
+                f"{dic[f'fpre{reservoir}']}{reservoir.upper()}_MULT{mlt}.INC",
+                "w",
+                encoding="utf8",
+            ) as file:
+                file.write(f"MULT{mlt}\n")
+                for val in dic[f"{name}_mult{mlt.lower()}"]:
+                    file.write(f"{val} ")
+                file.write("/\n")
+    if iteration > 0:
+        return
+    if name != "site":
+        kwrs = ["fipnum"]
+        if name == "regional":
+            kwrs += ["opernum"]
+        for kwr in kwrs:
+            dic[f"{name}_{kwr}"].insert(0, f"{kwr.upper()}\n")
+            dic[f"{name}_{kwr}"].append("/")
+            with open(
+                f"{dic[f'fpre{reservoir}']}{reservoir.upper()}_{kwr.upper()}.INC",
+                "w",
+                encoding="utf8",
+            ) as file:
+                file.write("".join(dic[f"{name}_{kwr}"]))
+            dic[f"{name}_{kwr}"] = dic[f"{name}_{kwr}"][1:-1]
     mytemplate = Template(
         filename=f"{dic['pat']}/templates/common/saturation_functions.mako"
     )
-    var = {"dic": dic}
+    var = {"dic": dic, "reservoir": reservoir}
     filledtemplate = mytemplate.render(**var)
     with open(
-        f"{dic['fol']}/jobs/saturation_functions.py",
+        f"{dic['fol']}/saturation_functions.py",
         "w",
         encoding="utf8",
     ) as file:
         file.write(filledtemplate)
-    os.system(f"chmod u+x {dic['fol']}/jobs/saturation_functions.py")
+    os.system(f"chmod u+x {dic['fol']}/saturation_functions.py")
     prosc = subprocess.run(
         [
             "python",
-            f"{dic['fol']}/jobs/saturation_functions.py",
+            f"{dic['fol']}/saturation_functions.py",
             "-r",
             f"{reservoir}",
         ],
@@ -105,32 +88,11 @@ def write_files(dic, reservoir):
     )
     if prosc.returncode != 0:
         raise ValueError(f"Invalid result: { prosc.returncode }")
-    sections = ["geology", "regions"]
+    os.system(f"rm {dic['fol']}/saturation_functions.py")
     var = {"dic": dic, "reservoir": name}
-    for section in sections:
-        mytemplate = Template(
-            filename=os.path.join(dic["pat"], "templates", "common", f"{section}.mako")
-        )
-        filledtemplate = mytemplate.render(**var)
-        with open(
-            os.path.join(
-                dic["fol"],
-                "preprocessing",
-                reservoir,
-                f"{section.upper()}_{name.upper()}.INC",
-            ),
-            "w",
-            encoding="utf8",
-        ) as file:
-            file.write(filledtemplate)
     filledtemplate = dic["gridtemplate"].render(**var)
     with open(
-        os.path.join(
-            dic["fol"],
-            "preprocessing",
-            reservoir,
-            f"GRID_{name.upper()}.INC",
-        ),
+        f"{dic[f'fpre{reservoir}']}{reservoir.upper()}_GRID.INC",
         "w",
         encoding="utf8",
     ) as file:
@@ -155,27 +117,6 @@ def write_properties(dic):
             dic["schedule_r"].append(dic["schedule_r"][-1] + nrst[0][1] * 86400.0)
         for _ in range(round(nrst[0][0] / nrst[0][2])):
             dic["schedule_s"].append(dic["schedule_s"][-1] + nrst[0][2] * 86400.0)
-    np.save(f"{dic['fol']}/output/regional/schedule", dic["schedule_r"])
-    np.save(f"{dic['fol']}/output/reference/schedule", dic["schedule_s"])
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/schedule",
-        dic["schedule_s"],
-    )
-    for fil in ["reference", "regional", f"site_{dic['site_bctype'][0]}"]:
-        if fil == f"site_{dic['site_bctype'][0]}":
-            np.save(
-                f"{dic['fol']}/output/{fil}/nowells",
-                len(dic["site_wellijk"]),
-            )
-        else:
-            np.save(
-                f"{dic['fol']}/output/{fil}/nowells",
-                len(dic["well_coords"]),
-            )
-        np.save(
-            f"{dic['fol']}/output/{fil}/nowells_site",
-            len(dic["site_wellijk"]),
-        )
 
 
 def set_gridmako(dic, f_xy):
@@ -215,12 +156,27 @@ def write_folders(dic):
     """
     if not os.path.exists(f"{dic['fol']}"):
         os.system(f"mkdir {dic['fol']}")
-    for fil in ["preprocessing", "jobs", "output", "postprocessing"]:
+    if not dic["subfolders"]:
+        return
+    for fil in ["preprocessing", "simulations"]:
         if not os.path.exists(f"{dic['fol']}/{fil}"):
             os.system(f"mkdir {dic['fol']}/{fil}")
-    for fil in ["reference", "regional", f"site_{dic['site_bctype'][0]}"]:
-        if not os.path.exists(f"{dic['fol']}/preprocessing/{fil}"):
-            os.system(f"mkdir {dic['fol']}/preprocessing/{fil}")
-        if not os.path.exists(f"{dic['fol']}/output/{fil}"):
-            os.system(f"mkdir {dic['fol']}/output/{fil}")
-    os.chdir(f"{dic['fol']}")
+    if dic["mode"] in ["all"]:
+        for fil in ["reference", "regional", f"site_{dic['site_bctype'][0]}"]:
+            if not os.path.exists(f"{dic['fol']}/preprocessing/{fil}"):
+                os.system(f"mkdir {dic['fol']}/preprocessing/{fil}")
+            if not os.path.exists(f"{dic['fol']}/simulations/{fil}"):
+                os.system(f"mkdir {dic['fol']}/simulations/{fil}")
+    else:
+        names = []
+        if dic["mode"] in ["reference", "regional"]:
+            names = [dic["mode"]]
+        elif dic["mode"] == "regional_site":
+            names = ["regional", f"site_{dic['site_bctype'][0]}"]
+        elif dic["mode"] == "site":
+            names = [f"site_{dic['site_bctype'][0]}"]
+        for name in names:
+            if not os.path.exists(f"{dic['fol']}/preprocessing/{name}"):
+                os.system(f"mkdir {dic['fol']}/preprocessing/{name}")
+            if not os.path.exists(f"{dic['fol']}/simulations/{name}"):
+                os.system(f"mkdir {dic['fol']}/simulations/{name}")

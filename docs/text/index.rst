@@ -1,7 +1,7 @@
 .. expreccs documentation master file
 
-Welcome to expreccs's documentation!
-====================================
+Welcome to the expreccs's documentation!
+========================================
 
 .. toctree::
    :maxdepth: 4

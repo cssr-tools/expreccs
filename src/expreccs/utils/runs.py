@@ -4,6 +4,7 @@
 """
 Utiliy functions to run the studies.
 """
+
 import os
 from expreccs.visualization.plotting import plot_results
 from expreccs.utils.writefile import set_gridmako, write_files
@@ -30,36 +31,27 @@ def simulations(dic, name):
 
     """
     os.system(
-        f"{dic['flow']} --output-dir={dic['fol']}/output/{name} "
-        f"{dic['fol']}/preprocessing/{name}/{name.upper()}.DATA & wait\n"
+        f"{dic['flow']} --output-dir={dic[f'fsim{name}']} "
+        f"{dic[f'fpre{name}']}{name.upper()}.DATA & wait\n"
     )
 
 
-def plotting(dic, time):
+def plotting(dic):
     """
     Generate the figures
 
     Args:
-        dic (dict): Global dictionary\n
-        time (float): Execution time to be printed at the end.
+        dic (dict): Global dictionary
 
     Returns:
         None
 
     """
     dic["folders"] = [dic["fol"]]
-    dic["time"] = time
+    if not os.path.exists(f"{dic['fol']}/postprocessing"):
+        os.system(f"mkdir {dic['fol']}/postprocessing")
     os.chdir(f"{dic['fol']}/postprocessing")
-    plot_exe = [
-        "python3",
-        f"{dic['pat']}/visualization/plotting.py",
-        f"-t {time}",
-        f"-f {dic['fol']}",
-        f"-m {dic['plot']}",
-        f"-r {dic['reading']}",
-        f"-l {dic['latex']}",
-    ]
-    print(" ".join(plot_exe))
+    print("\nPlot: Generation of png figures, please wait.")
     plot_results(dic)
 
 
@@ -78,13 +70,13 @@ def run_models(dic):
     if dic["mode"] in ["all", "reference"]:
         write_files(dic, "reference")
         simulations(dic, "reference")
-    if dic["mode"] in ["all", "regional", "noreference"]:
+    if dic["mode"] in ["all", "regional", "regional_site"]:
         porv_regional_segmentation(dic)
         write_files(dic, "regional")
         simulations(dic, "regional")
-    if dic["mode"] in ["all", "site", "noreference"]:
+    if dic["mode"] in ["all", "site", "regional_site"]:
         if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
-            if dic["reading"] == "resdata":
+            if dic["use"] == "resdata":
                 aquaflux_resdata(dic)
             else:
                 aquaflux_opm(dic)

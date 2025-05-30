@@ -3,6 +3,6 @@ expreccs.visualization.reading module
 
 .. automodule:: expreccs.visualization.reading
    :members:
-   :undoc-members:
-   :show-inheritance:
    :private-members:
+   :show-inheritance:
+   :undoc-members:

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=C0302,R0914,R1702,R0912,R0915
+# pylint: disable=C0302,R0914,R1702,R0912,R0915,E1102
 
 """
 Utiliy script for creating a deck with projected pressures from given
@@ -11,6 +11,7 @@ import os
 import csv
 import numpy as np
 import pandas as pd
+from alive_progress import alive_bar
 from shapely.geometry import LineString, Polygon, Point
 from scipy.interpolate import LinearNDInterpolator, interp1d
 from resdata.grid import Grid
@@ -96,7 +97,6 @@ def create_deck(dic):
     dynamic_interpolator(dic)
     temporal_interpolation(dic)
     write_files(dic)
-    print(f"\nThe execution of ExpReCCS succeeded, see {dic['fol']}/.")
 
 
 def handle_grid_coord(dic):
@@ -413,101 +413,118 @@ def find_regional_cells(dic):
     count = -1
     d_z = 0.5 * dic["rinit"].iget_kw("DZ")[0]
     whr = [True] * len(dic["c_y"])
+    ntot = 0
     for n, p in enumerate(
         ["n", "w", "s", "e"],
     ):
-        (
-            dic[f"rx{p}"],
-            dic[f"ry{p}"],
-            dic[f"rz{p}"],
-            dic[f"ri{p}"],
-            dic[f"sd{p}"],
-            dic[f"rf{p}"],
-            dic[f"rt{p}"],
-            dic[f"rk{p}"],
-            dic[f"rkg{p}"],
-        ) = (
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-        )
-        fin = 0
         for i, (x_c, y_c, z_c) in enumerate(
             zip(dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"])
         ):
-            if dic["zones"]:
-                if fin != dic[f"sf{p}"][i]:
-                    fin = dic[f"sf{p}"][i]
-                    whr = dic["rfip"] != fin
-                    c_x, c_y, c_z = (
-                        dic["c_x"].copy(),
-                        dic["c_y"].copy(),
-                        dic["c_z"].copy(),
-                    )
-                    c_x[whr], c_y[whr], c_z[whr] = np.inf, np.inf, np.inf
-                ind = pd.Series(
-                    (abs(c_x - x_c) + abs(c_y - y_c) + abs(c_z - z_c))
-                ).argmin()
-            else:
-                ind = pd.Series(
-                    (
-                        abs(dic["c_x"] - x_c)
-                        + abs(dic["c_y"] - y_c)
-                        + abs(dic["c_z"] - z_c)
-                    )
-                ).argmin()
-            count += 1
-            gind = dic["rgrid"].global_index(ind)
-            lines = check_intersection(dic, ind, gind, i, n)
-            if lines[0] == 0 and lines[1] == 0:
-                dic["sdel"].append(count)
-                dic[f"sd{p}"].append(i)
-                continue
-            border = LineString(
-                [
-                    (dic["sbox"][n][0], dic["sbox"][n][1]),
-                    (dic["sbox"][n + 1][0], dic["sbox"][n + 1][1]),
-                ]
+            ntot += 1
+    print("\nFind the regional cells to build the interpolator:")
+    with alive_bar(ntot) as bar_animation:
+        for n, p in enumerate(
+            ["n", "w", "s", "e"],
+        ):
+            (
+                dic[f"rx{p}"],
+                dic[f"ry{p}"],
+                dic[f"rz{p}"],
+                dic[f"ri{p}"],
+                dic[f"sd{p}"],
+                dic[f"rf{p}"],
+                dic[f"rt{p}"],
+                dic[f"rk{p}"],
+                dic[f"rkg{p}"],
+            ) = (
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
+                [],
             )
-            if lines[0] == 0:
-                lines[0] = lines[1]
-            elif lines[1] == 0:
-                lines[1] = lines[0]
-            if lines[0].intersects(border) or lines[1].intersects(border):
-                ijk = dic["rgrid"].get_ijk(global_index=gind)
-                dic["snum"].append(dic["sai"][count])
-                dic[f"rx{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[0])
-                dic[f"ry{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[1])
-                dic[f"rz{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[2])
-                dic[f"ri{p}"].append(ind)
-                dic[f"rf{p}"].append(dic["rfip"][ind])
-                dic[f"rt{p}"].append(dic[f"rz{p}"][-1] - d_z[int(ind)])
-                dic[f"rk{p}"].append(ijk[2])
-                dic["oprn"][gind] = f"{n+2}"
-                check_regional_neighbours(dic, gind, p, n, d_z)
-            else:
-                dic["sdel"].append(count)
-                dic[f"sd{p}"].append(i)
-        dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"], dic[f"sf{p}"], dic[f"st{p}"] = (
-            np.array(dic[f"sx{p}"]),
-            np.array(dic[f"sy{p}"]),
-            np.array(dic[f"sz{p}"]),
-            np.array(dic[f"sf{p}"]),
-            np.array(dic[f"st{p}"]),
-        )
-        dic[f"ri{p}"] = np.array(dic[f"ri{p}"])
-        dic[f"rx{p}"] = np.array(dic[f"rx{p}"])
-        dic[f"ry{p}"] = np.array(dic[f"ry{p}"])
-        dic[f"rz{p}"] = np.array(dic[f"rz{p}"])
-        dic[f"rf{p}"] = np.array(dic[f"rf{p}"])
-        dic[f"rt{p}"] = np.array(dic[f"rt{p}"])
-        dic[f"rk{p}"] = np.array(dic[f"rk{p}"])
+            fin = 0
+            for i, (x_c, y_c, z_c) in enumerate(
+                zip(dic[f"sx{p}"], dic[f"sy{p}"], dic[f"sz{p}"])
+            ):
+                bar_animation()
+                if dic["zones"]:
+                    if fin != dic[f"sf{p}"][i]:
+                        fin = dic[f"sf{p}"][i]
+                        whr = dic["rfip"] != fin
+                        c_x, c_y, c_z = (
+                            dic["c_x"].copy(),
+                            dic["c_y"].copy(),
+                            dic["c_z"].copy(),
+                        )
+                        c_x[whr], c_y[whr], c_z[whr] = np.inf, np.inf, np.inf
+                    ind = pd.Series(
+                        (abs(c_x - x_c) + abs(c_y - y_c) + abs(c_z - z_c))
+                    ).argmin()
+                else:
+                    ind = pd.Series(
+                        (
+                            abs(dic["c_x"] - x_c)
+                            + abs(dic["c_y"] - y_c)
+                            + abs(dic["c_z"] - z_c)
+                        )
+                    ).argmin()
+                count += 1
+                gind = dic["rgrid"].global_index(ind)
+                lines = check_intersection(dic, ind, gind, i, n)
+                if lines[0] == 0 and lines[1] == 0:
+                    dic["sdel"].append(count)
+                    dic[f"sd{p}"].append(i)
+                    continue
+                border = LineString(
+                    [
+                        (dic["sbox"][n][0], dic["sbox"][n][1]),
+                        (dic["sbox"][n + 1][0], dic["sbox"][n + 1][1]),
+                    ]
+                )
+                if lines[0] == 0:
+                    lines[0] = lines[1]
+                elif lines[1] == 0:
+                    lines[1] = lines[0]
+                if lines[0].intersects(border) or lines[1].intersects(border):
+                    ijk = dic["rgrid"].get_ijk(global_index=gind)
+                    dic["snum"].append(dic["sai"][count])
+                    dic[f"rx{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[0])
+                    dic[f"ry{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[1])
+                    dic[f"rz{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[2])
+                    dic[f"ri{p}"].append(ind)
+                    dic[f"rf{p}"].append(dic["rfip"][ind])
+                    dic[f"rt{p}"].append(dic[f"rz{p}"][-1] - d_z[int(ind)])
+                    dic[f"rk{p}"].append(ijk[2])
+                    dic["oprn"][gind] = f"{n+2}"
+                    check_regional_neighbours(dic, gind, p, n, d_z)
+                else:
+                    dic["sdel"].append(count)
+                    dic[f"sd{p}"].append(i)
+            (
+                dic[f"sx{p}"],
+                dic[f"sy{p}"],
+                dic[f"sz{p}"],
+                dic[f"sf{p}"],
+                dic[f"st{p}"],
+            ) = (
+                np.array(dic[f"sx{p}"]),
+                np.array(dic[f"sy{p}"]),
+                np.array(dic[f"sz{p}"]),
+                np.array(dic[f"sf{p}"]),
+                np.array(dic[f"st{p}"]),
+            )
+            dic[f"ri{p}"] = np.array(dic[f"ri{p}"])
+            dic[f"rx{p}"] = np.array(dic[f"rx{p}"])
+            dic[f"ry{p}"] = np.array(dic[f"ry{p}"])
+            dic[f"rz{p}"] = np.array(dic[f"rz{p}"])
+            dic[f"rf{p}"] = np.array(dic[f"rf{p}"])
+            dic[f"rt{p}"] = np.array(dic[f"rt{p}"])
+            dic[f"rk{p}"] = np.array(dic[f"rk{p}"])
     for rem in reversed(dic["sdel"]):
         del dic["sbound"][rem]
     git = (
@@ -549,8 +566,11 @@ def dynamic_interpolator(dic):
     dic["rp"] = [[] for _ in range(dic["rrst"].num_report_steps())]
     for p in ["n", "w", "s", "e"]:
         dic[f"rp{p}"] = [[] for _ in range(dic["rrst"].num_report_steps())]
-    for i in range(dic["rrst"].num_report_steps()):
-        project_pressures(dic, i)
+    print("Dynamic interpolator:")
+    with alive_bar(dic["rrst"].num_report_steps()) as bar_animation:
+        for i in range(dic["rrst"].num_report_steps()):
+            bar_animation()
+            project_pressures(dic, i)
 
 
 def temporal_interpolation(dic):
@@ -589,7 +609,7 @@ def temporal_interpolation(dic):
         dic["ddays"] = dic["sdays"][1:] - dic["sdays"][:-1]
     else:
         dic["ddays"] = []
-    print(f"Input report steps regional (days, tot={len(dic['rdays'])}):")
+    print(f"\nInput report steps regional (days, tot={len(dic['rdays'])}):")
     print(dic["rdays"])
     print(f"Input report steps site (days, tot={len(dic['isdays'])}):")
     print(dic["isdays"])

@@ -89,20 +89,25 @@
 <section id="via-configuration-files">
 <h2>Via configuration files<a class="headerlink" href="#via-configuration-files" title="Link to this heading"></a></h2>
 <p>The following screenshot shows the generated files in the selected output folder after
-executing <strong>expreccs</strong>.</p>
+executing <strong>expreccs</strong> in the <a class="reference internal" href="examples.html#hello-world"><span class="std std-ref">Hello world</span></a> example.</p>
 <figure class="align-default" id="id1">
 <img alt="_images/output.png" src="_images/output.png" />
 <figcaption>
 <p><span class="caption-text">Generated files after executing <strong>expreccs</strong>.</span><a class="headerlink" href="#id1" title="Link to this image"></a></p>
 </figcaption>
 </figure>
-<p>The different simulation results are saved in the output folder, and
-<a class="reference external" href="https://resinsight.org">ResInsight</a> can be used for the visualization.
+<p>The different simulation results are saved in the simulations folder, and
+<a class="reference external" href="https://resinsight.org">ResInsight</a> and <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> can be used for the visualization.
 Then after running <strong>expreccs</strong>, one could modify the generated OPM related files in
 the preprocessing folder and  run directly the simulations calling the Flow solvers, e.g., to add tracers
 (see the OPM Flow documentation <a class="reference external" href="https://opm-project.org/?page_id=955">here</a>).
 In addition, some plots comparing the site simulations to the reference
 and the site are generated in the postprocessing folder.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Running <strong>expreccs</strong> using the flag “-s 0” results in generating the decks and simulation results in the
+given output folder without creating the subfolders preprocessing and simulations.</p>
+</div>
 </section>
 <section id="via-opm-flow-decks">
 <h2>Via OPM Flow decks<a class="headerlink" href="#via-opm-flow-decks" title="Link to this heading"></a></h2>
