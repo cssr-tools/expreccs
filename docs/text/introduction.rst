@@ -34,11 +34,10 @@ where
 
 -i  The base name of the :doc:`configuration file <./configuration_file>`; or paths (space between them and quotation marks) to the regional and site models ('input.toml' by default).
 -o  The base name of the :doc:`output folder <./output_folder>` ('output' by default).
--m  Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), or only regional and site models ('noreference') ('all' by default).
+-m  Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), only the regional ('regional'), only the regional and site models ('regional_site'), or none ('none') ('all' by default).
 -c  Generate metric plots for the current outputed folders ('compare') ('' by default).
 -p  Create nice figures in the postprocessing folder ('no' by default).
--u  Using 'gasoil' or 'gaswater' co2store implementation ('gaswater' by default).
--r  Using the 'opm' or 'resdata' python package ('resdata' by default).
+-u  Using the 'opm' or 'resdata' python package ('resdata' by default).
 -t  Grades to rotate the site geological model ('0' by default).
 -b  Set the number of entries to skip the bc projections on the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side ('0,0,0,0' by default).
 -f  Frequency to evaluate the boundary pressures on the site between report steps in the site. Write an array, e.g., '2,7,3', to set the frequency in each site report step ('1' by default).
@@ -47,8 +46,9 @@ where
 -l  Set to 0 to not use LaTeX formatting ('1' by default).
 -e  Set to 0 to write the pressure increase on the site bc from the regional values ('1' by default, i.e., the pressure values on the boundaries correspond to the explicit values on the regional simulations).
 -z  Set to 1 to project the regional pressures per fipnum zones, i.e., the pressure maps to the site bcs are written for equal fipnum numbers in the whole xy layer ('0' by default, i.e., the projections include the z location offset between regional and site models).
+-s  Set to 0 to not create the subfolders preprocessing, output, and postprocessing, i.e., to write all generated files in the output directory ('1' by default).
 
-The valid flags for toml **configuration file** are -i, -o, -m, -c, -p, -u, -r, -t, -w, and -l. 
+The valid flags for a toml **configuration file** are -i, -o, -m, -c, -p, -u, -t, -w, and -l. 
 The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, -w, -e, and -z.
 
 In the **configuration file** the geological model is defined by generation

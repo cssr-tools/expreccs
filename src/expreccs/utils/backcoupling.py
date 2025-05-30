@@ -12,13 +12,6 @@ from expreccs.visualization.reading import (
     reading_resdata,
     reading_opm,
 )
-from expreccs.utils.mapboundaries import (
-    aquaflux_resdata,
-    aquaflux_opm,
-    porv_projections,
-    temporal_interpolation_flux,
-    temporal_interpolation_pressure,
-)
 from expreccs.utils.runs import simulations
 from expreccs.utils.writefile import (
     write_files,
@@ -45,27 +38,29 @@ def backcoupling(dic):
         fil = ""
         if iteration > 1:
             fil = f"_{iteration-1}"
-
         compute_multipliers(dic, fil)
         write_folder_iter(dic, f"regional_{iteration}")
-        write_files(dic, f"regional_{iteration}")
+        write_files(dic, f"regional_{iteration}", iteration)
         simulations(dic, f"regional_{iteration}")
 
-        if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
-            if dic["reading"] == "resdata":
-                aquaflux_resdata(dic, f"_{iteration}")
-            else:
-                aquaflux_opm(dic, f"_{iteration}")
-            if dic["site_bctype"][0] == "flux":
-                temporal_interpolation_flux(dic)
-            else:
-                temporal_interpolation_pressure(dic)
-        elif dic["site_bctype"][0] == "porvproj":
-            porv_projections(dic)
+        # For now this is commented, first focusing on one way
+        # i.e., from site to regional
 
-        write_folder_iter(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
-        write_files(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
-        simulations(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
+        # if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
+        #     if dic["use"] == "resdata":
+        #         aquaflux_resdata(dic, f"_{iteration}")
+        #     else:
+        #         aquaflux_opm(dic, f"_{iteration}")
+        #     if dic["site_bctype"][0] == "flux":
+        #         temporal_interpolation_flux(dic)
+        #     else:
+        #         temporal_interpolation_pressure(dic)
+        # elif dic["site_bctype"][0] == "porvproj":
+        #     porv_projections(dic)
+
+        # write_folder_iter(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
+        # write_files(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
+        # simulations(dic, f"site_{dic['site_bctype'][0]}_{iteration}")
 
 
 def write_folder_iter(dic, fil):
@@ -82,8 +77,8 @@ def write_folder_iter(dic, fil):
     """
     if not os.path.exists(f"{dic['fol']}/preprocessing/{fil}"):
         os.system(f"mkdir {dic['fol']}/preprocessing/{fil}")
-    if not os.path.exists(f"{dic['fol']}/output/{fil}"):
-        os.system(f"mkdir {dic['fol']}/output/{fil}")
+    if not os.path.exists(f"{dic['fol']}/simulations/{fil}"):
+        os.system(f"mkdir {dic['fol']}/simulations/{fil}")
 
 
 def init_multipliers(dic):
@@ -126,13 +121,13 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
     dic["sat_thr"] = 1e-2  # Threshold for the gas saturation
 
     dic["quantity"] = [
-        f"FLO{dic['liq']}I+",
-        f"FLO{dic['liq']}J+",
-        f"FLO{dic['liq']}I-",
-        f"FLO{dic['liq']}J-",
+        "FLOWATI+",
+        "FLOWATJ+",
+        "FLOWATI-",
+        "FLOWATJ-",
     ]
 
-    if dic["reading"] == "resdata":
+    if dic["use"] == "resdata":
         reading_resdata(dic, False)
     else:
         reading_opm(dic, False)
@@ -154,9 +149,9 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
     # pylint: disable=R1702
     for fol in dic["folders"]:
         for res in dic[f"{fol}_sites"]:
-            if "site_pres" in res:
+            if "site_porvproj" in res or "site_pres" in res:
                 for j, quantity in enumerate(dic["quantity"]):
-                    if f"FLO{dic['liq']}" in quantity:
+                    if "FLOWAT" in quantity:
                         regional_fluxes = 0.0
                         local_fluxes = 0.0
                         for k, b in enumerate(dic[f"{fol}/{res}_{quantity}_array"]):
@@ -181,7 +176,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                             + j_reg * nx_reg
                                             + k_reg * nx_reg * ny_reg
                                         )
-                                        if quantity == f"FLO{dic['liq']}I+":
+                                        if quantity == "FLOWATI+":
                                             for j in range(dy):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -194,7 +189,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                                 sum_local_fluxes[ind] += local_fluxes[
                                                     ind_loc
                                                 ]
-                                        elif quantity == f"FLO{dic['liq']}I-":
+                                        elif quantity == "FLOWATI-":
                                             for j in range(dy):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -205,7 +200,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                                 sum_local_fluxes[ind] += local_fluxes[
                                                     ind_loc
                                                 ]
-                                        elif quantity == f"FLO{dic['liq']}J+":
+                                        elif quantity == "FLOWATJ+":
                                             for i in range(dx):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -218,7 +213,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                                                 sum_local_fluxes[ind] += local_fluxes[
                                                     ind_loc
                                                 ]
-                                        elif quantity == f"FLO{dic['liq']}J-":
+                                        elif quantity == "FLOWATJ-":
                                             for i in range(dx):
                                                 # for k in range(dz):
                                                 ind_loc = (
@@ -237,22 +232,22 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
                         mult[np.isnan(mult)] = 1
 
                         # use 1 on the boundary
-                        if quantity == f"FLO{dic['liq']}I-":
+                        if quantity == "FLOWATI-":
                             for i in range(1, nx_reg):
                                 for j in range(0, ny_reg):
                                     mult[i + j * nx_reg] = 1
-                        elif quantity == f"FLO{dic['liq']}J-":
+                        elif quantity == "FLOWATJ-":
                             for i in range(0, nx_reg):
                                 for j in range(1, ny_reg):
                                     mult[i + j * nx_reg] = 1
                         ll = 0
 
                         direction = "x"
-                        if quantity == f"FLO{dic['liq']}J+":
+                        if quantity == "FLOWATJ+":
                             direction = "y"
-                        elif quantity == f"FLO{dic['liq']}I-":
+                        elif quantity == "FLOWATI-":
                             direction = "x-"
-                        elif quantity == f"FLO{dic['liq']}J-":
+                        elif quantity == "FLOWATJ-":
                             direction = "y-"
 
                         for l, inside in enumerate(dic[f"{fol}/regional_fipn"] == 1):

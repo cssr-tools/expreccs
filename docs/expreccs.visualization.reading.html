@@ -102,13 +102,12 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.handle_smsp_time">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">handle_smsp_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.handle_smsp_time" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">handle_smsp_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.handle_smsp_time" title="Link to this definition"></a></dt>
 <dd><p>Handle the times in the summary files</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 <p>fol (str): Name of the output folder</p>
 <p>res (str): Complete name of the simulated model</p>
-<p>name (str): Name of the type of simulated model (e.g., site)</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
@@ -130,13 +129,13 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.opm_arrays">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">opm_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadnpy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.opm_arrays" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">opm_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doplot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.opm_arrays" title="Link to this definition"></a></dt>
 <dd><p>From simulation data to arrays</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 <p>fol (str): Name of the output folder</p>
 <p>res (str): Complete name of the simulated model</p>
-<p>loadnpy (bool): True for plotting, False for back-coupling</p>
+<p>doplot (bool): True for plotting, False for back-coupling</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
@@ -145,11 +144,11 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.reading_opm">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">reading_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadnpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.reading_opm" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">reading_opm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.reading_opm" title="Link to this definition"></a></dt>
 <dd><p>Read the deck quantities using opm</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>loadnpy (bool): True for plotting, False for back-coupling</p>
+<p>doplot (bool): True for plotting, False for back-coupling</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
@@ -158,11 +157,11 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.reading_resdata">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">reading_resdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadnpy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.reading_resdata" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">reading_resdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.reading_resdata" title="Link to this definition"></a></dt>
 <dd><p>Read the deck quantities using resdata</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>loadnpy (bool): True for plotting, False for back-coupling</p>
+<p>doplot (bool): True for plotting, False for back-coupling</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
@@ -171,13 +170,13 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.resdata_arrays">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">resdata_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadnpy</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.resdata_arrays" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">resdata_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doplot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.resdata_arrays" title="Link to this definition"></a></dt>
 <dd><p>From simulation data to arrays</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 <p>fol (str): Name of the output folder</p>
 <p>res (str): Complete name of the simulated model</p>
-<p>loadnpy (bool): True for plotting, False for back-coupling</p>
+<p>doplot (bool): True for plotting, False for back-coupling</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>
@@ -186,13 +185,12 @@
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.resdata_load_data">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">resdata_load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.resdata_load_data" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">resdata_load_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.resdata_load_data" title="Link to this definition"></a></dt>
 <dd><p>Read the data needed for the plotting</p>
 <dl>
 <dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
 <p>fol (str): Name of the output folder</p>
 <p>res (str): Complete name of the simulated model</p>
-<p>name (str): Name of the type of simulated model (e.g., site)</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
 </dd>

@@ -22,7 +22,7 @@ def process_input(dic, in_file):
         dic (dict): Modified global dictionary
 
     """
-    dic["hysteresis"] = 0
+    dic["hysteresis"] = False
     dic["salinity"] = 0.0
     dic["rock_comp"] = 0.0
     dic["iterations"] = 0
@@ -38,14 +38,9 @@ def process_input(dic, in_file):
             sum(dic[f"{res}_y_n"]),
             sum(dic[f"{res}_z_n"]),
         ]
-    if dic["co2store"] == "gasoil":
-        dic["liq"] = "OIL"
-        dic["lin"] = "OIL"
-        dic["l"] = "O"
-    else:
-        dic["liq"] = "WAT"
-        dic["lin"] = "WATER"
-        dic["l"] = "W"
+    dic["ntabs"] = dic["satnum"]
+    if dic["hysteresis"]:
+        dic["ntabs"] *= 2
 
 
 def check_entries(dic):

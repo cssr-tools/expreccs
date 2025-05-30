@@ -15,20 +15,14 @@ def test_all_bcs():
     os.chdir(f"{dirname}/configs")
     main()
     os.chdir(f"{dirname}/configs")
-    os.system("expreccs -i wells.toml -m site -w 1")
-    os.chdir(f"{dirname}/configs")
-    os.system("expreccs -i interp.toml -m site -w 1")
-    os.chdir(f"{dirname}/configs")
-    os.system("expreccs -i flux.toml -m site -p all -r opm -w 1")
-    assert os.path.exists(
-        f"{dirname}/configs/output/postprocessing/output_difference_site_wells_pressure.png"
-    )
-    assert os.path.exists(
-        f"{dirname}/configs/output/postprocessing/output_difference_site_pres_pressure.png"
-    )
-    assert os.path.exists(
-        f"{dirname}/configs/output/postprocessing/output_difference_site_flux_pressure.png"
-    )
+    for name in ["wells", "interp"]:
+        os.system(f"expreccs -i{name}.toml -m site -w 1")
+        os.chdir(f"{dirname}/configs")
+    os.system("expreccs -i flux.toml -m site -p all -u opm -w 1")
+    for name in ["wells_pressure", "pres_pressure", "flux_pressure"]:
+        assert os.path.exists(
+            f"{dirname}/configs/output/postprocessing/output_difference_site_{name}.png"
+        )
     os.system("expreccs -c compare -w 1")
     assert os.path.exists(
         f"{dirname}/configs/compare/compareoutput_distance_from_border.png"

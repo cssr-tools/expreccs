@@ -52,7 +52,6 @@
 <li class="toctree-l2"><a class="reference internal" href="#via-configuration-files">Via configuration files</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#hello-world">Hello world</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#layered-model">Layered model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#back-coupling-under-development">Back-coupling (under development)</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#via-opm-flow-decks">Via OPM Flow decks</a></li>
@@ -94,7 +93,7 @@
 <section id="via-configuration-files">
 <h2>Via configuration files<a class="headerlink" href="#via-configuration-files" title="Link to this heading"></a></h2>
 <section id="hello-world">
-<h3>Hello world<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h3>
+<span id="id1"></span><h3>Hello world<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h3>
 <p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1.toml">example1.toml</a> in the
 examples folder (the animation in the <a class="reference external" href="https://github.com/cssr-tools/expreccs">GitHub home page</a> was based on this configuration file).
 If the results are to be saved in a folder called ‘hello_world’, this is achieved by the following command:</p>
@@ -165,34 +164,6 @@ files in <a class="reference external" href="https://github.com/cssr-tools/expre
 <a class="reference external" href="https://doi.org/10.1016/j.geoen.2025.213733">this manuscript</a>.</p>
 </div>
 </section>
-<section id="back-coupling-under-development">
-<span id="back-coupling"></span><h3>Back-coupling (under development)<a class="headerlink" href="#back-coupling-under-development" title="Link to this heading"></a></h3>
-<p>We consider the configuration file <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.toml">example1_back.toml</a> in the examples folder.
-The plan is to update properties (e.g., transmissibility multipliers) in the regional model from features (e.g., faults) in the site model (i.e., not included in the regional model).
-By running:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span>example1_back.toml<span class="w"> </span>-o<span class="w"> </span>back-coupling<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-p<span class="w"> </span>yes
-</pre></div>
-</div>
-<p>This is one of the generated figures in the back-coupling/postprocessing folder (named as back-coupling_summary_BPR_regional_reference.png):</p>
-<img alt="_images/back-coupling_summary_BPR_regional_reference.png" src="_images/back-coupling_summary_BPR_regional_reference.png" />
-<p>The figures in the postprocessing includes the results for the first two iterations and the last one (in this case 9 since the number of
-iteration is set to 10 in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/example1_back.toml">configuration_file</a>, “iterations = 10” in line 20).</p>
-<p>For example, to show the difference in the spatial maps for pressure between iteration 4 and 7 at the third restart, this can be achieved using
-<a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span>back-coupling/output/regional_7/regional_7<span class="w"> </span>-diff<span class="w"> </span>back-coupling/output/regional_4/regional_4<span class="w"> </span>-v<span class="w"> </span>pressure<span class="w"> </span>-r<span class="w"> </span><span class="m">3</span><span class="w"> </span>-s<span class="w"> </span>,,1<span class="w"> </span>-c<span class="w"> </span>rainbow<span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5
-</pre></div>
-</div>
-<img alt="_images/pressure_plopm.png" src="_images/pressure_plopm.png" />
-<p>and to show the comparison for the summary vector FPR for iterations 1, 5, 7, and 9:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;back-coupling/output/regional_1/regional_1 back-coupling/output/regional_5/regional_5 back-coupling/output/regional_7/regional_7 back-coupling/output/regional_9/regional_9&#39;</span><span class="w"> </span>-v<span class="w"> </span>fpr<span class="w"> </span>-d<span class="w"> </span><span class="m">5</span>,5<span class="w"> </span>-f<span class="w"> </span><span class="m">10</span>
-</pre></div>
-</div>
-<img alt="_images/fpr_plopm.png" src="_images/fpr_plopm.png" />
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>You can install <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing in the terminal: <strong>pip install git+https://github.com/cssr-tools/plopm.git</strong>.</p>
-</div>
-</section>
 </section>
 <section id="via-opm-flow-decks">
 <span id="generic"></span><h2>Via OPM Flow decks<a class="headerlink" href="#via-opm-flow-decks" title="Link to this heading"></a></h2>
@@ -210,7 +181,7 @@ For example, to run the test, this can be achieved by executing:</p>
 </div>
 <p>To visualize/compare results between the model with static (input) and dynamic (generated by expreccs) boundary conditions,
 we can use our friend <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;tests/configs/rotate/output/site_closed/SITE_CLOSED tests/configs/rotate/output/expreccs/EXPRECCS tests/configs/rotate/output/reference/REFERENCE&#39;</span><span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1 ,,1 ,,1&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.2,0.95,0.6,0.02<span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,8<span class="w"> </span>-cformat<span class="w"> </span>.1f<span class="w"> </span>-f<span class="w"> </span><span class="m">20</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,15000]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,15000]&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;tests/configs/rotate/simulations/site_closed/SITE_CLOSED tests/configs/rotate/simulations/expreccs/EXPRECCS tests/configs/rotate/simulations/reference/REFERENCE&#39;</span><span class="w"> </span>-v<span class="w"> </span>sgas<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1 ,,1 ,,1&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.2,0.95,0.6,0.02<span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,8<span class="w"> </span>-cformat<span class="w"> </span>.1f<span class="w"> </span>-f<span class="w"> </span><span class="m">20</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,15000]&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,15000]&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id5">
@@ -219,12 +190,16 @@ we can use our friend <a class="reference external" href="https://github.com/css
 <p><span class="caption-text">Comparison of the gas saturation on the top cells at the end of the simulations.</span><a class="headerlink" href="#id5" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can install <a class="reference external" href="https://github.com/cssr-tools/plopm">plopm</a> by executing in the terminal: <strong>pip install git+https://github.com/cssr-tools/plopm.git</strong>.</p>
+</div>
 <p>See also the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_4_site_regional.py">test_4_site_regional.py</a>, where the
 two-stage approach is demonstrated in a site and regional deck generated using <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/sandwich.toml">sandwich.toml</a>. In this test
 the functionality to select if the bc mappings are written per fipnums, i.e., if there is an offset between the site and regional models along the z direction, then
 using <strong>-z 1</strong> builds the interpolators per corresponding fipnums in the regional and site models. In addition, the flag <strong>-e 0</strong> set the interpolators to be defined by pressure increase and
 not by pressure values. If you run that test, then using plopm:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;regional/REGIONAL expreccs/EXPRECCS expreccs_dpincrease/EXPRECCS_DPINCREASE expreccs_perfipnum/EXPRECCS_PERFIPNUM&#39;</span><span class="w"> </span>-v<span class="w"> </span>rpr:3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;tests/regional/REGIONAL tests/expreccs/EXPRECCS tests/expreccs_dpincrease/EXPRECCS_DPINCREASE tests/expreccs_perfipnum/EXPRECCS_PERFIPNUM&#39;</span><span class="w"> </span>-v<span class="w"> </span>rpr:3
 </pre></div>
 </div>
 <figure class="align-default" id="id6">

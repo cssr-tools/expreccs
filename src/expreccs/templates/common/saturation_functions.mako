@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: GPL-3.0
 #!/usr/bin/env python
 
-""""
+"""
 Script to write the saturation functions
 """
 
@@ -14,7 +14,7 @@ parser.add_argument(
     "-r",
     "--reservoir",
     default="reference",
-    help="The geological model ('reference' by defaul)",
+    help="The geological model ('reference' by default)",
 )
 
 CMDARGS = vars(parser.parse_known_args()[0])
@@ -34,68 +34,80 @@ def krne(sw, swi, sni, krn, nkrn):
 
 def pcwce(sw, swi, sni, pen, npen):
     # Capillary pressure
-    return ${dic['pcap'].strip()}
+    return 0 if pen==0 else ${dic['pcap'].strip()}
 
 
 def safu_evaluation():
     # Saturation function assignation
 
     # Properties: swi, sni, krw, krn, pe
-    safu = [[0.0] * 9 for _ in range(${len(dic['safu'])})]
+    safug = [[0.0] * ${len(dic['safu'][0])} for _ in range(${len(dic['safu'])})]
+    safuw = [[0.0] * ${len(dic['safu'][0])} for _ in range(${len(dic['safu'])})]
     % for i, _ in enumerate(dic['safu']):
     % for j, _ in enumerate(dic['safu'][i]):
-    safu[${i}][${j}] = ${dic['safu'][i][j]}
+    safug[${i}][${j}] = ${dic['safu'][i][j]}
+    % if dic["hysteresis"] and j == 1 and len(dic['safu'])/2 <= i:
+    safuw[${i}][${j}] = ${dic['safu'][int(i%len(dic['safu'])/2)][j]}
+    % else:
+    safuw[${i}][${j}] = ${dic['safu'][i][j]}
+    % endif
     % endfor
     % endfor
 
     with open(
-        f"${dic['fol']}/preprocessing/{RESERVOIR}/PROPS_{NAME.upper()}.INC",
+        f"${dic[f'fpre{reservoir}']}{RESERVOIR.upper()}_SGWFN.INC",
         "w",
         encoding="utf8",
     ) as file:
-        % if dic["co2store"] == "gaswater":
-        file.write("SGWFN\n")
-        % else:
-        file.write("SGOF\n")
-        % endif
-        for _, para in enumerate(safu):
-            snatc = np.linspace(para[1], 1-para[0], 1000)
-            if para[1] > 0:
+        file.write("SGFN\n")
+        for j, para in enumerate(safug):
+            if j > 0:
+                if safug[j-1] == para:
+                    file.write("/\n")
+                    continue
+            sco2 = np.linspace(para[1], 1 - para[0], para[9])
+            if sco2[0] > 0:
                 file.write(
-                    f"{0:.6f}"
-                    f" 0.00000"
-                    f" 1.00000"
-                    f" {pcwce(1-para[1]+para[8],para[0], para[1], para[4], para[7]):E} \n"
+                    f"{0:E} {0:E}"
+                    f" {0:E} \n"
                 )
-            for i, value in enumerate(snatc):
-                if i==0:
+            for i, value in enumerate(sco2[:-1]):
+                file.write(
+                    f"{value:E} {max(0,krne(1-sco2[i], para[0], para[1], para[3], para[6])):E}"
+                    f" {0:E} \n"
+                )
+            file.write(
+                    f"{sco2[-1]:E} {max(0,krne(1-sco2[-1], para[0], para[1], para[3], para[6])):E}"
+                    f" {0:E} \n"
+                )
+            file.write("/\n")
+        file.write("SWFN\n")
+        for j, para in enumerate(safuw):
+            if j > 0:
+                if safuw[j-1] == para:
+                    file.write("/\n")
+                    continue
+            swatc = np.linspace(para[0], 1, para[9])
+            for i, value in enumerate(swatc):
+                if value <= para[0]:
                     file.write(
-                        f"{value:.6f}"
-                        f" 0.00000"
-                        f" {krwe(1-value,para[0], para[1] , para[2], para[5]) :.6f}"
-                        f" {pcwce(1-value+para[8],para[0], para[1], para[4], para[7]):E} \n"
+                        f"{value:E}"
+                        f" {0:E}"
+                        f" {pcwce(value, para[0] - para[8], para[1], para[4], para[7]):E} \n"
                     )
+                elif value >= 1 - para[1]:
+                    file.write(
+                            f"{value:E}"
+                            f" {1:E}"
+                            f" {pcwce(value, para[0]- para[8], para[1], para[4], para[7]):E} \n"
+                        )
                 else:
                     file.write(
-                        f"{value:.6f}"
-                        f" {krne(1-value,para[0], para[1] , para[3], para[6]) :.6f}"
-                        f" {krwe(1-value,para[0], para[1] , para[2], para[5]) :.6f}"
-                        f" {pcwce(1-value+para[8],para[0], para[1], para[4], para[7]):E} \n"
+                        f"{value:E}"
+                        f" {krwe(value, para[0], para[1] , para[2], para[5]):E}"
+                        f" {pcwce(value, para[0]- para[8], para[1], para[4], para[7]):E} \n"
                     )
             file.write("/\n")
-
-        % if dic["hysteresis"] ==1:
-        file.write("EHYSTR\n")
-        file.write("1* 2/\n")
-        % endif
-        % if dic["salinity"] >0.:
-        file.write("SALINITY\n")
-        file.write("${dic["salinity"]} /\n")
-        % endif
-        %if dic["rock_comp"] > 0:
-        file.write("ROCK\n")
-        file.write("276.0 ${dic["rock_comp"]} /")
-        % endif
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2023 NORCE
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=C0302, R0912
+# pylint: disable=C0302, R0912, E1102
 
 """
 Utiliy script for mapping to the site boundaries
@@ -9,6 +9,7 @@ Utiliy script for mapping to the site boundaries
 import math as mt
 import numpy as np
 import pandas as pd
+from alive_progress import alive_bar
 from scipy.interpolate import RegularGridInterpolator, interp1d
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
@@ -33,7 +34,7 @@ def porv_regional_segmentation(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["regional_fipnum"] = []
+    dic["regional_opernum"] = []
     for _, z_c in enumerate(dic["regional_zmz_mid"]):
         for _, y_c in enumerate(dic["regional_ymy_mid"]):
             for _, x_c in enumerate(dic["regional_xmx_mid"]):
@@ -44,7 +45,7 @@ def porv_regional_segmentation(dic):
                 ) and x_c in pd.Interval(
                     dic["site_location"][0], dic["site_location"][3]
                 ):
-                    dic["regional_fipnum"].append(1)
+                    dic["regional_opernum"].append("1 ")
                 elif Polygon(
                     [
                         (0, 0),
@@ -53,7 +54,7 @@ def porv_regional_segmentation(dic):
                         (dic["reference_dims"][0], 0),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(2)
+                    dic["regional_opernum"].append("2 ")
                 elif Polygon(
                     [
                         (dic["reference_dims"][0], 0),
@@ -62,7 +63,7 @@ def porv_regional_segmentation(dic):
                         (dic["reference_dims"][0], dic["reference_dims"][1]),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(3)
+                    dic["regional_opernum"].append("3 ")
                 elif Polygon(
                     [
                         (dic["reference_dims"][0], dic["reference_dims"][1]),
@@ -71,7 +72,7 @@ def porv_regional_segmentation(dic):
                         (0, dic["reference_dims"][1]),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(4)
+                    dic["regional_opernum"].append("4 ")
                 elif Polygon(
                     [
                         (0, dic["reference_dims"][1]),
@@ -80,7 +81,7 @@ def porv_regional_segmentation(dic):
                         (0, 0),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(5)
+                    dic["regional_opernum"].append("5 ")
                 elif Polygon(
                     [
                         (dic["site_location"][3], 0),
@@ -89,7 +90,7 @@ def porv_regional_segmentation(dic):
                         (dic["reference_dims"][0], 0),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(6)
+                    dic["regional_opernum"].append("6 ")
                 elif Polygon(
                     [
                         (dic["site_location"][3], dic["site_location"][4]),
@@ -98,7 +99,7 @@ def porv_regional_segmentation(dic):
                         (dic["reference_dims"][0], dic["site_location"][4]),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(7)
+                    dic["regional_opernum"].append("7 ")
                 elif Polygon(
                     [
                         (0, dic["site_location"][4]),
@@ -107,9 +108,9 @@ def porv_regional_segmentation(dic):
                         (0, dic["reference_dims"][1]),
                     ]
                 ).contains(Point(x_c, y_c)):
-                    dic["regional_fipnum"].append(8)
+                    dic["regional_opernum"].append("8 ")
                 else:
-                    dic["regional_fipnum"].append(9)
+                    dic["regional_opernum"].append("9 ")
 
 
 def porv_projections(dic):
@@ -123,35 +124,35 @@ def porv_projections(dic):
         dic (dict): Modified global dictionary
 
     """
-    case = f"{dic['fol']}/output/regional/REGIONAL"
-    if dic["reading"] == "resdata":
+    case = f"{dic['fol']}/simulations/regional/REGIONAL"
+    if dic["use"] == "resdata":
         ini = ResdataFile(case + ".INIT")
         porv = np.array(ini.iget_kw("PORV")[0])
-        fipnum = np.array(ini.iget_kw("FIPNUM")[0])
+        opernum = np.array(ini.iget_kw("OPERNUM")[0])
     else:
         ini = OpmFile(case + ".INIT")
         porv = np.array(ini["PORV"])
-        fipnum = np.array(ini["FIPNUM"])
+        opernum = np.array(ini["OPERNUM"])
     mask = porv > 0
     dic["pv_bottom"] = (
-        porv[mask][fipnum == 2].sum()
-        + 0.5 * porv[mask][fipnum == 9].sum()
-        + 0.5 * porv[mask][fipnum == 6].sum()
+        porv[mask][opernum == 2].sum()
+        + 0.5 * porv[mask][opernum == 9].sum()
+        + 0.5 * porv[mask][opernum == 6].sum()
     )
     dic["pv_right"] = (
-        porv[mask][fipnum == 3].sum()
-        + 0.5 * porv[mask][fipnum == 6].sum()
-        + 0.5 * porv[mask][fipnum == 7].sum()
+        porv[mask][opernum == 3].sum()
+        + 0.5 * porv[mask][opernum == 6].sum()
+        + 0.5 * porv[mask][opernum == 7].sum()
     )
     dic["pv_top"] = (
-        porv[mask][fipnum == 4].sum()
-        + 0.5 * porv[mask][fipnum == 7].sum()
-        + 0.5 * porv[mask][fipnum == 8].sum()
+        porv[mask][opernum == 4].sum()
+        + 0.5 * porv[mask][opernum == 7].sum()
+        + 0.5 * porv[mask][opernum == 8].sum()
     )
     dic["pv_left"] = (
-        porv[mask][fipnum == 5].sum()
-        + 0.5 * porv[mask][fipnum == 8].sum()
-        + 0.5 * porv[mask][fipnum == 9].sum()
+        porv[mask][opernum == 5].sum()
+        + 0.5 * porv[mask][opernum == 8].sum()
+        + 0.5 * porv[mask][opernum == 9].sum()
     )
 
 
@@ -166,7 +167,7 @@ def aquaflux_resdata(dic, iteration=""):
         dic (dict): Modified global dictionary
 
     """
-    case = f"{dic['fol']}/output/regional/REGIONAL"
+    case = f"{dic['fsimregional']}REGIONAL"
     dic["regza"] = [False] * len(dic["regional_zmz_mid"])
     ini = ResdataFile(case + ".INIT")
     dic["porvr"] = np.array(ini.iget_kw("PORV")[0])
@@ -181,7 +182,7 @@ def aquaflux_resdata(dic, iteration=""):
                 )
                 if dic["porvr"][ind] > 0:
                     dic["regza"][k] = True
-    case = f"{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
+    case = f"{dic[f'fsimregional{iteration}']}REGIONAL{iteration}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     dic["rst"], dic["grid"] = ResdataFile(rst), Grid(grid)
@@ -228,8 +229,8 @@ def aquaflux_resdata(dic, iteration=""):
                     * dic["regional_num_cells"][1]
                 )
     for keyword in [
-        f"FLO{dic['liq']}I+",
-        f"FLO{dic['liq']}J+",
+        "FLOWATI+",
+        "FLOWATJ+",
         "PRESSURE",
         "WAT_DEN",
         "R_AQUFLUX_bottom",
@@ -250,67 +251,70 @@ def aquaflux_resdata(dic, iteration=""):
         "S_PRESSURE_left",
     ]:
         dic[keyword] = [[] for _ in range(dic["rst"].num_report_steps())]
-    for i in range(dic["rst"].num_report_steps()):
-        for keyword in [
-            f"FLO{dic['liq']}I+",
-            f"FLO{dic['liq']}J+",
-            "PRESSURE",
-            "WAT_DEN",
-        ]:
-            dic[keyword][i] = [dic["porvr"] * 0]
-            dic[keyword][i][0][dic["actindr"]] = np.array(
-                dic["rst"].iget_kw(keyword)[i]
-            )
-        if dic["site_bctype"][0] == "flux":
-            n_xy = dic["regional_num_cells"][0] * dic["regional_num_cells"][1]
-            dic["R_AQUFLUX_bottom"][i].append(
-                [
-                    np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
-                    / (
-                        dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_bottom"]
-                ]
-            )
-            dic["R_AQUFLUX_top"][i].append(
-                [
-                    -np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
-                    / (
-                        dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_top"]
-                ]
-            )
-            dic["R_AQUFLUX_right"][i].append(
-                [
-                    -np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
-                    / (
-                        dic["regional_ymy_dsize"][
-                            mt.floor((j % n_xy) / dic["regional_num_cells"][0])
-                        ]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_right"]
-                ]
-            )
-            dic["R_AQUFLUX_left"][i].append(
-                [
-                    np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
-                    / (
-                        dic["regional_ymy_dsize"][
-                            mt.floor((j % n_xy) / dic["regional_num_cells"][0])
-                        ]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_left"]
-                ]
-            )
-        elif dic["site_bctype"][0] == "pres":
-            handle_stencil_resdata(dic, i)
-        elif dic["site_bctype"][0] == "pres2p":
-            handle_stencil_2p(dic, i)
+    print("Handle boundary conditions:")
+    with alive_bar(dic["rst"].num_report_steps()) as bar_animation:
+        for i in range(dic["rst"].num_report_steps()):
+            bar_animation()
+            for keyword in [
+                "FLOWATI+",
+                "FLOWATJ+",
+                "PRESSURE",
+                "WAT_DEN",
+            ]:
+                dic[keyword][i] = [dic["porvr"] * 0]
+                dic[keyword][i][0][dic["actindr"]] = np.array(
+                    dic["rst"].iget_kw(keyword)[i]
+                )
+            if dic["site_bctype"][0] == "flux":
+                n_xy = dic["regional_num_cells"][0] * dic["regional_num_cells"][1]
+                dic["R_AQUFLUX_bottom"][i].append(
+                    [
+                        np.array(dic["FLOWATJ+"][i][0][j])
+                        / (
+                            dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_bottom"]
+                    ]
+                )
+                dic["R_AQUFLUX_top"][i].append(
+                    [
+                        -np.array(dic["FLOWATJ+"][i][0][j])
+                        / (
+                            dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_top"]
+                    ]
+                )
+                dic["R_AQUFLUX_right"][i].append(
+                    [
+                        -np.array(dic["FLOWATI+"][i][0][j])
+                        / (
+                            dic["regional_ymy_dsize"][
+                                mt.floor((j % n_xy) / dic["regional_num_cells"][0])
+                            ]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_right"]
+                    ]
+                )
+                dic["R_AQUFLUX_left"][i].append(
+                    [
+                        np.array(dic["FLOWATI+"][i][0][j])
+                        / (
+                            dic["regional_ymy_dsize"][
+                                mt.floor((j % n_xy) / dic["regional_num_cells"][0])
+                            ]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_left"]
+                    ]
+                )
+            elif dic["site_bctype"][0] == "pres":
+                handle_stencil_resdata(dic, i)
+            elif dic["site_bctype"][0] == "pres2p":
+                handle_stencil_2p(dic, i)
     if dic["site_bctype"][0] == "pres" or dic["site_bctype"][0] == "pres2p":
         handle_pressure_correction(dic)
 
@@ -326,7 +330,7 @@ def aquaflux_opm(dic, iteration=""):
         dic (dict): Modified global dictionary
 
     """
-    case = f"{dic['fol']}/output/regional/REGIONAL"
+    case = f"{dic['fol']}/simulations/regional/REGIONAL"
     dic["regza"] = [False] * len(dic["regional_zmz_mid"])
     ini = OpmFile(case + ".INIT")
     dic["porvr"] = np.array(ini["PORV"])
@@ -341,7 +345,7 @@ def aquaflux_opm(dic, iteration=""):
                 )
                 if dic["porvr"][ind] > 0:
                     dic["regza"][k] = True
-    case = f"{dic['fol']}/output/regional{iteration}/REGIONAL{iteration}"
+    case = f"{dic['fol']}/simulations/regional{iteration}/REGIONAL{iteration}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     dic["rst"], dic["grid"] = OpmFile(rst), OpmGrid(grid)
@@ -423,8 +427,8 @@ def aquaflux_opm(dic, iteration=""):
                     * dic["regional_num_cells"][1]
                 )
     for keyword in [
-        f"FLO{dic['liq']}I+",
-        f"FLO{dic['liq']}J+",
+        "FLOWATI+",
+        "FLOWATJ+",
         "PRESSURE",
         "WAT_DEN",
         "R_AQUFLUX_bottom",
@@ -445,65 +449,68 @@ def aquaflux_opm(dic, iteration=""):
         "S_PRESSURE_left",
     ]:
         dic[keyword] = [[] for _ in range(len(dic["schedule_r"]))]
-    for i in range(len(dic["schedule_r"])):
-        for keyword in [
-            f"FLO{dic['liq']}I+",
-            f"FLO{dic['liq']}J+",
-            "PRESSURE",
-            "WAT_DEN",
-        ]:
-            dic[keyword][i] = [dic["porvr"] * 0]
-            dic[keyword][i][0][dic["actindr"]] = np.array(dic["rst"][keyword, i])
-        if dic["site_bctype"][0] == "flux":
-            n_xy = dic["regional_num_cells"][0] * dic["regional_num_cells"][1]
-            dic["R_AQUFLUX_bottom"][i].append(
-                [
-                    np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
-                    / (
-                        dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_bottom"]
-                ]
-            )
-            dic["R_AQUFLUX_top"][i].append(
-                [
-                    -np.array(dic[f"FLO{dic['liq']}J+"][i][0][j])
-                    / (
-                        dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_top"]
-                ]
-            )
-            dic["R_AQUFLUX_right"][i].append(
-                [
-                    -np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
-                    / (
-                        dic["regional_ymy_dsize"][
-                            mt.floor((j % n_xy) / dic["regional_num_cells"][0])
-                        ]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_right"]
-                ]
-            )
-            dic["R_AQUFLUX_left"][i].append(
-                [
-                    np.array(dic[f"FLO{dic['liq']}I+"][i][0][j])
-                    / (
-                        dic["regional_ymy_dsize"][
-                            mt.floor((j % n_xy) / dic["regional_num_cells"][0])
-                        ]
-                        * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
-                    )
-                    for j in dic["cells_left"]
-                ]
-            )
-        elif dic["site_bctype"][0] == "pres":
-            handle_stencil_opm(dic, i)
-        elif dic["site_bctype"][0] == "pres2p":
-            handle_stencil_2p(dic, i)
+    print("Handle boundary conditions:")
+    with alive_bar(len(dic["schedule_r"])) as bar_animation:
+        for i in range(len(dic["schedule_r"])):
+            bar_animation()
+            for keyword in [
+                "FLOWATI+",
+                "FLOWATJ+",
+                "PRESSURE",
+                "WAT_DEN",
+            ]:
+                dic[keyword][i] = [dic["porvr"] * 0]
+                dic[keyword][i][0][dic["actindr"]] = np.array(dic["rst"][keyword, i])
+            if dic["site_bctype"][0] == "flux":
+                n_xy = dic["regional_num_cells"][0] * dic["regional_num_cells"][1]
+                dic["R_AQUFLUX_bottom"][i].append(
+                    [
+                        np.array(dic["FLOWATJ+"][i][0][j])
+                        / (
+                            dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_bottom"]
+                    ]
+                )
+                dic["R_AQUFLUX_top"][i].append(
+                    [
+                        -np.array(dic["FLOWATJ+"][i][0][j])
+                        / (
+                            dic["regional_xmx_dsize"][j % dic["regional_num_cells"][0]]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_top"]
+                    ]
+                )
+                dic["R_AQUFLUX_right"][i].append(
+                    [
+                        -np.array(dic["FLOWATI+"][i][0][j])
+                        / (
+                            dic["regional_ymy_dsize"][
+                                mt.floor((j % n_xy) / dic["regional_num_cells"][0])
+                            ]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_right"]
+                    ]
+                )
+                dic["R_AQUFLUX_left"][i].append(
+                    [
+                        np.array(dic["FLOWATI+"][i][0][j])
+                        / (
+                            dic["regional_ymy_dsize"][
+                                mt.floor((j % n_xy) / dic["regional_num_cells"][0])
+                            ]
+                            * dic["regional_zmz_dsize"][mt.floor(j / n_xy)]
+                        )
+                        for j in dic["cells_left"]
+                    ]
+                )
+            elif dic["site_bctype"][0] == "pres":
+                handle_stencil_opm(dic, i)
+            elif dic["site_bctype"][0] == "pres2p":
+                handle_stencil_2p(dic, i)
     if dic["site_bctype"][0] == "pres" or dic["site_bctype"][0] == "pres2p":
         handle_pressure_correction(dic)
 

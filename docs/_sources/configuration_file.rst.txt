@@ -53,7 +53,7 @@ The following input lines are:
     rock_comp = 6.11423e-5 # Rock compressibility [1/Bar]
     sensor_coords = [20000,8000,0] # Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
     z_xy = "(20-20*mt.sin((2*mt.pi*(x+y)/10000)))" # The function for the reservoir surface
-    hysteresis = 1 # Add hysteresis (1/0)
+    hysteresis = ["Killough", "Both"] # Activate hysteresis: 1) Killough or Carlson and 2) Both, Pc, or Kr (HYSTOPT in EHYSTR keyword, see the OPM manual)
     salinity = 2.92 # Add salinity (value [1e-3 kg-M/kg])
 
 Here we first set the dimensions of the regional model and the grid size for the discretization,
@@ -62,7 +62,7 @@ of the box. The following line defines a fault along the z-direction in the regi
 location and continues in zig-zag until the given final location. Finally, we set the thickness of the layers along the z direction, 
 which allows to consider different rock and saturation function properties, as well as the reservoir conditions (pressure, temperature, and rock compressibility), 
 the location of a point of interest to compare results, and the z position of the tops cells as a function of the (x,y) location. The hysteresis option activates the
-Killough hysteresis model on the gas relative permeability, and salinity can be added to the system.
+Killough or Carlson hysteresis model (if the hysteresis variable is not added to the configuration file, then hysteresis is deactivated), and salinity can be added to the system.
 
 .. code-block:: python
     :linenos:
@@ -79,9 +79,6 @@ We define the BC for the regional and site models, where flux/pres2p/pres in the
 projects the fluxes/pressures from the regional simulations (pres2p using only two points for the projection, while pres uses an interpolator 
 along the side on the bc with all pressures), porvproj adds computed pore volumes from the regional
 reservoir, and wells add 4 injectors and 4 producers on the middle points on the site boundaries.
-
-.. note::
-    The functionality for back-coupling activated by adding the entry "iterations = n", n an integer, is under development, see the :ref:`back_coupling` if you are curious.
 
 .. figure:: figs/grids.png
 
@@ -112,25 +109,25 @@ In this example we consider properties for the sands number one to five as descr
     :lineno-start: 36
 
     # Properties sat functions: 1) swi [-], 2) sni [-], 3) krw [-], 4) krn [-], 5) pen [Bar], 6) nkrw [-], 7) nkrn [-],
-    # 8) npen [-], 9) threshold cP evaluation (entry per layer, if hysteresis, additional entries per layer)
-    safu = [[0.12,0.10,1,1,3060e-5,2,2,2,1e-4],
-    [0.12,0.10,1.0,1.0,3870.63e-5,2,2,2,1e-4],
-    [0.12,0.10,1.0,1.0,3060.00e-5,2,2,2,1e-4],
-    [0.12,0.10,1.0,1.0,3870.63e-5,2,2,2,1e-4],
-    [0.32,0.10,1.0,1.0, 193531e-5,2,2,2,1e-4],
-    [0.14,0.10,1.0,1.0,8654.99e-5,2,2,2,1e-4],
-    [0.12,0.10,1.0,1.0,6120.00e-5,2,2,2,1e-4],
-    [0.14,0.10,1.0,1.0,8654.99e-5,2,2,2,1e-4],
-    [0.12,0.10,1.0,1.0,6120.00e-5,2,2,2,1e-4],
-    [0.22,0.30,1.0,1.0,3060.00e-5,2,4,2,1e-4],
-    [0.12,0.30,1.0,1.0,3870.63e-5,2,4,2,1e-4],
-    [0.12,0.30,1.0,1.0,3060.00e-5,2,4,2,1e-4],
-    [0.12,0.30,1.0,1.0,3870.63e-5,2,4,2,1e-4],
-    [0.32,0.30,1.0,1.0, 193531e-5,2,4,2,1e-4],
-    [0.14,0.30,1.0,1.0,8654.99e-5,2,4,2,1e-4],
-    [0.12,0.30,1.0,1.0,6120.00e-5,2,4,2,1e-4],
-    [0.14,0.30,1.0,1.0,8654.99e-5,2,4,2,1e-4],
-    [0.12,0.30,1.0,1.0,6120.00e-5,2,4,2,1e-4]]
+    # 8) npen [-], 9) threshold cP evaluation, and 10) npoints [-] (entry per layer, if hysteresis, additional entries per layer)
+    safu = [[0.12,0.10,1,1,3060e-5,2,2,2,1e-4,1000],
+    [0.12,0.10,1.0,1.0,3870.63e-5,2,2,2,1e-4,1000],
+    [0.12,0.10,1.0,1.0,3060.00e-5,2,2,2,1e-4,1000],
+    [0.12,0.10,1.0,1.0,3870.63e-5,2,2,2,1e-4,1000],
+    [0.32,0.10,1.0,1.0, 193531e-5,2,2,2,1e-4,1000],
+    [0.14,0.10,1.0,1.0,8654.99e-5,2,2,2,1e-4,1000],
+    [0.12,0.10,1.0,1.0,6120.00e-5,2,2,2,1e-4,1000],
+    [0.14,0.10,1.0,1.0,8654.99e-5,2,2,2,1e-4,1000],
+    [0.12,0.10,1.0,1.0,6120.00e-5,2,2,2,1e-4,1000],
+    [0.22,0.30,1.0,1.0,3060.00e-5,2,4,2,1e-4,1000],
+    [0.12,0.30,1.0,1.0,3870.63e-5,2,4,2,1e-4,1000],
+    [0.12,0.30,1.0,1.0,3060.00e-5,2,4,2,1e-4,1000],
+    [0.12,0.30,1.0,1.0,3870.63e-5,2,4,2,1e-4,1000],
+    [0.32,0.30,1.0,1.0, 193531e-5,2,4,2,1e-4,1000],
+    [0.14,0.30,1.0,1.0,8654.99e-5,2,4,2,1e-4,1000],
+    [0.12,0.30,1.0,1.0,6120.00e-5,2,4,2,1e-4,1000],
+    [0.14,0.30,1.0,1.0,8654.99e-5,2,4,2,1e-4,1000],
+    [0.12,0.30,1.0,1.0,6120.00e-5,2,4,2,1e-4,1000]]
 
 .. note::
     Since hysteresis is activated, then we add the values for the imbibition curves (lines 47 to 55),

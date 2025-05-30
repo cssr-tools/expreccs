@@ -30,8 +30,8 @@ krn = "krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn" # Non-wetting rel p
 pcap = "pen * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npen))" # Capillary pressure saturation function [Bar]
 
 # Properties sat functions: 1) swi [-], 2) sni [-], 3) krw [-], 4) krn [-], 5) pen [Bar], 6) nkrw [-], 7) nkrn [-],
-# 8) npen [-], 9) threshold cP evaluation (entry per layer, if hysteresis, additional entries per layer)
-safu = [[0.12,0.1,1,1,0.0306,2,2,2,1e-4]]
+# 8) npen [-], 9) threshold cP evaluation, and 10) npoints [-] (entry per layer, if hysteresis, additional entries per layer)
+safu = [[0.12,0.1,1,1,0.0306,2,2,2,1e-4,1000]]
 
 # Properties rock: 1) Kxy [mD], 2) Kz [mD], and 3) phi [-] (entry per layer)
 rock = [[1013.25,101.325,0.25]]

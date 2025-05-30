@@ -17,7 +17,6 @@ pressure = 3E2  # Pressure on the reservoir top [Bar]
 temperature = [105,105] # Top and bottom temperatures [C]
 rock_comp = 4.934e-5 # Rock compressibility [1/Bar]
 sensor_coords = [62000,102000,0] # Sensor position x, y, and z to assess the error over time w.r.t the reference solution [m]
-hysteresis = 0 # Add hysteresis (1/0)
 salinity = 2.92 # Add salinity (value [1e-3 kg-M/kg])
 
 # Set the boundary conditions
@@ -33,8 +32,8 @@ krn = "krn * ((1.0 - sw - sni) / (1.0 - sni - swi)) ** nkrn" # Non-wetting rel p
 pcap = "pen * ((sw - swi) / (1.0 - swi)) ** (-(1.0 / npen))" # Capillary pressure saturation function [Bar]
 
 # Properties sat functions: 1) swi [-], 2) sni [-], 3) krw [-], 4) krn [-], 5) pen [Bar], 6) nkrw [-], 7) nkrn [-],
-# 8) npen [-], 9) threshold cP evaluation (entry per layer, if hysteresis, additional entries per layer)
-safu = [[0.478,0,1,0.3,0,3,3,2,1e-5],[0.478,0,1,0.3,0,3,3,2,1e-5],[0.478,0,1,0.3,0,3,3,2,1e-5]]
+# 8) npen [-], 9) threshold cP evaluation, and 10) npoints [-] (entry per layer, if hysteresis, additional entries per layer)
+safu = [[0.478,0,1,0.3,0,3,3,2,1e-5,1000],[0.478,0,1,0.3,0,3,3,2,1e-5,1000],[0.478,0,1,0.3,0,3,3,2,1e-5,1000]]
 
 # Properties rock: 1) Kxy [mD], 2) Kz [mD], and 3) phi [-] (entry per layer)
 rock = [[1000,100,0.2],[1000,100,0],[1000,100,0.2]]

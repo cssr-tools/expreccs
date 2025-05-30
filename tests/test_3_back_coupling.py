@@ -14,5 +14,5 @@ def test_back_coupling():
     os.chdir(f"{dirname}/configs")
     os.system("expreccs -i back-coupling.toml -o back -p yes -w 1")
     assert os.path.exists(
-        f"{dirname}/configs/back/postprocessing/back_difference_site_pres_watfluxi-.png"
+        f"{dirname}/configs/back/postprocessing/back_difference_site_porvproj_watfluxi+.png"
     )

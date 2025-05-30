@@ -55,10 +55,6 @@ def mapping_properties(dic):
                 dic[f"{res}_{name}"][1:] + dic[f"{res}_{name}"][:-1]
             )
             dic[f"{res}_num_cells"][i] = len(dic[f"{res}_{name}"]) - 1
-            np.save(
-                f"{dic['fol']}/output/{res}/{res}_{name}",
-                dic[f"{res}_{name}"],
-            )
         dic[f"{res}_layers"] = np.zeros(dic[f"{res}_num_cells"][2], int)
         for i, _ in enumerate(dic["thickness"]):
             dic[f"{res}_layers"] += dic[f"{res}_zmz_mid"] > sum(
@@ -75,10 +71,6 @@ def mapping_properties(dic):
                 dic[f"{res}_{name}"][1:] + dic[f"{res}_{name}"][:-1]
             )
             dic[f"{res}_num_cells"][i] = len(dic[f"{res}_{name}"]) - 1
-            np.save(
-                f"{dic['fol']}/output/{res}_{dic['site_bctype'][0]}/{res}_{name}",
-                dic[f"{res}_{name}"],
-            )
         dic[f"{res}_layers"] = np.zeros(dic[f"{res}_num_cells"][2], int)
         dic[f"{res}_zmaps"] = np.zeros(dic[f"{res}_num_cells"][2], int)
         for i, _ in enumerate(dic["thickness"]):
@@ -130,14 +122,6 @@ def rotate_grid(dic):
             )
     dic["site_xc"] = np.array(dic["site_xc"])
     dic["site_yc"] = np.array(dic["site_yc"])
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/d2x",
-        dic["site_xc"],
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/d2y",
-        dic["site_yc"],
-    )
 
 
 def positions_regional(dic):
@@ -172,17 +156,21 @@ def positions_regional(dic):
                 ) and z_c in pd.Interval(
                     dic["site_location"][2], dic["site_location"][5]
                 ):
-                    dic["regional_fipnum"].append(1)
+                    dic["regional_fipnum"].append("1 ")
                     lasti = i
                     if indc == 0:
                         dic["site_corners"][0] = [i, j, 0]
                         indc = j
                 else:
-                    dic["regional_fipnum"].append(2)
+                    dic["regional_fipnum"].append("2 ")
                 indx += 1
             if (
                 indc > 0
-                and min(dic["regional_fipnum"][-dic["regional_num_cells"][0] :]) == 2
+                and min(
+                    int(val)
+                    for val in dic["regional_fipnum"][-dic["regional_num_cells"][0] :]
+                )
+                == 2
             ):
                 dic["site_corners"][1] = [lasti, j - 1, 0]
                 indc = 0
@@ -194,11 +182,15 @@ def positions_regional(dic):
         dic["asright"] = False
     if dic["site_corners"][1][0] == -1:
         if (
-            min(dic["regional_fipnum"][-dic["regional_num_cells"][0] :]) == 1
-            and dic["regional_fipnum"][-1] != 1
+            min(
+                int(val)
+                for val in dic["regional_fipnum"][-dic["regional_num_cells"][0] :]
+            )
+            == 1
+            and dic["regional_fipnum"][-1] != "1 "
         ):
             for val in dic["regional_fipnum"][-dic["regional_num_cells"][0] :]:
-                if val == 2:
+                if val == "2":
                     continue
                 dic["site_corners"][1][0] += 1
         else:
@@ -235,25 +227,6 @@ def positions_regional(dic):
         dic["regional_sensor"][i] = pd.Series(
             abs(dic["sensor_coords"][i] - midpoints)
         ).argmin()
-    sensor_ind = (
-        dic["regional_sensor"][0]
-        + dic["regional_sensor"][1] * dic["regional_num_cells"][0]
-        + dic["regional_sensor"][2]
-        * dic["regional_num_cells"][0]
-        * dic["regional_num_cells"][1]
-    )
-    np.save(
-        f"{dic['fol']}/output/regional/sensor",
-        sensor_ind,
-    )
-    np.save(
-        f"{dic['fol']}/output/regional/sensor_coords",
-        dic["sensor_coords"],
-    )
-    np.save(
-        f"{dic['fol']}/output/regional/sensorijk",
-        dic["regional_sensor"],
-    )
 
 
 def positions_rotation(dic):
@@ -267,7 +240,7 @@ def positions_rotation(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["site_fipnum"] = [1] * (
+    dic["site_fipnum"] = ["1 "] * (
         dic["site_num_cells"][0] * dic["site_num_cells"][1] * dic["site_num_cells"][2]
     )
     dic["site_wellijk"] = []
@@ -307,23 +280,6 @@ def positions_rotation(dic):
         dic["site_sensor"][k] = pd.Series(
             abs(dic["sensor_coords"][k] - midpoints)
         ).argmin()
-    sensor_ind = (
-        dic["site_sensor"][0]
-        + dic["site_sensor"][1] * dic["site_num_cells"][0]
-        + dic["site_sensor"][2] * dic["site_num_cells"][0] * dic["site_num_cells"][1]
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor",
-        sensor_ind,
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor_coords",
-        dic["sensor_coords"],
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensorijk",
-        dic["site_sensor"],
-    )
 
 
 def positions_site(dic):
@@ -337,7 +293,7 @@ def positions_site(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["site_fipnum"] = [1] * (
+    dic["site_fipnum"] = ["1 "] * (
         dic["site_num_cells"][0] * dic["site_num_cells"][1] * dic["site_num_cells"][2]
     )
     dic["site_wellijk"] = []
@@ -369,23 +325,6 @@ def positions_site(dic):
         dic["site_sensor"][k] = pd.Series(
             abs(dic["sensor_coords"][k] - midpoints)
         ).argmin()
-    sensor_ind = (
-        dic["site_sensor"][0]
-        + dic["site_sensor"][1] * dic["site_num_cells"][0]
-        + dic["site_sensor"][2] * dic["site_num_cells"][0] * dic["site_num_cells"][1]
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor",
-        sensor_ind,
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensor_coords",
-        dic["sensor_coords"],
-    )
-    np.save(
-        f"{dic['fol']}/output/site_{dic['site_bctype'][0]}/sensorijk",
-        dic["site_sensor"],
-    )
 
 
 def positions_reference(dic):
@@ -410,9 +349,9 @@ def positions_reference(dic):
                 ) and k in pd.Interval(
                     dic["site_location"][2], dic["site_location"][5]
                 ):
-                    dic["reference_fipnum"].append(1)
+                    dic["reference_fipnum"].append("1 ")
                 else:
-                    dic["reference_fipnum"].append(2)
+                    dic["reference_fipnum"].append("2 ")
     dic["reference_wellijk"] = [[] for _ in range(len(dic["well_coords"]))]
     dic["reference_fault"] = [0, 0, 0]
     dic["reference_site_fault"] = [[0, 0, 0], [0, 0, 0]]
@@ -440,22 +379,3 @@ def positions_reference(dic):
         dic["reference_sensor"][i] = pd.Series(
             abs(dic["sensor_coords"][i] - midpoints)
         ).argmin()
-    sensor_ind = (
-        dic["reference_sensor"][0]
-        + dic["reference_sensor"][1] * dic["reference_num_cells"][0]
-        + dic["reference_sensor"][2]
-        * dic["reference_num_cells"][0]
-        * dic["reference_num_cells"][1]
-    )
-    np.save(
-        f"{dic['fol']}/output/reference/sensor",
-        sensor_ind,
-    )
-    np.save(
-        f"{dic['fol']}/output/reference/sensor_coords",
-        dic["sensor_coords"],
-    )
-    np.save(
-        f"{dic['fol']}/output/reference/sensorijk",
-        dic["reference_sensor"],
-    )
