@@ -158,6 +158,8 @@ results
 cssr
 
 # Extra files
+regional_rpr-3.png
+reference_sgas_i,j,1_t90.png
 /tests/regional/FIPNUM_EXPRECCS.INC
 /tests/regional/OPERNUM_EXPRECCS.INC
 /tests/regional/REGIONAL.DBG

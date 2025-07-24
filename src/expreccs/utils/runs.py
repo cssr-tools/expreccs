@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 NORCE
+# SPDX-FileCopyrightText: 2023-2025 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
 """
@@ -7,7 +7,7 @@ Utiliy functions to run the studies.
 
 import os
 from expreccs.visualization.plotting import plot_results
-from expreccs.utils.writefile import set_gridmako, write_files
+from expreccs.utils.writefile import write_files
 from expreccs.utils.mapboundaries import (
     aquaflux_resdata,
     aquaflux_opm,
@@ -66,7 +66,6 @@ def run_models(dic):
         dic (dict): Modified global dictionary
 
     """
-    set_gridmako(dic, dic["z_xy"])
     if dic["mode"] in ["all", "reference"]:
         write_files(dic, "reference")
         simulations(dic, "reference")

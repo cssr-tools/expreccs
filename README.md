@@ -65,5 +65,5 @@ The following is a list of manuscripts in which _expreccs_ is used:
 
 ## About expreccs
 The _expreccs_ package is funded by Harbour Energy, Equinor, Shell, and the Research Council of Norway [project number 336294].
-This is work in progress. [_Here_](https://www.norceresearch.no/en/projects/expansion-of-resources-for-co2-storage-on-the-horda-platform-expreccs) is the link to the project details.
+[_Here_](https://www.norceresearch.no/en/projects/expansion-of-resources-for-co2-storage-on-the-horda-platform-expreccs) is the link to the project details.
 Contributions are more than welcome using the fork and pull request approach. For new features, please request them raising an issue.

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 NORCE
+# SPDX-FileCopyrightText: 2023-2025 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 #!/usr/bin/env python
 
@@ -68,17 +68,20 @@ def safu_evaluation():
             sco2 = np.linspace(para[1], 1 - para[0], para[9])
             if sco2[0] > 0:
                 file.write(
-                    f"{0:E} {0:E}"
-                    f" {0:E} \n"
+                    f"{0}".rjust(12)
+                    + f"{0}".rjust(13)
+                    + f" {0}\n"
                 )
             for i, value in enumerate(sco2[:-1]):
                 file.write(
-                    f"{value:E} {max(0,krne(1-sco2[i], para[0], para[1], para[3], para[6])):E}"
-                    f" {0:E} \n"
+                    (f"{value:E}" if value not in [0,1] else f"{int(value)}".rjust(12))
+                    + (f" {max(0,krne(1-sco2[i], para[0], para[1], para[3], para[6])):E}" if max(0,krne(1-sco2[i], para[0], para[1], para[3], para[6])) not in [0,1] else f"{int(max(0,krne(1-sco2[i], para[0], para[1], para[3], para[6])))}".rjust(13))
+                    + f" {0}\n"
                 )
             file.write(
-                    f"{sco2[-1]:E} {max(0,krne(1-sco2[-1], para[0], para[1], para[3], para[6])):E}"
-                    f" {0:E} \n"
+                    (f"{sco2[-1]:E}" if sco2[-1] not in [0,1] else f"{int(sco2[-1])}".rjust(12))
+                    + (f" {max(0,krne(1-sco2[-1], para[0], para[1], para[3], para[6])):E}" if max(0,krne(1-sco2[-1], para[0], para[1], para[3], para[6])) not in [0,1] else f"{int(max(0,krne(1-sco2[-1], para[0], para[1], para[3], para[6])))}".rjust(13))
+                    + f" {0}\n"
                 )
             file.write("/\n")
         file.write("SWFN\n")
@@ -91,21 +94,21 @@ def safu_evaluation():
             for i, value in enumerate(swatc):
                 if value <= para[0]:
                     file.write(
-                        f"{value:E}"
-                        f" {0:E}"
-                        f" {pcwce(value, para[0] - para[8], para[1], para[4], para[7]):E} \n"
+                        (f"{value:E}" if value not in [0,1] else f"{int(value)}".rjust(12))
+                        + f"{0}".rjust(13)
+                        + (f" {pcwce(value, para[0] - para[8], para[1], para[4], para[7]):E}\n" if pcwce(value, para[0] - para[8], para[1], para[4], para[7]) != 0 else f" 0\n")
                     )
                 elif value >= 1 - para[1]:
                     file.write(
-                            f"{value:E}"
-                            f" {1:E}"
-                            f" {pcwce(value, para[0]- para[8], para[1], para[4], para[7]):E} \n"
+                            (f"{value:E}" if value not in [0,1] else f"{int(value)}".rjust(12))
+                            + f"{1}".rjust(13)
+                            + (f" {pcwce(value, para[0] - para[8], para[1], para[4], para[7]):E}\n" if pcwce(value, para[0] - para[8], para[1], para[4], para[7]) != 0 else f" 0\n")
                         )
                 else:
                     file.write(
-                        f"{value:E}"
-                        f" {krwe(value, para[0], para[1] , para[2], para[5]):E}"
-                        f" {pcwce(value, para[0]- para[8], para[1], para[4], para[7]):E} \n"
+                        (f"{value:E}" if value not in [0,1] else f"{int(value)}".rjust(12))
+                        + f" {krwe(value, para[0], para[1] , para[2], para[5]):E}"
+                        + (f" {pcwce(value, para[0] - para[8], para[1], para[4], para[7]):E}\n" if pcwce(value, para[0] - para[8], para[1], para[4], para[7]) != 0 else f" 0\n")
                     )
             file.write("/\n")
 

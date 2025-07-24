@@ -1,5 +1,5 @@
 # Set mpirun, the full path to the flow executable, and simulator flags (except --output-dir)
-flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1 --enable-tuning=true"
+flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1"
 
 # Set the model parameters
 regional_dims = [45000,15000,81] # Regional aquifer length, width, and depth [m]
@@ -69,7 +69,8 @@ rock = [[1013.25,101.325,0.25],
 well_coords = [[21180,7068,0,81],[24200,7800,15,65],[21718,7122,45,81],[14518,11377,0,50],[31679,8883,0,30],[28477,2732,0,81]]
 
 # Define the injection values (entry per change in the schedule): 
-# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d], 4) maximum time step [d]
+# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d]
 # 1) fluid (0 wetting, 1 non-wetting) well 0, 2) injection rates [kg/day] well 0, 3) fluid ... well n, injection, ...well n (as many as num of wells) 
 # if 'wells' for site_bctype, then 1) bottom, 2) right, 3) top, and 4) left values (0(prod)/1(inj), pressure [Bar]))
-inj = [[[365,73,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,5e6,0,1e7]],[[365,73,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,0,0,1e7]]]
+# if --enable-tuning=1, then 1) for TUNING values as described in the OPM manual
+inj = [[[365,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,5e6,0,1e7]],[[365,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,0,0,1e7]]]

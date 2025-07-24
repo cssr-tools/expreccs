@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2025 NORCE
+# SPDX-FileCopyrightText: 2025 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
 """Test the expreccs functionality to rotate grids and to handle generic 2D decks"""

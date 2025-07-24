@@ -1,5 +1,5 @@
 # Set mpirun, the full path to the flow executable, and simulator flags (except --output-dir)
-flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1 --enable-tuning=true"
+flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1"
 
 # Set the model parameters
 regional_dims = [15000,15000,5] # Regional aquifer length, width, and depth [m]
@@ -40,16 +40,17 @@ rock = [[1013.25,101.325,0.25]]
 well_coords = [[7180,7180,0,5],[7970,7970,0,5],[11200,11200,0,5],[11200,4800,0,5]]
 
 # Define the injection values (entry per change in the schedule): 
-# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d], 4) maximum time step [d]
+# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d]
 # 1) fluid (0 wetting, 1 non-wetting) well 0, 2) injection rates [kg/day] well 0, 3) fluid ... well n, injection, ...well n (as many as num of wells) 
 # if 'wells' for site_bctype, then 1) bottom, 2) right, 3) top, and 4) left values (0(prod)/1(inj), pressure [Bar]))
-inj = [[[73,73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
-[[73,73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]]]
+# if --enable-tuning=1, then 1) for TUNING values as described in the OPM manual
+inj = [[[73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,1,5e6,0,0],[0,2e2,1,2.15e2,1,2.15e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]],
+[[73,73,73],[1,3e5,1,3e5,0,0,1,5e6],[1,2.15e2,1,2.15e2,0,2e2,0,2e2]]]
