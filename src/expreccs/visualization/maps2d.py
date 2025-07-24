@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 NORCE
+# SPDX-FileCopyrightText: 2023-2025 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=E1102,R0914
 

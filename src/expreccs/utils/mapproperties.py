@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023 NORCE
+# SPDX-FileCopyrightText: 2023-2025 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=R0912,R0915
 
@@ -143,9 +143,7 @@ def positions_regional(dic):
         True,
         True,
     )  # active side
-    indx = 0
-    indc = 0
-    lasti = 0
+    indx, indc, lasti, found = 0, 0, 0, False
     for _, z_c in enumerate(dic["regional_zmz_mid"]):
         for j, y_c in enumerate(dic["regional_ymy_mid"]):
             for i, x_c in enumerate(dic["regional_xmx_mid"]):
@@ -174,6 +172,16 @@ def positions_regional(dic):
             ):
                 dic["site_corners"][1] = [lasti, j - 1, 0]
                 indc = 0
+                found = True
+            if (
+                j == len(dic["regional_ymy_mid"]) - 1
+                and not found
+                and dic["site_location"][0] == 0
+            ):
+                for i, x_c in enumerate(dic["regional_xmx_mid"]):
+                    if x_c > dic["site_location"][3]:
+                        dic["site_corners"][1][0] = i - 1
+                        break
     if dic["site_corners"][0][0] == 0:
         dic["asleft"] = False
     if dic["site_corners"][0][1] == 1:
@@ -199,7 +207,6 @@ def positions_regional(dic):
     if dic["site_corners"][1][1] == -1:
         dic["astop"] = False
         dic["site_corners"][1][1] = dic["regional_num_cells"][1] - 1
-    # print(dic["astop"],dic["asbottom"],dic["asright"],dic["asleft"])
     dic["regional_wellijk"] = [[] for _ in range(len(dic["well_coords"]))]
     dic["regional_fault"] = [0, 0, 0]
     dic["regional_sensor"] = [0, 0, 0]

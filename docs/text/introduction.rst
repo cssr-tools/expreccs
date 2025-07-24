@@ -9,7 +9,7 @@ This documentation describes the **expreccs** tool hosted in `https://github.com
 
 Concept
 -------
-Simplified and flexible testing framework for two-stage approach (dynamic pressure boundary conditions) to improve CO2 storage regional and site simulations:
+Simplified and flexible testing framework for a two-stage approach (dynamic pressure boundary conditions) to improve CO2 storage regional and site simulations:
 
 - Simulate the regional model (all timesteps).
 - Identify connections on the regional model that corresponds to the boundary of the site model.

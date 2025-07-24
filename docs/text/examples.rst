@@ -114,7 +114,11 @@ we can use our friend `plopm <https://github.com/cssr-tools/plopm>`_:
     Comparison of the gas saturation on the top cells at the end of the simulations.
 
 .. tip::
-    You can install `plopm <https://github.com/cssr-tools/plopm>`_ by executing in the terminal: **pip install git+https://github.com/cssr-tools/plopm.git**.
+    You can install `plopm <https://github.com/cssr-tools/plopm>`_ by executing in the terminal:
+    
+    .. code-block:: bash
+
+        pip install git+https://github.com/cssr-tools/plopm.git
 
 See also the `test_4_site_regional.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_4_site_regional.py>`_, where the 
 two-stage approach is demonstrated in a site and regional deck generated using `sandwich.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/sandwich.toml>`_. In this test 

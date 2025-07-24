@@ -20,7 +20,7 @@ The first input parameter in the configuration file is:
     :linenos:
 
     # Set mpirun, the full path to the flow executable, and simulator flags (except --output-dir)
-    flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1 --enable-tuning=true"
+    flow = "flow --relaxed-max-pv-fraction=0 --enable-opm-rst-file=true --newton-min-iterations=1"
 
 If **flow** is not in your path, then write the full path to the executable, as well as adding mpirun if this is supported in your machine 
 (e.g., mpirun -np 8 /Users/dmar/expreccs/build/opm-simulators/bin/flow). We also add in the same 
@@ -177,16 +177,31 @@ The injection rates are given in the following entries:
     :lineno-start: 71
 
     # Define the injection values (entry per change in the schedule): 
-    # 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d], 4) maximum time step [d]
+    # 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d]
     # 1) fluid (0 wetting, 1 non-wetting) well 0, 2) injection rates [kg/day] well 0, 3) fluid ... well n, injection, ...well n (as many as num of wells) 
     # if 'wells' for site_bctype, then 1) bottom, 2) right, 3) top, and 4) left values (0(prod)/1(inj), pressure [Bar]))
-    inj = [[[365,73,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,5e6,0,1e7]],[[365,73,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,0,0,1e7]]]
+    # if --enable-tuning=1, then 1) for TUNING values as described in the OPM manual
+    inj = [[[365,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,5e6,0,1e7]],[[365,73,73],[1,3e5,1,3e5,1,3e5,1,5e6,1,0,0,1e7]]]
 
-Since we defined six wells (three of them inside the site model), then each row of the schedule has 16 entries, corresponding to
-the first four defining the injection time, number of restart files in the solution for the regional, number of restart files in the solution for the site/reference, and maximum solver time step, and 2*6 additional 
+Since we defined six wells (three of them inside the site model), then each row of the schedule has 15 entries (two groups), corresponding to
+the first three defining the injection time, number of restart files in the solution for the regional, and number of restart files in the solution for the site/reference, and 2*6 additional 
 entries to define injected fluid (0 water, 1 CO2) and the injection rates from well 0 to well 5 respectively. If 'site_bctype' is set to wells, 
 then at the end of each row we add the values from the wells (BHP control) on the boundaries in the order of bottom, right, top,
-and left with two values respectively (0 for producers and 1 for injectors, and the BHP in Bars, see `example1_wells.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_wells.toml>`_). 
+and left with two values respectively (0 for producers and 1 for injectors, and the BHP in Bars, see `example1_wells.toml <https://github.com/cssr-tools/expreccs/blob/main/examples/example1_wells.toml>`_).
+
+.. note::
+    If tuning is enabled by the OPM flag **-\-enable-tuning**, then the TUNING keywords are added to the deck, see the OPM Flow manual for the definitions of all 
+    34 different options and their default values. To set these values to avoid using the default values, then one can add per injection line in the configuration file a string with the corresponding values. 
+    For exmaple, to set a maximum time step of 10 and 20 days in the example above (and adding **-\-enable-tuning=1** in line 2):
+
+    .. code-block:: python
+
+        inj = [[[365,73,73,"1* 10"],[1,3e5,1,3e5,1,3e5,1,5e6,1,5e6,0,1e7]],[[365,73,73,"1* 20"],[1,3e5,1,3e5,1,3e5,1,5e6,1,0,0,1e7]]]
+
+    The first value is defaulted (1*), and the second entry corresponds to TSMAXZ. 
+    See `this configuration file <https://github.com/OPM/pyopmspe11/blob/main/examples/tuning.toml>`_ for an example setting TUNING values, where entries are given for the three 
+    different records (lines) of the TUNING keyword. In practice, TUNING helps to speed up simulations, e.g., to limit the time step for periods with higher injection rates, while relaxing it 
+    for periods where the wells are shut.
 
 ******************
 Simulation results

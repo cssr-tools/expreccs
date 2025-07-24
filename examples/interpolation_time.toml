@@ -40,7 +40,10 @@ rock = [[1013.25,101.325,0.25]]
 well_coords = [[7180,7180,0,5],[7970,7970,0,5],[11200,11200,0,5],[11200,4800,0,5]]
 
 # Define the injection values (entry per change in the schedule): 
-# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d], 4) maximum time step [d]
+# 1) injection time [d], 2) time step size to write results regional [d], 3) time step size to write results site/reference [d]
 # 1) fluid (0 wetting, 1 non-wetting) well 0, 2) injection rates [kg/day] well 0, 3) fluid ... well n, injection, ...well n (as many as num of wells) 
 # if 'wells' for site_bctype, then 1) bottom, 2) right, 3) top, and 4) left values (0(prod)/1(inj), pressure [Bar]))
-inj = [[[73,73,7.3,7.3],[1,3e5,1,3e5,1,5e6,0,0]],[[292,292,73,73],[1,3e5,1,3e5,1,5e6,0,0]],[[365,365,73,73],[1,3e5,1,3e5,0,0,1,5e6]]]
+# if --enable-tuning=1, then 1) for TUNING values as described in the OPM manual
+inj = [[[73,73,7.3],[1,3e5,1,3e5,1,5e6,0,0],"1* 7.3 1e-12"],
+       [[292,292,73],[1,3e5,1,3e5,1,5e6,0,0],"1* 73 1e-12"],
+       [[365,365,73],[1,3e5,1,3e5,0,0,1,5e6],"1* 73 1e-12"]]
