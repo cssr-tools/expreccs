@@ -366,14 +366,12 @@ BCPRO2 ${mt.ceil(dic['site_num_cells'][0]/2)} ${dic['site_num_cells'][1]} 1 ${di
 BCPRO3 1 ${mt.ceil(dic['site_num_cells'][1]/2)} 1 ${dic['site_num_cells'][2]} OPEN 2* 0.2 /
 % endif
 /
-<%
-n = 0
-%>\
+<% n = 0 %>\
 % for j in range(len(dic['inj'])):
 % for k in range(round(dic['inj'][j][0][0]/dic['inj'][j][0][2])):
 
 % if dic["tuning"]:
-<% i = 1 if dic["site_bctype"] == "wells" else 0 %>
+<% i = 1 if dic["site_bctype"] == "wells" else 0 %>\
 TUNING
 ${dic['inj'][j][2+i]+" " if len(dic['inj'][j])>2+i else ""}/
 ${dic['inj'][j][3+i]+" " if len(dic['inj'][j])>3+i else ""}/

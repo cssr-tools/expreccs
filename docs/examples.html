@@ -54,7 +54,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#layered-model">Layered model</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#via-opm-flow-decks">Via OPM Flow decks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#via-opm-flow-decks">Via OPM Flow decks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#regular-boundaries">Regular boundaries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#non-regular-boundaries">Non-regular boundaries</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
@@ -167,6 +171,8 @@ files in <a class="reference external" href="https://github.com/cssr-tools/expre
 </section>
 <section id="via-opm-flow-decks">
 <span id="generic"></span><h2>Via OPM Flow decks<a class="headerlink" href="#via-opm-flow-decks" title="Link to this heading"></a></h2>
+<section id="regular-boundaries">
+<h3>Regular boundaries<a class="headerlink" href="#regular-boundaries" title="Link to this heading"></a></h3>
 <p>See/run the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/test_2_generic_deck.py">test_2_generic_deck.py</a>
 for an example where <strong>expreccs</strong> is used in two given models (regional and site, in this case they are created using
 the <strong>expreccs</strong> package, but in general can be any given geological models), generating a new input deck where
@@ -174,8 +180,7 @@ the pressures are projected.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;path_to_the_regional_model path_to_the_site_model&#39;</span>
 </pre></div>
 </div>
-<p>In the current implementation, the name of the decks need to match the name of the given folder (e.g., regional/REGIONAL.DATA).
-For example, to run the test, this can be achieved by executing:</p>
+<p>For example, to run the test, this can be achieved by executing:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pytest<span class="w"> </span>--cov<span class="o">=</span>expreccs<span class="w"> </span>--cov-report<span class="w"> </span>term-missing<span class="w"> </span>tests/test_2_generic_deck.py
 </pre></div>
 </div>
@@ -212,6 +217,47 @@ not by pressure values. If you run that test, then using plopm:</p>
 in the regional model, while to the bottom part in the site model.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+</section>
+<section id="non-regular-boundaries">
+<h3>Non-regular boundaries<a class="headerlink" href="#non-regular-boundaries" title="Link to this heading"></a></h3>
+<p>The previous examples show the application to sites with reguler boundaries, i.e., prescribed in a rectangle. This example shows how the flag
+<strong>-n 1</strong> can be used to project the pressures in a non-regular boundary. For simplicity, this example does not include wells in the schedule, but
+you can add wells if you are curious.</p>
+<p>We start with a deck with only one cell, then we refined the deck, and after we extract the submodel. To this end, we use another friend: <strong>pycopm</strong>.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can install <a class="reference external" href="https://github.com/cssr-tools/pycopm">pycopm</a> by executing in the terminal:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/cssr-tools/pycopm.git
+</pre></div>
+</div>
+</div>
+<p>The terminal commands are the following in the same location as the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/examples/SIMPLE.DATA">SIMPLE.DATA</a> deck</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pycopm<span class="w"> </span>-i<span class="w"> </span>SIMPLE.DATA<span class="w"> </span>-l<span class="w"> </span>R<span class="w"> </span>-w<span class="w"> </span>REFINED<span class="w"> </span>-g<span class="w"> </span><span class="m">199</span>,319,0
+pycopm<span class="w"> </span>-i<span class="w"> </span>REFINED.DATA<span class="w"> </span>-l<span class="w"> </span>S<span class="w"> </span>-w<span class="w"> </span>SUBMODEL<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;xypolygon [15e3,80e3] [60e3,80e3] [60e3,10e3] [55e3,10e3] [55e3,05e3] [50e3,05e3] [50e3,10e3] [33e3,10e3] [33e3,24e3] [15e3,24e3] [15e3,80e3]&#39;</span><span class="w"> </span>-p<span class="w"> </span><span class="m">0</span><span class="w"> </span>-m<span class="w"> </span>all
+</pre></div>
+</div>
+<p>The previous commands generate two decks: REFINED.DATA and SUBMODEL.DATA, where the former one is our regional model and the later one the SITE model. We proceed to run the models:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>flow<span class="w"> </span>REFINED.DATA
+flow<span class="w"> </span>SUBMODEL.DATA
+</pre></div>
+</div>
+<p>Now we can apply <strong>expreccs</strong> and run the generated model:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>expreccs<span class="w"> </span>-i<span class="w"> </span><span class="s2">&quot;REFINED SUBMODEL&quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-o<span class="w"> </span>expreccs
+flow<span class="w"> </span>expreccs/EXPRECCS.DATA
+</pre></div>
+</div>
+<p>For the following figure, it is necessary to include in the REGION section of the REFINED.DATA the file “OPERNUM_EXPRECCS.INC” and rerun it. Then, using <strong>plopm</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;REFINED expreccs/EXPRECCS&#39;</span><span class="w"> </span>-v<span class="w"> </span>opernum<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1 ,,1&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-f<span class="w"> </span><span class="m">30</span><span class="w"> </span>-c<span class="w"> </span>Set1_r
+</pre></div>
+</div>
+<figure class="align-default" id="id7">
+<img alt="_images/expreccs_opernum_i%2Cj%2C1_t0.png" src="_images/expreccs_opernum_i%2Cj%2C1_t0.png" />
+<figcaption>
+<p><span class="caption-text">In the regional model (left), <strong>expreccs</strong> writes the location of the overlapping cells with the site model in the OPERNUM variable, while in the
+site model this variable is used to label the ij direction of the boundary conditions.</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
+</figcaption>
+</figure>
+</section>
 </section>
 </section>
 

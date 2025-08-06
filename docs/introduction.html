@@ -132,7 +132,7 @@ of the input decks to include the dynamic boundary updates.</p>
 <dd><p>Grades to rotate the site geological model (‘0’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-b</span></kbd></dt>
-<dd><p>Set the number of entries to skip the bc projections on the site, where ‘j=0,i=nx,j=ny,i=0’, e.g., ‘0,2,0,0’ would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side (‘0,0,0,0’ by default).</p>
+<dd><p>Set the number of entries to skip the bc projections on the site, where ‘j=0,i=nx-1,j=ny-1,i=0’, e.g., ‘[0,2,0,0]’ would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side (‘[0,0,0,0]’ by default).</p>
 </dd>
 <dt><kbd><span class="option">-f</span></kbd></dt>
 <dd><p>Frequency to evaluate the boundary pressures on the site between report steps in the site. Write an array, e.g., ‘2,7,3’, to set the frequency in each site report step (‘1’ by default).</p>
@@ -155,9 +155,12 @@ of the input decks to include the dynamic boundary updates.</p>
 <dt><kbd><span class="option">-s</span></kbd></dt>
 <dd><p>Set to 0 to not create the subfolders preprocessing, output, and postprocessing, i.e., to write all generated files in the output directory (‘1’ by default).</p>
 </dd>
+<dt><kbd><span class="option">-n</span></kbd></dt>
+<dd><p>Set to 1 for a site with irregular contour, i.e., not defined in a rectangle (‘0’ by default).</p>
+</dd>
 </dl>
 <p>The valid flags for a toml <strong>configuration file</strong> are -i, -o, -m, -c, -p, -u, -t, -w, and -l.
-The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, -w, -e, and -z.</p>
+The valid flags for paths to the regional and site folders are -i, -o, -b, -f, -a, -w, -e, -n, and -z.</p>
 <p>In the <strong>configuration file</strong> the geological model is defined by generation
 of corner-point grids (cpg), adding heterogeinities (e.g., different rock properties, faults, hysteresis), wells, and defining schedules for the
 operations (see the <a class="reference internal" href="configuration_file.html"><span class="doc">configuration file</span></a> section).</p>
