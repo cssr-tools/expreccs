@@ -148,9 +148,12 @@ opm-simulators/
 /tests/expreccs/
 /tests/expreccs_perfipnum/
 /tests/expreccs_dpincrease/
+/tests/expreccs_frequency/
+/tests/expreccs_zones/
 examples/hello_world
 developing
 playground
+presentation
 debugging
 vexpreccs
 workshop

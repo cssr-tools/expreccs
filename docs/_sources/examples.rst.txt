@@ -63,7 +63,7 @@ Below are some of the figures generated inside the postprocessing folder:
     hello_world_distance_from_border.png respectively
 
 
-Layered model 
+Layered model
 -------------
 
 The configuration file example2.toml set a more complex geological model with more grid cells (1 417 500). This was used
@@ -86,6 +86,9 @@ to generate the animation (using ResInsight) in the :doc:`introduction section <
 Via OPM Flow decks 
 ==================
 
+Regular boundaries
+------------------
+
 See/run the `test_2_generic_deck.py <https://github.com/cssr-tools/expreccs/blob/main/tests/test_2_generic_deck.py>`_ 
 for an example where **expreccs** is used in two given models (regional and site, in this case they are created using
 the **expreccs** package, but in general can be any given geological models), generating a new input deck where
@@ -95,7 +98,6 @@ the pressures are projected.
 
     expreccs -i 'path_to_the_regional_model path_to_the_site_model'
 
-In the current implementation, the name of the decks need to match the name of the given folder (e.g., regional/REGIONAL.DATA).
 For example, to run the test, this can be achieved by executing:
 
 .. code-block:: bash
@@ -134,3 +136,51 @@ not by pressure values. If you run that test, then using plopm:
     
     Comparison of the different functionality to mapp the dynamic boundary conditions. Here, rpr:3 (fipnum equal to 3) corresponds to the top part of the sandwich (three layers with the middel layer inactive) 
     in the regional model, while to the bottom part in the site model.
+
+Non-regular boundaries
+----------------------
+
+The previous examples show the application to sites with reguler boundaries, i.e., prescribed in a rectangle. This example shows how the flag
+**-n 1** can be used to project the pressures in a non-regular boundary. For simplicity, this example does not include wells in the schedule, but
+you can add wells if you are curious.
+
+We start with a deck with only one cell, then we refined the deck, and after we extract the submodel. To this end, we use another friend: **pycopm**. 
+
+.. tip::
+    You can install `pycopm <https://github.com/cssr-tools/pycopm>`_ by executing in the terminal:
+    
+    .. code-block:: bash
+
+        pip install git+https://github.com/cssr-tools/pycopm.git
+
+The terminal commands are the following in the same location as the `SIMPLE.DATA <https://github.com/cssr-tools/expreccs/blob/main/examples/SIMPLE.DATA>`_ deck
+
+.. code-block:: bash
+
+    pycopm -i SIMPLE.DATA -l R -w REFINED -g 199,319,0
+    pycopm -i REFINED.DATA -l S -w SUBMODEL -v 'xypolygon [15e3,80e3] [60e3,80e3] [60e3,10e3] [55e3,10e3] [55e3,05e3] [50e3,05e3] [50e3,10e3] [33e3,10e3] [33e3,24e3] [15e3,24e3] [15e3,80e3]' -p 0 -m all
+
+The previous commands generate two decks: REFINED.DATA and SUBMODEL.DATA, where the former one is our regional model and the later one the SITE model. We proceed to run the models:
+
+.. code-block:: bash
+
+    flow REFINED.DATA
+    flow SUBMODEL.DATA
+
+Now we can apply **expreccs** and run the generated model:
+
+.. code-block:: bash
+
+    expreccs -i "REFINED SUBMODEL" -n 1 -o expreccs
+    flow expreccs/EXPRECCS.DATA
+
+For the following figure, it is necessary to include in the REGION section of the REFINED.DATA the file "OPERNUM_EXPRECCS.INC" and rerun it. Then, using **plopm**:
+
+.. code-block:: bash
+
+    plopm -i 'REFINED expreccs/EXPRECCS' -v opernum -s ',,1 ,,1' -r 0 -xunits km -xlnum 5 -yunits km -yformat .0f -ylnum 5 -xformat .0f -subfigs 1,2 -d 16,12 -cbsfax 0.1,0.95,0.8,0.02 -f 30 -c Set1_r
+
+.. figure:: figs/expreccs_opernum_i,j,1_t0.png
+    
+    In the regional model (left), **expreccs** writes the location of the overlapping cells with the site model in the OPERNUM variable, while in the 
+    site model this variable is used to label the ij direction of the boundary conditions.

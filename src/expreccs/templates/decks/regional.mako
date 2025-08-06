@@ -223,7 +223,7 @@ INJR${i-len(dic["site_wellijk"])} ${dic['regional_wellijk'][i][0]} ${dic['region
 % for j in range(len(dic['inj'])):
 
 % if dic["tuning"]:
-<% i = 1 if dic["site_bctype"] == "wells" else 0 %>
+<% i = 1 if dic["site_bctype"] == "wells" else 0 %>\
 TUNING
 ${dic['inj'][j][2+i]+" " if len(dic['inj'][j])>2+i else ""}/
 ${dic['inj'][j][3+i]+" " if len(dic['inj'][j])>3+i else ""}/

@@ -180,6 +180,39 @@ regional and site decks.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.get_bccon">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">get_bccon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dire</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.get_bccon" title="Link to this definition"></a></dt>
+<dd><p>Process the regional and site grid coordinates</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>boundary (list): Modified global dictionary</p>
+<p>dire (list): Direction of the bc connection</p>
+</dd>
+<dt>Returns:</dt><dd><p>coords (list): xy coordinates of the site boundaries</p>
+<p>dic (dict): Modify global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.get_xymaps">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">get_xymaps</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.get_xymaps" title="Link to this definition"></a></dt>
+<dd><p>Process the spatial maps of the boundary cells</p>
+<dl>
+<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
+<p>coords (list): xy coordinates of the site boundaries</p>
+</dd>
+<dt>Returns:</dt><dd><p>x (array): x coordinates of the site boundaries</p>
+<p>y (array): y coordinates of the site boundaries</p>
+<p>z (array): z coordinates of the site boundaries</p>
+<p>inds (list): Active indices of the boundaries</p>
+<p>fipr (arrays): Number of fipnum</p>
+<p>offset (list): Offset fot the hydrostaic pressure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.handle_grid_coord">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">handle_grid_coord</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.handle_grid_coord" title="Link to this definition"></a></dt>
 <dd><p>Process the regional and site grid coordinates</p>
@@ -200,6 +233,20 @@ regional and site decks.</p>
 <p>i (int): Index of report step in the site</p>
 </dd>
 <dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.reg_sit_given_decks.site_contour">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.reg_sit_given_decks.</span></span><span class="sig-name descname"><span class="pre">site_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.reg_sit_given_decks.site_contour" title="Link to this definition"></a></dt>
+<dd><p>Process the site contour</p>
+<dl>
+<dt>Args:</dt><dd><p>grid (array): Binary map of the active cells in the grid</p>
+<p>start (array): Initial coordinates in the conrour</p>
+</dd>
+<dt>Returns:</dt><dd><p>boundary (list): Modified global dictionary</p>
+<p>dir (list): Direction of the bc connection</p>
 </dd>
 </dl>
 </dd></dl>

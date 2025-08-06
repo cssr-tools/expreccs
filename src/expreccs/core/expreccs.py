@@ -37,11 +37,12 @@ def expreccs():
     dic["zones"] = int(cmdargs["zones"]) == 1  # Pressure projections per fipnum
     dic["freq"] = (cmdargs["frequency"].strip()).split(",")  # Frequency bc evaluations
     dic["subfolders"] = int(cmdargs["subfolders"]) == 1  # Create subfolders
+    dic["nonregular"] = int(cmdargs["nonregular"]) == 1  # Complex site contour
     dic["acoeff"] = (cmdargs["acoeff"].strip()).split(
         ","
     )  # Coefficient telescopic partition
     dic["latex"] = int(cmdargs["latex"])  # LaTeX formatting
-    dic["boundaries"] = (cmdargs["boundaries"].strip()).split(",")  # Boundaries
+    dic["boundaries"] = (cmdargs["boundaries"].strip())[1:-1].split(",")  # Boundaries
     dic["boundaries"] = [int(val) for val in dic["boundaries"]]
     dic["compare"] = cmdargs["compare"]
     # If the compare plots are generated, then we exit right afterwards
@@ -139,7 +140,7 @@ def load_parser():
         description="Main method to simulate regional and site reservoirs for CO2 storage. "
         "The valid flags for toml configuration files are -i, -o, -m, -c, -p, -u, -r, -t, "
         "-w, -l. The valid flags for paths to the regional and site folders are -i, -o, -b, "
-        "-f, -a, -w, -e, -z",
+        "-f, -a, -w, -e, -z, -n",
     )
     parser.add_argument(
         "-i",
@@ -189,11 +190,12 @@ def load_parser():
     parser.add_argument(
         "-b",
         "--boundaries",
-        default="0,0,0,0",
+        default="[0,0,0,0]",
         help="Set the number of entries to skip the bc projections on "
-        "the site, where 'j=0,i=nx,j=ny,i=0', e.g., '0,2,0,0' would skip all cells "
-        "with i=nx and i=nx-1; this becomes handly for models where all cells in a "
-        "given site are inactive along a side ('0,0,0,0' by default).",
+        "the site, where 'j=0,i=nx-1,j=ny-1,i=0', e.g., '[0,2,0,0]' would skip all cells "
+        "with i=nx-1 and i=nx-2; this becomes handly for models where all cells in a "
+        "given site are inactive along a side. Set an entry to -1 to skip the whole "
+        "boundary ('[0,0,0,0]' by default).",
     )
     parser.add_argument(
         "-f",
@@ -248,6 +250,13 @@ def load_parser():
         help="Set to 0 to not create the subfolders preprocessing, output, and "
         "postprocessing, i.e., to write all generated files in the output directory "
         "('1' by default).",
+    )
+    parser.add_argument(
+        "-n",
+        "--nonregular",
+        default=0,
+        help="Set to 1 for a site with irregular contour, i.e., not defined in a "
+        "rectangle ('0' by default).",
     )
     return vars(parser.parse_known_args()[0])
 
