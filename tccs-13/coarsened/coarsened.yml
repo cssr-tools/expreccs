@@ -1,0 +1,160 @@
+controls:
+  - name: point_0
+    type: generic_control
+    min: 1
+    control_type: integer
+    variables:
+      - name: i00
+        max: 181
+        initial_guess: 33
+      - name: j00
+        max: 317
+        initial_guess: 89
+      - name: i01
+        max: 181
+        initial_guess: 84
+      - name: j01
+        max: 317
+        initial_guess: 66
+      - name: i02
+        max: 181
+        initial_guess: 94
+      - name: j02
+        max: 317
+        initial_guess: 47
+      - name: i03
+        max: 181
+        initial_guess: 22
+      - name: j03
+        max: 317
+        initial_guess: 108
+      - name: i04
+        max: 181
+        initial_guess: 99
+      - name: j04
+        max: 317
+        initial_guess: 104
+      - name: i05
+        max: 181
+        initial_guess: 102
+      - name: j05
+        max: 317
+        initial_guess: 81
+      - name: i06
+        max: 181
+        initial_guess: 30
+      - name: j06
+        max: 317
+        initial_guess: 79
+      - name: i07
+        max: 181
+        initial_guess: 95
+      - name: j07
+        max: 317
+        initial_guess: 19
+      - name: i08
+        max: 181
+        initial_guess: 87
+      - name: j08
+        max: 317
+        initial_guess: 22
+      - name: i09
+        max: 181
+        initial_guess: 85
+      - name: j09
+        max: 317
+        initial_guess: 64
+      - name: i10
+        max: 181
+        initial_guess: 80
+      - name: j10
+        max: 317
+        initial_guess: 75
+      - name: i11
+        max: 181
+        initial_guess: 129
+      - name: j11
+        max: 317
+        initial_guess: 48
+      - name: i12
+        max: 181
+        initial_guess: 40
+      - name: j12
+        max: 317
+        initial_guess: 215
+      - name: i13
+        max: 181
+        initial_guess: 29
+      - name: j13
+        max: 317
+        initial_guess: 100
+      - name: k00
+        max: 2
+        initial_guess: 2
+      - name: k01
+        max: 2
+        initial_guess: 1
+      - name: k02
+        max: 2
+        initial_guess: 2
+      - name: k03
+        max: 2
+        initial_guess: 2
+      - name: k04
+        max: 2
+        initial_guess: 1
+      - name: k05
+        max: 2
+        initial_guess: 1
+      - name: k06
+        max: 2
+        initial_guess: 2
+      - name: k07
+        max: 2
+        initial_guess: 2
+      - name: k08
+        max: 2
+        initial_guess: 2
+      - name: k09
+        max: 2
+        initial_guess: 1
+      - name: k10
+        max: 2
+        initial_guess: 1
+      - name: k11
+        max: 2
+        initial_guess: 1
+      - name: k12
+        max: 2
+        initial_guess: 2
+      - name: k13
+        max: 2
+        initial_guess: 2
+
+objective_functions:
+  - name: func
+
+optimization:
+  backend: scipy
+  algorithm: differential_evolution
+  max_function_evaluations: 1000000
+  backend_options:
+    seed: 18
+  parallel: True
+
+install_jobs:
+  - name: locations
+    source: jobs/LOCATIONS
+
+model:
+  realizations: [0]
+
+simulator:
+  cores: 7
+
+forward_model:
+  - locations
+
+environment:
+  simulation_folder: sim_output
+  random_seed: 18

@@ -1,0 +1,160 @@
+-- This reservoir simulation deck is made available under the Open Database
+-- License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in
+-- individual contents of the database are licensed under the Database Contents
+-- License: http://opendatacommons.org/licenses/dbcl/1.0/
+-- Copyright (C) 2025 NORCE Research AS
+----------------------------------------------------------------------------
+RUNSPEC
+----------------------------------------------------------------------------
+WELLDIMS
+14 217 1 14 /
+START
+1 JAN 2025 /
+METRIC
+DIMENS
+181 317 217 /
+TABDIMS
+/
+EQLDIMS
+/
+CO2STORE
+GAS
+WATER
+DISGASW
+UNIFOUT
+----------------------------------------------------------------------------
+GRID
+----------------------------------------------------------------------------
+INIT
+DX
+12450809*500 /
+DY
+12450809*500 /
+DZ
+12450809*1 /
+TOPS
+57377*0 /
+PORO
+12450809*0.2 /
+PERMX
+12450809*1000 /
+COPY
+PERMX PERMY /
+PERMX PERMZ /
+/
+----------------------------------------------------------------------------
+PROPS
+----------------------------------------------------------------------------
+ROCK
+276.0 1.95e-4 /
+SGWFN
+0 0 1 0
+1 1 0 0 /
+----------------------------------------------------------------------------
+SOLUTION
+----------------------------------------------------------------------------
+EQUIL 
+0 200 0 0 0 0 1 1 0 /
+RPTRST
+BASIC=2 DEN /
+----------------------------------------------------------------------------
+SUMMARY
+----------------------------------------------------------------------------
+PERFORMA
+RPR
+/
+RGIR
+/
+RGIT
+/
+RGIP
+/
+FGMIP
+FGMDS
+FPR
+FPRP
+FGIP
+FGIR
+FGIT
+FGIP
+FGIPL
+FGIPG
+WGIR
+/
+WGIT
+/
+WBHP
+/
+----------------------------------------------------------------------------
+SCHEDULE
+----------------------------------------------------------------------------
+RPTRST
+BASIC=2 DEN /
+WELSPECS
+INJ00 G1 41 80 1* GAS /
+INJ01 G1 130 15 1* GAS /
+INJ02 G1 58 80 1* GAS /
+INJ03 G1 108 83 1* GAS /
+INJ04 G1 103 56 1* GAS /
+INJ05 G1 85 39 1* GAS /
+INJ06 G1 78 62 1* GAS /
+INJ07 G1 115 52 1* GAS /
+INJ08 G1 100 97 1* GAS /
+INJ09 G1 97 31 1* GAS /
+INJ10 G1 72 73 1* GAS /
+INJ11 G1 109 41 1* GAS /
+INJ12 G1 41 214 1* GAS /
+INJ13 G1 33 100 1* GAS /
+/
+COMPDAT
+INJ00 41 80 117 217 OPEN 2* 0.2 /
+INJ01 130 15 117 217 OPEN 2* 0.2 /
+INJ02 58 80 1 111 OPEN 2* 0.2 /
+INJ03 108 83 117 217 OPEN 2* 0.2 /
+INJ04 103 56 1 111 OPEN 2* 0.2 /
+INJ05 85 39 117 217 OPEN 2* 0.2 /
+INJ06 78 62 1 111 OPEN 2* 0.2 /
+INJ07 115 52 1 111 OPEN 2* 0.2 /
+INJ08 100 97 1 111 OPEN 2* 0.2 /
+INJ09 97 31 117 217 OPEN 2* 0.2 /
+INJ10 72 73 1 111 OPEN 2* 0.2 /
+INJ11 109 41 1 111 OPEN 2* 0.2 /
+INJ12 41 214 117 217 OPEN 2* 0.2 /
+INJ13 33 100 117 217 OPEN 2* 0.2 /
+/
+WCONINJE
+INJ00 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ01 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ02 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ03 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ04 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ05 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ06 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ07 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ08 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ09 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ10 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ11 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ12 GAS OPEN RATE 2093313.1721548035 1* 480 /
+INJ13 GAS OPEN RATE 2093313.1721548035 1* 480 /
+/
+TSTEP
+25*365.25 /
+WCONINJE
+INJ00 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ01 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ02 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ03 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ04 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ05 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ06 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ07 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ08 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ09 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ10 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ11 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ12 GAS SHUT RATE 2093313.1721548035 1* 480 /
+INJ13 GAS SHUT RATE 2093313.1721548035 1* 480 /
+/
+TSTEP
+5*36525 /
