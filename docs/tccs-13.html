@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TCCS-13 &mdash; expreccs  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="expreccs Python API" href="api.html" />
+    <link rel="prev" title="Examples" href="examples.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #aaaaaa" >
+
+          
+          
+          <a href="index.html">
+            
+              <img src="_static/logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration_file.html">Configuration file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TCCS-13</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">expreccs Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="output_folder.html">Output folder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="related.html">Related</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About expreccs</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #aaaaaa" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">expreccs</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TCCS-13</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/tccs-13.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tccs-13">
+<h1>TCCS-13<a class="headerlink" href="#tccs-13" title="Link to this heading"></a></h1>
+<p>Here we describe the steps to reproduce the results in:</p>
+<p>Landa-Marbán, D., Sandve, T.H., and Gasda, S.E. 2025. A Coarsening Approach to the Troll Aquifer Model. Submitted to SINTEF Proceedings. <a class="reference external" href="https://doi.org/10.13140/RG.2.2.24886.41283">https://doi.org/10.13140/RG.2.2.24886.41283</a></p>
+<p>To this end, the deck <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tccs-13/ORIGINAL.DATA">ORIGINAL.DATA</a> has the
+same dimensions and number of total cells (12,450,809) as the Troll aquifer model, and the rest of the properties are
+set to common homogeneous values from literature, while the well locations match the ones described in the TCCS-13 paper.
+Then, you could contact the <a class="reference external" href="https://www.sodir.no/en/">Norwegian Offshore Directorate</a> to get the actual Troll aquifer model,
+and adapt those files to the ones in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tccs-13/">tccs-13 folder</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>You should not run the ORIGINAL.DATA file before adapting it with the actual Troll aquifer model, since it has a lot of active cells.</p>
+</div>
+<p>For the first figures, <a class="reference external" href="https://github.com/cssr-tools/plopm.git">plopm</a> and <a class="reference external" href="https://github.com/cssr-tools/pycopm.git">pycopm</a> are used, which can be installed by:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/cssr-tools/plopm.git
+pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/cssr-tools/pycopm.git
+</pre></div>
+</div>
+<p>The following commands generate Figures 1 and 2 (a few features such as the transmissibilities, wells, and sensor are added using PowerPoint) using
+<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tccs-13/methodology/FIG1.DATA">FIG1.DATA</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pycopm<span class="w"> </span>-i<span class="w"> </span>FIG1.DATA<span class="w"> </span>-z<span class="w"> </span><span class="m">1</span>:4<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-a<span class="w"> </span>max<span class="w"> </span>-w<span class="w"> </span>COARSENED_TRANS<span class="w"> </span>-l<span class="w"> </span>TRANS<span class="w"> </span>-t<span class="w"> </span><span class="m">2</span>
+pycopm<span class="w"> </span>-i<span class="w"> </span>FIG1.DATA<span class="w"> </span>-c<span class="w"> </span><span class="m">1</span>,1,4<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-a<span class="w"> </span>max<span class="w"> </span>-w<span class="w"> </span>COARSENED_PERMS<span class="w"> </span>-l<span class="w"> </span>PERMS
+flow<span class="w"> </span>FIG1.DATA
+flow<span class="w"> </span>COARSENED_TRANS.DATA
+flow<span class="w"> </span>COARSENED_PERMS.DATA
+plopm<span class="w"> </span>-i<span class="w"> </span>FIG1<span class="w"> </span>-v<span class="w"> </span>poro<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;#bfebf2&#39;</span><span class="w"> </span>-z<span class="w"> </span><span class="m">0</span><span class="w"> </span>-grid<span class="w"> </span><span class="s1">&#39;black,1e0&#39;</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[5,-1]&#39;</span><span class="w"> </span>-ylnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-xlnum<span class="w"> </span><span class="m">7</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,1,1<span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,16<span class="w"> </span>-f<span class="w"> </span><span class="m">60</span><span class="w"> </span>-save<span class="w"> </span>fig1
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;COARSENED_PERMS FIG1 COARSENED_TRANS&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;pressure - 0pressure&#39;</span><span class="w"> </span>-subfigs<span class="w"> </span><span class="m">3</span>,1<span class="w"> </span>-r<span class="w"> </span><span class="m">1</span><span class="w"> </span>-z<span class="w"> </span><span class="m">0</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[5,-1]&#39;</span><span class="w"> </span>-cformat<span class="w"> </span>.0f<span class="w"> </span>-grid<span class="w"> </span><span class="s1">&#39;black,1e0&#39;</span><span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Pressure increase [bar]&#39;</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Coarsened (permeabilities)  Before coarsening  Coarsened (transmissibilities)&#39;</span><span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,48<span class="w"> </span>-f<span class="w"> </span><span class="m">80</span><span class="w"> </span>-save<span class="w"> </span>fig2
+</pre></div>
+</div>
+<p>For Figs. 3b, 5, 6, and 8, 9, and 10:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>flow<span class="w"> </span>ORIGINAL.DATA<span class="w"> </span>--enable-opm-rst-file<span class="o">=</span><span class="nb">true</span><span class="w"> </span>--linear-solver<span class="o">=</span>cpr_trueimpes<span class="w"> </span>--time-step-control<span class="o">=</span>newtoniterationcount<span class="w"> </span>--newton-min-iterations<span class="o">=</span><span class="m">1</span><span class="w"> </span>--tolerance-cnv-relaxed<span class="o">=</span>1e-2<span class="w"> </span>--relaxed-max-pv-fraction<span class="o">=</span><span class="m">0</span>
+pycopm<span class="w"> </span>-i<span class="w"> </span>ORIGINAL.DATA<span class="w"> </span>-t<span class="w"> </span><span class="m">2</span><span class="w"> </span>-a<span class="w"> </span>max<span class="w"> </span>-z<span class="w"> </span><span class="m">1</span>:30,31:56,57:111,112:116,117:217<span class="w"> </span>-w<span class="w"> </span>COARSENED<span class="w"> </span>-l<span class="w"> </span>C
+flow<span class="w"> </span>COARSENED.DATA<span class="w"> </span>--enable-opm-rst-file<span class="o">=</span><span class="nb">true</span><span class="w"> </span>--linear-solver<span class="o">=</span>cpr_trueimpes<span class="w"> </span>--time-step-control<span class="o">=</span>newtoniterationcount<span class="w"> </span>--newton-min-iterations<span class="o">=</span><span class="m">1</span><span class="w"> </span>--tolerance-cnv-relaxed<span class="o">=</span>1e-2<span class="w"> </span>--relaxed-max-pv-fraction<span class="o">=</span><span class="m">0</span>
+plopm<span class="w"> </span>-i<span class="w"> </span>ORIGINAL<span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;depth * 0.001&#39;</span><span class="w"> </span>-s<span class="w"> </span>,,1:217<span class="w"> </span>-how<span class="w"> </span>min<span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Depth [km]&#39;</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-cformat<span class="w"> </span>.2f<span class="w"> </span>-c<span class="w"> </span>managua_r<span class="w"> </span>-save<span class="w"> </span>fig3b
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL ORIGINAL ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;porv&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:30 ,,57:111 ,,117:217&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-cformat<span class="w"> </span>.1f<span class="w"> </span>-f<span class="w"> </span><span class="m">24</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Total pore volume [m$^3$]&#39;</span><span class="w"> </span>-log<span class="w"> </span><span class="m">1</span><span class="w"> </span>-c<span class="w"> </span>brg<span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Cook  Johansen  Statfjord&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-save<span class="w"> </span>fig5
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;faults&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:217&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w"> </span>-global<span class="w"> </span><span class="m">1</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Total no. faults = 65&#39;</span><span class="w"> </span>-save<span class="w"> </span>fig6a
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;faults&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,30:117&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-f<span class="w"> </span><span class="m">8</span><span class="w"> </span>-how<span class="w"> </span>max<span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Cook-Johansen-Statfjord&#39;</span><span class="w"> </span>-remove<span class="w"> </span><span class="m">1</span>,0,0,0<span class="w"> </span>-save<span class="w"> </span>fig6b
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL ORIGINAL ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;pressure - 0pressure&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:30 ,,57:111 ,,117:217&#39;</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-d<span class="w">  </span><span class="m">24</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-f<span class="w"> </span><span class="m">24</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Pore-volume-weighted-average pressure increase [bar]&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r<span class="w"> </span><span class="m">25</span><span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,80]&#39;</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Cook, t=25 years  Johansen, t=25 years  Statfjord, t=25 years&#39;</span><span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,80]&#39;</span><span class="w"> </span>-save<span class="w"> </span>fig8upper
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL ORIGINAL ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;pressure - 0pressure&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:30 ,,57:111 ,,117:217&#39;</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-d<span class="w">  </span><span class="m">24</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-f<span class="w"> </span><span class="m">24</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Pore-volume-weighted-average pressure increase [bar]&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r<span class="w"> </span><span class="m">30</span><span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,80]&#39;</span><span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Cook, t=525 years  Johansen, t=525 years  Statfjord, t=525 years&#39;</span><span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[0,80]&#39;</span><span class="w"> </span>-save<span class="w"> </span>fig8lower
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL ORIGINAL ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;limipres&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:30 ,,57:111 ,,117:217&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,3<span class="w"> </span>-d<span class="w"> </span><span class="m">24</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-cformat<span class="w"> </span>.1f<span class="w"> </span>-f<span class="w"> </span><span class="m">24</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Maximum allowable pressure increase limit [bar]&#39;</span><span class="w"> </span>-c<span class="w"> </span>gnuplot2<span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Cook  Johansen  Statfjord&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-save<span class="w"> </span>fig9
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;imbnum&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:217&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,1,1<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;203;203;203&#39;</span><span class="w"> </span>-save<span class="w"> </span>fig10a
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORIGINAL COARSENED&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;overpres&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:217 ,,1:5&#39;</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-f<span class="w"> </span><span class="m">24</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Overpressure (p - p$_{lim}$) [bar], t=25 years&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-remove<span class="w"> </span><span class="m">1</span>,0,0,0<span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Troll aquifer model  Coarsened version&#39;</span><span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[-126.7,-1.1]&#39;</span><span class="w"> </span>-c<span class="w"> </span>cet_diverging_rainbow_bgymr_45_85_c67<span class="w"> </span>-save<span class="w"> </span>fig10bc
+</pre></div>
+</div>
+<p>Figs. 4 and 7 are generated using <a class="reference external" href="https://resinsight.org">ResInsight</a>. To run the optimization, <a class="reference external" href="https://github.com/equinor/everest">Everest</a> is needed. Since it has been merged to
+<a class="reference external" href="https://github.com/equinor/ert">ERT</a>, it seems there are some issues using it via ERT. Then, the walk around is to use the version before merging. One way to get this installed is to
+create a new virtual environment (to avoid version conflicts) and execute:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">ert</span><span class="o">==</span><span class="m">11</span>.0.8
+pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/equinor/everest.git
+pip<span class="w"> </span>install<span class="w"> </span>mako
+</pre></div>
+</div>
+<p>Once installed, then you could adapt the coarsened generated files in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tccs-13/coarsened/">coarsened folder</a> to run the optimization:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>everest<span class="w"> </span>run<span class="w"> </span>coarsened.yml
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You might need to adapt the number of cores and mpirun depending on your resources, i.e., the current file is set to use mpirun -np 5 flow … and 14 cores in parallel.</p>
+</div>
+<p>After the study, to generate Fig. 11, execute the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tccs-13/postprocessing.py">postprocessing.py file</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>postprocessing.py
+</pre></div>
+</div>
+<p>Finally, you can look at the improved well locations in the generated figures/optimal_solution folder, and take those locations in the ORGININAL.DATA deck
+and save it as IMPROVED.DATA, similar to the coarsened version to COARSENED_IMPROVED.DATA, to generate Fig. 12:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>flow<span class="w"> </span>IMPROVED.DATA<span class="w"> </span>--enable-opm-rst-file<span class="o">=</span><span class="nb">true</span><span class="w"> </span>--linear-solver<span class="o">=</span>cpr_trueimpes<span class="w"> </span>--time-step-control<span class="o">=</span>newtoniterationcount<span class="w"> </span>--newton-min-iterations<span class="o">=</span><span class="m">1</span><span class="w"> </span>--tolerance-cnv-relaxed<span class="o">=</span>1e-2<span class="w"> </span>--relaxed-max-pv-fraction<span class="o">=</span><span class="m">0</span>
+flow<span class="w"> </span>COARSENED_IMPROVED.DATA<span class="w"> </span>--enable-opm-rst-file<span class="o">=</span><span class="nb">true</span><span class="w"> </span>--linear-solver<span class="o">=</span>cpr_trueimpes<span class="w"> </span>--time-step-control<span class="o">=</span>newtoniterationcount<span class="w"> </span>--newton-min-iterations<span class="o">=</span><span class="m">1</span><span class="w"> </span>--tolerance-cnv-relaxed<span class="o">=</span>1e-2<span class="w"> </span>--relaxed-max-pv-fraction<span class="o">=</span><span class="m">0</span>
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;IMPROVED&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;imbnum&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:217&#39;</span><span class="w"> </span>-r<span class="w"> </span><span class="m">0</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-remove<span class="w"> </span><span class="m">0</span>,0,1,1<span class="w"> </span>-c<span class="w"> </span><span class="s1">&#39;203;203;203&#39;</span><span class="w"> </span>-save<span class="w"> </span>fig12a
+plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;IMPROVED COARSENED_IMPROVED&#39;</span><span class="w"> </span>-v<span class="w"> </span><span class="s1">&#39;overpres&#39;</span><span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;,,1:217 ,,1:5&#39;</span><span class="w"> </span>-translate<span class="w"> </span><span class="s1">&#39;[-495000,-6.605e6]&#39;</span><span class="w"> </span>-x<span class="w"> </span><span class="s1">&#39;[0,95000]&#39;</span><span class="w"> </span>-xunits<span class="w"> </span>km<span class="w"> </span>-xlnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-y<span class="w"> </span><span class="s1">&#39;[0,160000]&#39;</span><span class="w"> </span>-yunits<span class="w"> </span>km<span class="w"> </span>-yformat<span class="w"> </span>.0f<span class="w"> </span>-ylnum<span class="w"> </span><span class="m">2</span><span class="w"> </span>-xformat<span class="w"> </span>.0f<span class="w"> </span>-subfigs<span class="w"> </span><span class="m">1</span>,2<span class="w"> </span>-d<span class="w"> </span><span class="m">16</span>,12<span class="w"> </span>-cbsfax<span class="w"> </span><span class="m">0</span>.1,0.95,0.8,0.02<span class="w"> </span>-f<span class="w"> </span><span class="m">24</span><span class="w"> </span>-cnum<span class="w"> </span><span class="m">5</span><span class="w"> </span>-suptitle<span class="w"> </span><span class="m">0</span><span class="w"> </span>-clabel<span class="w"> </span><span class="s1">&#39;Overpressure (p - p$_{lim}$) [bar], t=25 years&#39;</span><span class="w"> </span>-delax<span class="w"> </span><span class="m">1</span><span class="w"> </span>-remove<span class="w"> </span><span class="m">1</span>,0,0,0<span class="w"> </span>-t<span class="w"> </span><span class="s1">&#39;Troll aquifer model  Coarsened version&#39;</span><span class="w"> </span>-b<span class="w"> </span><span class="s1">&#39;[-126.7,-1.1]&#39;</span><span class="w"> </span>-c<span class="w"> </span>cet_diverging_rainbow_bgymr_45_85_c67<span class="w"> </span>-save<span class="w"> </span>fig10bc
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="examples.html" class="btn btn-neutral float-left" title="Examples" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.html" class="btn btn-neutral float-right" title="expreccs Python API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-2025, NORCE Research AS.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
