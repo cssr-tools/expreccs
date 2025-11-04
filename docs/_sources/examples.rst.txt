@@ -174,7 +174,7 @@ Now we can apply **expreccs** and run the generated model:
     expreccs -i "REFINED SUBMODEL" -n 1 -o expreccs
     flow expreccs/EXPRECCS.DATA
 
-For the following figure, it is necessary to include in the REGION section of the REFINED.DATA the file "OPERNUM_EXPRECCS.INC" and rerun it. Then, using **plopm**:
+For the following figure, it is necessary to include in the REGIONS section of the REFINED.DATA the file "OPERNUM_EXPRECCS.INC" and rerun it. Then, using **plopm**:
 
 .. code-block:: bash
 

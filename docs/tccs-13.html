@@ -127,7 +127,7 @@ plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ORI
 </div>
 <p>Figs. 4 and 7 are generated using <a class="reference external" href="https://resinsight.org">ResInsight</a>. To run the optimization, <a class="reference external" href="https://github.com/equinor/everest">Everest</a> is needed. Since it has been merged to
 <a class="reference external" href="https://github.com/equinor/ert">ERT</a>, it seems there are some issues using it via ERT. Then, the walk around is to use the version before merging. One way to get this installed is to
-create a new virtual environment (to avoid version conflicts) and execute:</p>
+create a new virtual environment (to avoid version conflicts, tested with Python 3.13) and execute:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">ert</span><span class="o">==</span><span class="m">11</span>.0.8
 pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/equinor/everest.git
 pip<span class="w"> </span>install<span class="w"> </span>mako

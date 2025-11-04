@@ -9,8 +9,7 @@ import os
 from expreccs.visualization.plotting import plot_results
 from expreccs.utils.writefile import write_files
 from expreccs.utils.mapboundaries import (
-    aquaflux_resdata,
-    aquaflux_opm,
+    aquaflux,
     porv_projections,
     porv_regional_segmentation,
     temporal_interpolation_flux,
@@ -75,10 +74,7 @@ def run_models(dic):
         simulations(dic, "regional")
     if dic["mode"] in ["all", "site", "regional_site"]:
         if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
-            if dic["use"] == "resdata":
-                aquaflux_resdata(dic)
-            else:
-                aquaflux_opm(dic)
+            aquaflux(dic)
             if dic["site_bctype"][0] in ["pres", "pres2p"]:
                 temporal_interpolation_pressure(dic)
             else:

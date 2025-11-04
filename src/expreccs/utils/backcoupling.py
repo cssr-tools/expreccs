@@ -8,14 +8,9 @@ Utiliy functions to back-couple from site to regional model used by expreccs.
 import os
 import numpy as np
 
-from expreccs.visualization.reading import (
-    reading_resdata,
-    reading_opm,
-)
+from expreccs.visualization.reading import reading_simulations
 from expreccs.utils.runs import simulations
-from expreccs.utils.writefile import (
-    write_files,
-)
+from expreccs.utils.writefile import write_files
 
 
 def backcoupling(dic):
@@ -47,10 +42,7 @@ def backcoupling(dic):
         # i.e., from site to regional
 
         # if dic["site_bctype"][0] in ["flux", "pres", "pres2p"]:
-        #     if dic["use"] == "resdata":
-        #         aquaflux_resdata(dic, f"_{iteration}")
-        #     else:
-        #         aquaflux_opm(dic, f"_{iteration}")
+        #     aquaflux(dic, f"_{iteration}")
         #     if dic["site_bctype"][0] == "flux":
         #         temporal_interpolation_flux(dic)
         #     else:
@@ -127,10 +119,7 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
         "FLOWATJ-",
     ]
 
-    if dic["use"] == "resdata":
-        reading_resdata(dic, False)
-    else:
-        reading_opm(dic, False)
+    reading_simulations(dic, False)
 
     # Check for refinement
     numx = (int)(dic["site_num_cells"][0])

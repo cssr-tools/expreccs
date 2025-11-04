@@ -18,7 +18,7 @@ def test_all_bcs():
     for name in ["wells", "interp"]:
         os.system(f"expreccs -i{name}.toml -m site -w 1")
         os.chdir(f"{dirname}/configs")
-    os.system("expreccs -i flux.toml -m site -p all -u opm -w 1")
+    os.system("expreccs -i flux.toml -m site -p all -w 1")
     for name in ["wells_pressure", "pres_pressure", "flux_pressure"]:
         assert os.path.exists(
             f"{dirname}/configs/output/postprocessing/output_difference_site_{name}.png"
