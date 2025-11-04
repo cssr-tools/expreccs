@@ -31,7 +31,6 @@ def expreccs():
     dic["pat"] = os.path.dirname(__file__)[:-5]  # Path to the expreccs folder
     dic["mode"] = cmdargs["mode"]  # Parts of the workflow to run
     dic["plot"] = cmdargs["plot"]  # Generate some nice plots
-    dic["use"] = cmdargs["use"]  # Resdata or opm python package
     dic["rotate"] = int(cmdargs["transform"])  # Rotate the site model
     dic["explicit"] = int(cmdargs["explicit"]) == 1  # Explicit regional pressure bc
     dic["zones"] = int(cmdargs["zones"]) == 1  # Pressure projections per fipnum
@@ -174,12 +173,6 @@ def load_parser():
         "--plot",
         default="no",
         help="Plot 'all', 'reference', 'regional', 'site', or 'no' ('no' by default).",
-    )
-    parser.add_argument(
-        "-u",
-        "--use",
-        default="resdata",
-        help="Using the 'opm' or 'resdata' python package ('resdata' by default).",
     )
     parser.add_argument(
         "-t",

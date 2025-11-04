@@ -12,9 +12,9 @@ NAMES = [
     "on_report_steps",
     "interpolation_in_time",
 ]
-COMMAND = ""
+command = ""
 for i, name in enumerate(NAMES):
-    COMMAND += f"expreccs -i {name}.toml -m all -o {name} -p no & "
-COMMAND += "wait"
-os.system(COMMAND)
+    command += f"expreccs -i {name}.toml -m all -o {name} -p no & "
+command += "wait"
+os.system(command)
 os.system("expreccs -c compare")

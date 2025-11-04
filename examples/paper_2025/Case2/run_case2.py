@@ -15,9 +15,9 @@ NAMES = [
     "grid_4_1000m",
     "grid_5_5000m",
 ]
-COMMAND = ""
+command = ""
 for i, name in enumerate(NAMES):
-    COMMAND += f"expreccs -i {name}.toml -o {name} -m all -p no & "
-COMMAND += "wait"
-os.system(COMMAND)
+    command += f"expreccs -i {name}.toml -o {name} -m all -p no & "
+command += "wait"
+os.system(command)
 os.system("expreccs -c compare")

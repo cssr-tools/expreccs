@@ -37,7 +37,6 @@ where
 -m  Run the whole framework ('all'), only the reference ('reference'), only the site ('site'), only the regional ('regional'), only the regional and site models ('regional_site'), or none ('none') ('all' by default).
 -c  Generate metric plots for the current outputed folders ('compare') ('' by default).
 -p  Create nice figures in the postprocessing folder ('no' by default).
--u  Using the 'opm' or 'resdata' python package ('resdata' by default).
 -t  Grades to rotate the site geological model ('0' by default).
 -b  Set the number of entries to skip the bc projections on the site, where 'j=0,i=nx-1,j=ny-1,i=0', e.g., '[0,2,0,0]' would skip all cells with i=nx and i=nx-1; this becomes handly for models where all cells in a given site are inactive along a side ('[0,0,0,0]' by default).
 -f  Frequency to evaluate the boundary pressures on the site between report steps in the site. Write an array, e.g., '2,7,3', to set the frequency in each site report step ('1' by default).

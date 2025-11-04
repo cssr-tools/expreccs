@@ -92,9 +92,10 @@
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <p>The following steps work installing the dependencies in Linux via apt-get or in macOS using brew or macports.
-While using package managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.</p>
+While using package managers such as Anaconda, Miniforge, or Mamba might work, these are not tested.
+The supported Python versions are 3.11 to 3.14.</p>
 <section id="python-package">
-<h2>Python package<a class="headerlink" href="#python-package" title="Link to this heading"></a></h2>
+<span id="vexpreccs"></span><h2>Python package<a class="headerlink" href="#python-package" title="Link to this heading"></a></h2>
 <p>To install the <strong>expreccs</strong> executable from the development version in an existing Python environment:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com/cssr-tools/expreccs.git
 </pre></div>
@@ -123,22 +124,12 @@ install the Python requirements in a virtual environment with the following comm
 <p class="admonition-title">Tip</p>
 <p>Typing <strong>git tag -l</strong> writes all available specific versions.</p>
 </div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>For not macOS users, to install the Python opm package (this is an alternative
-to <a class="reference external" href="https://github.com/equinor/resdata">resdata</a>, both are use to read OPM output files; while resdata is easier to
-install in macOS, opm seems to be faster), execute in the terminal</p>
-<p><strong>pip install opm</strong></p>
-<p>For not macOS users, to install the dependencies used for the figure’s LaTeX formatting, execute</p>
-<p><strong>sudo apt-get install texlive-fonts-recommended texlive-fonts-extra dvipng cm-super</strong></p>
-<p>For macOS users, see <a class="reference internal" href="#macos"><span class="std std-ref">Source build in macOS</span></a>.</p>
-</div>
 </section>
 <section id="opm-flow">
 <h2>OPM Flow<a class="headerlink" href="#opm-flow" title="Link to this heading"></a></h2>
 <p>You also need to install:</p>
 <ul class="simple">
-<li><p>OPM Flow (<a class="reference external" href="https://opm-project.org">https://opm-project.org</a>, Release 2025.04 or current master branches)</p></li>
+<li><p>OPM Flow (<a class="reference external" href="https://opm-project.org">https://opm-project.org</a>, Release 2025.10 or current master branches)</p></li>
 </ul>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -147,31 +138,25 @@ for installation of OPM Flow (binary packages) and the expreccs package in Ubunt
 </div>
 <section id="source-build-in-linux-windows">
 <h3>Source build in Linux/Windows<a class="headerlink" href="#source-build-in-linux-windows" title="Link to this heading"></a></h3>
-<p>If you are a Linux user (including the Windows subsystem for Linux), then you could try to build Flow (after installing the <a class="reference external" href="https://opm-project.org/?page_id=239">prerequisites</a>) from the master branches with mpi support by running
+<p>If you are a Linux user (including the Windows subsystem for Linux, see <a class="reference external" href="https://learn.microsoft.com/en-us/windows/python/web-frameworks">this link</a>
+for a nice tutorial for setting Python environments in WSL), then you could try to build Flow (after installing the <a class="reference external" href="https://opm-project.org/?page_id=239">prerequisites</a>) from the master branches with mpi support by running
 in the terminal the following lines (which in turn should build flow in the folder ./build/opm-simulators/bin/flow.):</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">CURRENT_DIRECTORY=&quot;$PWD&quot;</span>
-
-<span class="go">for repo in common grid simulators</span>
-<span class="go">do</span>
-<span class="go">    git clone https://github.com/OPM/opm-$repo.git</span>
-<span class="go">done</span>
 
 <span class="go">mkdir build</span>
 
 <span class="go">for repo in common grid</span>
-<span class="go">do</span>
+<span class="go">do  git clone https://github.com/OPM/opm-$repo.git</span>
 <span class="go">    mkdir build/opm-$repo</span>
 <span class="go">    cd build/opm-$repo</span>
-<span class="go">    cmake -DUSE_MPI=1 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=&quot;$CURRENT_DIRECTORY/build/opm-common&quot; $CURRENT_DIRECTORY/opm-$repo</span>
-<span class="go">    make -j5 opm$repo</span>
+<span class="go">    cmake -DUSE_MPI=1 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=&quot;$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid&quot; $CURRENT_DIRECTORY/opm-$repo</span>
+<span class="go">    if [[ $repo == simulators ]]; then</span>
+<span class="go">        make -j5 flow</span>
+<span class="go">    else</span>
+<span class="go">        make -j5 opm$repo</span>
+<span class="go">    fi</span>
 <span class="go">    cd ../..</span>
 <span class="go">done</span>
-
-<span class="go">mkdir build/opm-simulators</span>
-<span class="go">cd build/opm-simulators</span>
-<span class="go">cmake -DUSE_MPI=1 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=&quot;$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid&quot; $CURRENT_DIRECTORY/opm-simulators</span>
-<span class="go">make -j5 flow</span>
-<span class="go">cd ../..</span>
 </pre></div>
 </div>
 <div class="admonition tip">
@@ -181,46 +166,49 @@ in the terminal the following lines (which in turn should build flow in the fold
 </section>
 <section id="source-build-in-macos">
 <span id="macos"></span><h3>Source build in macOS<a class="headerlink" href="#source-build-in-macos" title="Link to this heading"></a></h3>
-<p>For macOS, there are no available binary packages, so OPM Flow needs to be built from source, in addition to the dune libraries and the opm Python
-package (see the <a class="reference external" href="https://opm-project.org/?page_id=239">prerequisites</a>, which can be installed using macports or brew). This can be achieved by the following lines:</p>
+<p>For macOS, there are no available binary packages, so OPM Flow needs to be built from source, in addition to the dune libraries and the OPM Python
+package (see the <a class="reference external" href="https://opm-project.org/?page_id=239">prerequisites</a>, which can be installed using macports or brew).
+For example, with brew the prerequisites can be installed by:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brew install boost openblas suite-sparse python@3.14 cmake</span>
+</pre></div>
+</div>
+<p>In addition, it is recommended to uprade and update your macOS to the latest available versions (the following steps have
+worked for macOS Tahoe 26.1 with Apple clang version 17.0.0).
+After the prerequisites are installed and the vexpreccs Python environment is created (see <a class="reference internal" href="#vexpreccs"><span class="std std-ref">Python package</span></a>),
+then building OPM Flow can be achieved with the following bash lines:</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">CURRENT_DIRECTORY=&quot;$PWD&quot;</span>
+
+<span class="go">deactivate</span>
+<span class="go">source vexpreccs/bin/activate</span>
 
 <span class="go">for module in common geometry grid istl</span>
 <span class="go">do   git clone https://gitlab.dune-project.org/core/dune-$module.git --branch v2.9.1</span>
+<span class="go">    ./dune-common/bin/dunecontrol --only=dune-$module cmake -DCMAKE_DISABLE_FIND_PACKAGE_MPI=1</span>
+<span class="go">    ./dune-common/bin/dunecontrol --only=dune-$module make -j5</span>
 <span class="go">done</span>
-<span class="go">for module in common geometry grid istl</span>
-<span class="go">do   ./dune-common/bin/dunecontrol --only=dune-$module cmake -DCMAKE_DISABLE_FIND_PACKAGE_MPI=1</span>
-<span class="go">     ./dune-common/bin/dunecontrol --only=dune-$module make -j5</span>
-<span class="go">done</span>
-
-<span class="go">for repo in common grid simulators</span>
-<span class="go">do</span>
-<span class="go">    git clone https://github.com/OPM/opm-$repo.git</span>
-<span class="go">done</span>
-
-<span class="go">source vexpreccs/bin/activate</span>
 
 <span class="go">mkdir build</span>
 
-<span class="go">for repo in common grid</span>
-<span class="go">do</span>
+<span class="go">for repo in common grid simulators</span>
+<span class="go">do  git clone https://github.com/OPM/opm-$repo.git</span>
 <span class="go">    mkdir build/opm-$repo</span>
 <span class="go">    cd build/opm-$repo</span>
-<span class="go">    cmake -DPYTHON_EXECUTABLE=$(which python) -DWITH_NDEBUG=1 -DUSE_MPI=0 -DOPM_ENABLE_PYTHON=ON -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=&quot;$CURRENT_DIRECTORY/dune-common/build-cmake;$CURRENT_DIRECTORY/dune-grid/build-cmake;$CURRENT_DIRECTORY/dune-geometry/build-cmake;$CURRENT_DIRECTORY/dune-istl/build-cmake;$CURRENT_DIRECTORY/build/opm-common&quot; $CURRENT_DIRECTORY/opm-$repo</span>
-<span class="go">    make -j5 opm$repo</span>
+<span class="go">    cmake -DUSE_MPI=0 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=&quot;$CURRENT_DIRECTORY/dune-common/build-cmake;$CURRENT_DIRECTORY/dune-grid/build-cmake;$CURRENT_DIRECTORY/dune-geometry/build-cmake;$CURRENT_DIRECTORY/dune-istl/build-cmake;$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid&quot; $CURRENT_DIRECTORY/opm-$repo</span>
+<span class="go">    if [[ $repo == simulators ]]; then</span>
+<span class="go">        make -j5 flow</span>
+<span class="go">    else</span>
+<span class="go">        make -j5 opm$repo</span>
+<span class="go">    fi</span>
 <span class="go">    cd ../..</span>
 <span class="go">done</span>
 
-<span class="go">mkdir build/opm-simulators</span>
-<span class="go">cd build/opm-simulators</span>
-<span class="go">cmake -DUSE_MPI=0 -DWITH_NDEBUG=1 -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=&quot;$CURRENT_DIRECTORY/dune-common/build-cmake;$CURRENT_DIRECTORY/dune-grid/build-cmake;$CURRENT_DIRECTORY/dune-geometry/build-cmake;$CURRENT_DIRECTORY/dune-istl/build-cmake;$CURRENT_DIRECTORY/build/opm-common;$CURRENT_DIRECTORY/build/opm-grid&quot; $CURRENT_DIRECTORY/opm-simulators</span>
-<span class="go">make -j5 flow</span>
-<span class="go">cd ../..</span>
+<span class="go">echo &quot;export PATH=\$PATH:$CURRENT_DIRECTORY/build/opm-simulators/bin&quot; &gt;&gt; $CURRENT_DIRECTORY/vexpreccs/bin/activate</span>
 
-<span class="go">echo &quot;export PYTHONPATH=\$PYTHONPATH:$CURRENT_DIRECTORY/build/opm-common/python&quot; &gt;&gt; $CURRENT_DIRECTORY/vexpreccs/bin/activate</span>
+<span class="go">deactivate</span>
+<span class="go">source vexpreccs/bin/activate</span>
 </pre></div>
 </div>
-<p>This builds OPM Flow as well as the opm Python package, and it exports the required PYTHONPATH. Then after execution, deactivate and activate the Python virtual environment.</p>
+<p>This builds OPM Flow, and it exports the path to the flow executable (i.e., executing in the terminal <strong>which flow</strong> should print the path).</p>
 <p>For macOS, the LaTeX dependency can be installed from <a class="reference external" href="https://www.tug.org/mactex/">https://www.tug.org/mactex/</a>. If after installation you still face an error due to LaTeX
 when executing expreccs, then add the flag <strong>-latex 0</strong> to expreccs.</p>
 </section>

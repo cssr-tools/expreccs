@@ -12,9 +12,7 @@ dirname: pathlib.Path = pathlib.Path(__file__).parent
 def test_generic_deck_2d():
     """See configs/rotate_2d.toml"""
     os.chdir(f"{dirname}/configs")
-    os.system(
-        "expreccs -i rotate_2d.toml -o rotate_2d -m all -t 30 -u opm -p site -w 1"
-    )
+    os.system("expreccs -i rotate_2d.toml -o rotate_2d -m all -t 30 -p site -w 1")
     assert os.path.exists(
         "./rotate_2d/postprocessing/rotate_2d_site_closed_pressure.png"
     )

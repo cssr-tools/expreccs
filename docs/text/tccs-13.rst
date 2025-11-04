@@ -55,7 +55,7 @@ For Figs. 3b, 5, 6, and 8, 9, and 10:
 
 Figs. 4 and 7 are generated using `ResInsight <https://resinsight.org>`_. To run the optimization, `Everest <https://github.com/equinor/everest>`_ is needed. Since it has been merged to 
 `ERT <https://github.com/equinor/ert>`_, it seems there are some issues using it via ERT. Then, the walk around is to use the version before merging. One way to get this installed is to
-create a new virtual environment (to avoid version conflicts) and execute:
+create a new virtual environment (to avoid version conflicts, tested with Python 3.13) and execute:
 
 .. code-block:: bash
 

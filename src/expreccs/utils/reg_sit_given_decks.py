@@ -14,8 +14,9 @@ import numpy as np
 import pandas as pd
 from shapely.geometry import LineString, Polygon, Point
 from scipy.interpolate import LinearNDInterpolator, interp1d
-from resdata.grid import Grid
-from resdata.resfile import ResdataFile
+from opm.io.ecl import EclFile as OpmFile
+from opm.io.ecl import EGrid as OpmGrid
+from opm.io.ecl import ERst as OpmRestart
 from expreccs.utils.writefile import compact_format
 
 
@@ -36,29 +37,38 @@ def create_deck(dic):
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     init = case + ".INIT"
-    dic["rrst"], dic["rgrid"] = ResdataFile(rst), Grid(grid)
-    dic["rinit"] = ResdataFile(init)
+    dic["rrst"], dic["rgrid"] = OpmRestart(rst), OpmGrid(grid)
+    dic["rinit"] = OpmFile(init)
     case = f"{dic['fsit']}/{dic['sit']}"
     rst = case + ".UNRST"
     grid = case + ".EGRID"
     init = case + ".INIT"
     dic["sdata"] = case + ".DATA"
     dic["srst"], dic["sgrid"], dic["sinit"] = (
-        ResdataFile(rst),
-        Grid(grid),
-        ResdataFile(init),
+        OpmRestart(rst),
+        OpmGrid(grid),
+        OpmFile(init),
     )
-    dic["rfip"] = [1] * (dic["rgrid"].nx * dic["rgrid"].ny * dic["rgrid"].nz)
-    dic["sfip"] = [1] * (dic["sgrid"].nx * dic["sgrid"].ny * dic["sgrid"].nz)
+    dic["rfip"] = [1] * (
+        dic["rgrid"].dimension[0]
+        * dic["rgrid"].dimension[1]
+        * dic["rgrid"].dimension[2]
+    )
+    dic["sfip"] = [1] * (
+        dic["sgrid"].dimension[0]
+        * dic["sgrid"].dimension[1]
+        * dic["sgrid"].dimension[2]
+    )
     dic["ufip"] = [1]
+    dic["ract"] = np.array(dic["rinit"]["PORV"]) > 0
     if dic["zones"]:
-        dic["rfip"] = np.array(dic["rinit"].iget_kw("FIPNUM")[0])
-        dic["sfip"] = np.array(dic["sinit"].iget_kw("FIPNUM")[0])
+        dic["rfip"] = np.array(dic["rinit"]["FIPNUM"])
+        dic["sfip"] = np.array(dic["sinit"]["FIPNUM"])
         dic["ufip"] = np.intersect1d(np.unique(dic["rfip"]), np.unique(dic["sfip"]))
     for n in ["r", "s"]:
         dic[f"{n}days"] = []
-        for i in range(dic[f"{n}rst"].num_report_steps()):
-            dic[f"{n}days"].append(dic[f"{n}rst"].iget_kw("DOUBHEAD")[i][0])
+        for i in range(len(dic[f"{n}rst"])):
+            dic[f"{n}days"].append(dic[f"{n}rst"]["DOUBHEAD", i][0])
         dic[f"{n}days"] = np.array(dic[f"{n}days"])
     dic["isdays"] = dic[f"{n}days"].copy()
     if len(dic["freq"]) < len(dic["isdays"]) - 2:
@@ -71,7 +81,11 @@ def create_deck(dic):
         dic["acoeff"] = np.array([float(val) for val in dic["acoeff"]])
     if max(dic["freq"]) <= 0:
         dic["sdays"] = []
-    dic["sopn"] = ["0"] * (dic["sgrid"].nx * dic["sgrid"].ny * dic["sgrid"].nz)
+    dic["sopn"] = ["0"] * (
+        dic["sgrid"].dimension[0]
+        * dic["sgrid"].dimension[1]
+        * dic["sgrid"].dimension[2]
+    )
     if not os.path.exists(f"{dic['fol']}"):
         os.system(f"mkdir {dic['fol']}")
     if not os.path.exists(f"{dic['fol']}/bc") and max(dic["freq"]) > 0:
@@ -79,25 +93,27 @@ def create_deck(dic):
     find_ij_orientation(dic)
     if dic["nonregular"]:
         start_point, dic["sbound"], grid = [], [], []
-        actnum = np.array(dic["sinit"].iget_kw("PORV")[0]) > 0
-        if dic["sgrid"].nz == 1:
+        actnum = np.array(dic["sinit"]["PORV"]) > 0
+        if dic["sgrid"].dimension[2] == 1:
             grid = actnum
         else:
-            for j in range(dic["sgrid"].ny):
-                for i in range(dic["sgrid"].nx):
+            for j in range(dic["sgrid"].dimension[1]):
+                for i in range(dic["sgrid"].dimension[0]):
                     grid.append(0)
-                    for k in range(dic["sgrid"].nz):
+                    for k in range(dic["sgrid"].dimension[2]):
                         ind = (
                             i
-                            + j * dic["sgrid"].nx
-                            + k * dic["sgrid"].nx * dic["sgrid"].ny
+                            + j * dic["sgrid"].dimension[0]
+                            + k * dic["sgrid"].dimension[0] * dic["sgrid"].dimension[1]
                         )
                         if actnum[ind] > 0:
                             grid[-1] = 1
                             break
-        grid = np.array(grid).reshape(dic["sgrid"].ny, dic["sgrid"].nx)
-        for j in range(dic["sgrid"].ny):
-            for i in range(dic["sgrid"].nx):
+        grid = np.array(grid).reshape(
+            dic["sgrid"].dimension[1], dic["sgrid"].dimension[0]
+        )
+        for j in range(dic["sgrid"].dimension[1]):
+            for i in range(dic["sgrid"].dimension[0]):
                 if grid[j][i]:
                     start_point = [j, i]
                     break
@@ -106,11 +122,21 @@ def create_deck(dic):
         boundary, dire = site_contour(grid, start_point)
         boundary = np.array(boundary)
         dic["sopn"] = [
-            "0" for _ in range(dic["sgrid"].nx * dic["sgrid"].ny * dic["sgrid"].nz)
+            "0"
+            for _ in range(
+                dic["sgrid"].dimension[0]
+                * dic["sgrid"].dimension[1]
+                * dic["sgrid"].dimension[2]
+            )
         ]
         coords = get_bccon(dic, boundary, dire)
         dic["oprn"] = [
-            "0" for _ in range(dic["rgrid"].nx * dic["rgrid"].ny * dic["rgrid"].nz)
+            "0"
+            for _ in range(
+                dic["rgrid"].dimension[0]
+                * dic["rgrid"].dimension[1]
+                * dic["rgrid"].dimension[2]
+            )
         ]
         x_i, y_i, z_i, inds, fipr, offset = get_xymaps(dic, coords)
         git = "--This file was generated by expreccs https://github.com/cssr-tools/expreccs\n"
@@ -125,27 +151,27 @@ def create_deck(dic):
             encoding="utf8",
         ) as file:
             file.write("".join(dic["oprn"]))
-        dic["rp"] = [[] for _ in range(dic["rrst"].num_report_steps())]
+        dic["rp"] = [[] for _ in range(len(dic["rrst"]))]
         tmp = dic["sbound"].copy()
         if dic["sbound"]:
             print("Dynamic interpolator:")
-        with alive_bar(dic["rrst"].num_report_steps()) as bar_animation:
-            for i in range(dic["rrst"].num_report_steps()):
+        with alive_bar(len(dic["rrst"])) as bar_animation:
+            for i in range(len(dic["rrst"])):
                 if not dic["sbound"]:
                     break
                 bar_animation()
-                z_p = np.array(dic["rrst"].iget_kw("PRESSURE")[i])
+                z_p = np.array(dic["rrst"]["PRESSURE", i])
                 if not dic["explicit"]:
-                    z_p -= np.array(dic["rrst"].iget_kw("PRESSURE")[0])
+                    z_p -= np.array(dic["rrst"]["PRESSURE", 0])
                     z_p = np.array([z_p[ind] for ind in inds])
                 else:
-                    if dic["rinit"].has_kw("WAT_DEN"):
-                        den = 9.81 * dic["rinit"].iget_kw("WAT_DEN")[i] / 1e5
+                    if dic["rrst"].count("WAT_DEN", i):
+                        den = 9.81 * dic["rrst"]["WAT_DEN", i] / 1e5
                     else:
                         den = (
                             9.81
                             * 1000.0
-                            * (np.array(dic["rrst"].iget_kw("PRESSURE")[0]) > 0)
+                            * (np.array(dic["rrst"]["PRESSURE", i]) > 0)
                             / 1e5
                         )
                     z_p = np.array(
@@ -169,12 +195,10 @@ def create_deck(dic):
                         if sum(whr) == 0:
                             if i == 0:
                                 dic["sopn"][
-                                    dic["sgrid"].get_global_index(
-                                        ijk=(
-                                            int(edit[1]) - 1,
-                                            int(edit[3]) - 1,
-                                            int(edit[5]) - 1,
-                                        )
+                                    dic["sgrid"].global_index(
+                                        int(edit[1]) - 1,
+                                        int(edit[3]) - 1,
+                                        int(edit[5]) - 1,
                                     )
                                 ] = "-1"
                                 dic["sbound"].pop(count)
@@ -193,12 +217,10 @@ def create_deck(dic):
                             else:
                                 if i == 0:
                                     dic["sopn"][
-                                        dic["sgrid"].get_global_index(
-                                            ijk=(
-                                                int(edit[1]) - 1,
-                                                int(edit[3]) - 1,
-                                                int(edit[5]) - 1,
-                                            )
+                                        dic["sgrid"].global_index(
+                                            int(edit[1]) - 1,
+                                            int(edit[3]) - 1,
+                                            int(edit[5]) - 1,
                                         )
                                     ] = "-1"
                                     dic["sbound"].pop(count)
@@ -214,12 +236,10 @@ def create_deck(dic):
                         else:
                             if i == 0:
                                 dic["sopn"][
-                                    dic["sgrid"].get_global_index(
-                                        ijk=(
-                                            int(edit[1]) - 1,
-                                            int(edit[3]) - 1,
-                                            int(edit[5]) - 1,
-                                        )
+                                    dic["sgrid"].global_index(
+                                        int(edit[1]) - 1,
+                                        int(edit[3]) - 1,
+                                        int(edit[5]) - 1,
                                     )
                                 ] = "-1"
                                 dic["sbound"].pop(count)
@@ -258,25 +278,34 @@ def get_xymaps(dic, coords):
     x, y, z, c_x, c_y, c_z = [], [], [], [], [], []
     fipr, x_i, y_i, z_i, inds, offset = [], [], [], [], [], []
     dic["rtmin"] = np.inf
-    for cell in dic["rgrid"]:
-        x.append(cell.coordinate[0])
-        y.append(cell.coordinate[1])
-        z.append(cell.coordinate[2])
-        if cell.active:
-            c_x.append(cell.coordinate[0])
-            c_y.append(cell.coordinate[1])
-            c_z.append(cell.coordinate[2])
+    actnum = np.array(dic["rinit"]["PORV"]) > 0
+    for k in range(dic["rgrid"].dimension[2]):
+        for j in range(dic["rgrid"].dimension[1]):
+            for i in range(dic["rgrid"].dimension[0]):
+                xyz = np.mean(dic["rgrid"].xyz_from_ijk(i, j, k, True), axis=1)
+                x.append(xyz[0])
+                y.append(xyz[1])
+                z.append(xyz[2])
+                ind = (
+                    i
+                    + j * dic["rgrid"].dimension[0]
+                    + k * dic["rgrid"].dimension[0] * dic["rgrid"].dimension[1]
+                )
+                if actnum[ind]:
+                    c_x.append(xyz[0])
+                    c_y.append(xyz[1])
+                    c_z.append(xyz[2])
     c_x = np.array(c_x)
     c_y = np.array(c_y)
     c_z = np.array(c_z)
-    dz = 0.5 * np.array(dic["rinit"].iget_kw("DZ")[0])
-    act = np.array(dic["rinit"].iget_kw("PORV")[0]) > 0
+    dz = 0.5 * np.array(dic["rinit"]["DZ"])
+    act = np.array(dic["rinit"]["PORV"]) > 0
     for coord in coords:
         aind = int(
             np.argmin(abs(c_x - coord[0]) + abs(c_y - coord[1]) + abs(c_z - coord[2]))
         )
-        ind = dic["rgrid"].get_global_index(active_index=aind)
-        ijk = dic["rgrid"].get_ijk(active_index=aind)
+        ijk = dic["rgrid"].ijk_from_active_index(aind)
+        ind = dic["rgrid"].global_index(ijk[0], ijk[1], ijk[2])
         if not act[ind] or (dic["zones"] and dic["rfip"][aind] not in dic["ufip"]):
             continue
         take = [False, False, False, False, False]
@@ -289,8 +318,8 @@ def get_xymaps(dic, coords):
             inds.append(aind)
             fipr.append(dic["rfip"][aind])
             dic["oprn"][ind] = "1"
-        if ijk[0] < dic["rgrid"].nx - 1:
-            tmp = dic["rgrid"].get_active_index(global_index=ind + 1)
+        if ijk[0] < dic["rgrid"].dimension[0] - 1:
+            tmp = dic["rgrid"].active_index(ijk[0] + 1, ijk[1], ijk[2])
             if tmp not in inds:
                 take[1] = True
                 dic["oprn"][ind + 1] = "1"
@@ -301,7 +330,7 @@ def get_xymaps(dic, coords):
                 inds.append(tmp)
                 fipr.append(dic["rfip"][tmp])
         if 0 < ijk[0]:
-            tmp = dic["rgrid"].get_active_index(global_index=ind - 1)
+            tmp = dic["rgrid"].active_index(ijk[0] - 1, ijk[1], ijk[2])
             if tmp not in inds:
                 take[2] = True
                 dic["oprn"][ind - 1] = "1"
@@ -312,24 +341,24 @@ def get_xymaps(dic, coords):
                 inds.append(tmp)
                 fipr.append(dic["rfip"][tmp])
         if 0 < ijk[1]:
-            tmp = dic["rgrid"].get_active_index(global_index=ind - dic["rgrid"].nx)
+            tmp = dic["rgrid"].active_index(ijk[0], ijk[1] - 1, ijk[2])
             if tmp not in inds:
                 take[3] = True
-                dic["oprn"][ind - dic["rgrid"].nx] = "1"
-                x_i.append(x[ind - dic["rgrid"].nx])
-                y_i.append(y[ind - dic["rgrid"].nx])
-                z_i.append(z[ind - dic["rgrid"].nx] - dz[tmp])
+                dic["oprn"][ind - dic["rgrid"].dimension[0]] = "1"
+                x_i.append(x[ind - dic["rgrid"].dimension[0]])
+                y_i.append(y[ind - dic["rgrid"].dimension[0]])
+                z_i.append(z[ind - dic["rgrid"].dimension[0]] - dz[tmp])
                 offset.append(-dz[tmp])
                 inds.append(tmp)
                 fipr.append(dic["rfip"][tmp])
-        if ijk[1] < dic["rgrid"].ny - 1:
-            tmp = dic["rgrid"].get_active_index(global_index=ind + dic["rgrid"].nx)
+        if ijk[1] < dic["rgrid"].dimension[1] - 1:
+            tmp = dic["rgrid"].active_index(ijk[0], ijk[1] + 1, ijk[2])
             if tmp not in inds:
                 take[4] = True
-                dic["oprn"][ind + dic["rgrid"].nx] = "1"
-                x_i.append(x[ind + dic["rgrid"].nx])
-                y_i.append(y[ind + dic["rgrid"].nx])
-                z_i.append(z[ind + dic["rgrid"].nx] - dz[tmp])
+                dic["oprn"][ind + dic["rgrid"].dimension[0]] = "1"
+                x_i.append(x[ind + dic["rgrid"].dimension[0]])
+                y_i.append(y[ind + dic["rgrid"].dimension[0]])
+                z_i.append(z[ind + dic["rgrid"].dimension[0]] - dz[tmp])
                 offset.append(-dz[tmp])
                 inds.append(tmp)
                 fipr.append(dic["rfip"][tmp])
@@ -341,7 +370,7 @@ def get_xymaps(dic, coords):
             inds.append(aind)
             fipr.append(dic["rfip"][aind])
         if take[1]:
-            tmp = dic["rgrid"].get_active_index(global_index=ind + 1)
+            tmp = dic["rgrid"].active_index(ijk[0] + 1, ijk[1], ijk[2])
             x_i.append(x[ind + 1])
             y_i.append(y[ind + 1])
             z_i.append(z[ind + 1] + dz[tmp])
@@ -349,7 +378,7 @@ def get_xymaps(dic, coords):
             inds.append(tmp)
             fipr.append(dic["rfip"][tmp])
         if take[2]:
-            tmp = dic["rgrid"].get_active_index(global_index=ind - 1)
+            tmp = dic["rgrid"].active_index(ijk[0] - 1, ijk[1], ijk[2])
             x_i.append(x[ind - 1])
             y_i.append(y[ind - 1])
             z_i.append(z[ind - 1] + dz[tmp])
@@ -357,17 +386,17 @@ def get_xymaps(dic, coords):
             inds.append(tmp)
             fipr.append(dic["rfip"][tmp])
         if take[3]:
-            x_i.append(x[ind - dic["rgrid"].nx])
-            y_i.append(y[ind - dic["rgrid"].nx])
-            z_i.append(z[ind - dic["rgrid"].nx] + dz[tmp])
+            x_i.append(x[ind - dic["rgrid"].dimension[0]])
+            y_i.append(y[ind - dic["rgrid"].dimension[0]])
+            z_i.append(z[ind - dic["rgrid"].dimension[0]] + dz[tmp])
             offset.append(dz[tmp])
             inds.append(tmp)
             fipr.append(dic["rfip"][tmp])
         if take[4]:
-            tmp = dic["rgrid"].get_active_index(global_index=ind + dic["rgrid"].nx)
-            x_i.append(x[ind + dic["rgrid"].nx])
-            y_i.append(y[ind + dic["rgrid"].nx])
-            z_i.append(z[ind + dic["rgrid"].nx] + dz[tmp])
+            tmp = dic["rgrid"].active_index(ijk[0], ijk[1] + 1, ijk[2])
+            x_i.append(x[ind + dic["rgrid"].dimension[0]])
+            y_i.append(y[ind + dic["rgrid"].dimension[0]])
+            z_i.append(z[ind + dic["rgrid"].dimension[0]] + dz[tmp])
             offset.append(dz[tmp])
             inds.append(tmp)
             fipr.append(dic["rfip"][tmp])
@@ -392,24 +421,24 @@ def get_bccon(dic, boundary, dire):
     """
     coords, dic["spres"], dic["krfips"], dic["ksfips"] = [], [], [], []
     dic["stmin"] = np.inf
-    act = np.array(dic["sinit"].iget_kw("PORV")[0]) > 0
+    act = np.array(dic["sinit"]["PORV"]) > 0
     dx, dy, dz = 1.0 * act, 1.0 * act, 1.0 * act
-    dx[act] = dic["sinit"].iget_kw("DX")[0]
-    dy[act] = dic["sinit"].iget_kw("DY")[0]
-    dz[act] = dic["sinit"].iget_kw("DZ")[0]
-    for k in range(dic["sgrid"].nz):
+    dx[act] = dic["sinit"]["DX"]
+    dy[act] = dic["sinit"]["DY"]
+    dz[act] = dic["sinit"]["DZ"]
+    for k in range(dic["sgrid"].dimension[2]):
         for i, val in enumerate(boundary):
             ind = int(
-                val[0] * dic["sgrid"].nx
+                val[0] * dic["sgrid"].dimension[0]
                 + val[1]
-                + k * dic["sgrid"].nx * dic["sgrid"].ny
+                + k * dic["sgrid"].dimension[0] * dic["sgrid"].dimension[1]
             )
             if not act[ind]:
                 continue
             if (
                 dire[i] == 1
                 and dic["boundaries"][2] == -1
-                and val[0] == dic["sgrid"].ny - 1
+                and val[0] == dic["sgrid"].dimension[1] - 1
             ):
                 continue
             if dire[i] == 2 and dic["boundaries"][3] == -1 and val[1] == 0:
@@ -419,20 +448,19 @@ def get_bccon(dic, boundary, dire):
             if (
                 dire[i] == 4
                 and dic["boundaries"][1] == -1
-                and val[1] == dic["sgrid"].nx - 1
+                and val[1] == dic["sgrid"].dimension[0] - 1
             ):
                 continue
             dic["sopn"][ind] = str(dire[i])
+            xyz = np.mean(dic["sgrid"].xyz_from_ijk(val[1], val[0], k, True), axis=1)
             if k == 0:
-                dic["stmin"] = min(
-                    dic["stmin"], dic["sgrid"][ind].coordinate[2] - 0.5 * dz[ind]
-                )
+                dic["stmin"] = min(dic["stmin"], xyz[2] - 0.5 * dz[ind])
             if dire[i] == 1:
                 coords.append(
                     [
-                        dic["sgrid"][ind].coordinate[0],
-                        dic["sgrid"][ind].coordinate[1] + 0.5 * dy[ind],
-                        dic["sgrid"][ind].coordinate[2],
+                        xyz[0],
+                        xyz[1] + 0.5 * dy[ind],
+                        xyz[2],
                     ]
                 )
                 dic["sbound"].append(
@@ -442,9 +470,9 @@ def get_bccon(dic, boundary, dire):
             elif dire[i] == 2:
                 coords.append(
                     [
-                        dic["sgrid"][ind].coordinate[0] - 0.5 * dx[ind],
-                        dic["sgrid"][ind].coordinate[1],
-                        dic["sgrid"][ind].coordinate[2],
+                        xyz[0] - 0.5 * dx[ind],
+                        xyz[1],
+                        xyz[2],
                     ]
                 )
                 dic["sbound"].append(
@@ -454,9 +482,9 @@ def get_bccon(dic, boundary, dire):
             elif dire[i] == 3:
                 coords.append(
                     [
-                        dic["sgrid"][ind].coordinate[0],
-                        dic["sgrid"][ind].coordinate[1] - 0.5 * dy[ind],
-                        dic["sgrid"][ind].coordinate[2],
+                        xyz[0],
+                        xyz[1] - 0.5 * dy[ind],
+                        xyz[2],
                     ]
                 )
                 dic["sbound"].append(
@@ -466,9 +494,9 @@ def get_bccon(dic, boundary, dire):
             elif dire[i] == 4:
                 coords.append(
                     [
-                        dic["sgrid"][ind].coordinate[0] + 0.5 * dx[ind],
-                        dic["sgrid"][ind].coordinate[1],
-                        dic["sgrid"][ind].coordinate[2],
+                        xyz[0] + 0.5 * dx[ind],
+                        xyz[1],
+                        xyz[2],
                     ]
                 )
                 dic["sbound"].append(
@@ -476,20 +504,22 @@ def get_bccon(dic, boundary, dire):
                     f"{val[0] + 1} {k + 1} {k + 1} 'I' /"
                 )
             if not dic["explicit"]:
-                ind = dic["sgrid"].get_active_index(global_index=ind)
-                dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                ind = dic["sgrid"].active_index(val[1], val[0], k)
+                dic["spres"].append(dic["srst"]["PRESSURE", 0][ind])
     if not dic["explicit"]:
         for n in ["r", "s"]:
-            act = np.array(dic[f"{n}init"].iget_kw("PORV")[0]) > 0
-            for k in range(dic[f"{n}grid"].nz):
-                for j in range(dic[f"{n}grid"].ny):
-                    for i in range(dic[f"{n}grid"].nx):
+            act = np.array(dic[f"{n}init"]["PORV"]) > 0
+            for k in range(dic[f"{n}grid"].dimension[2]):
+                for j in range(dic[f"{n}grid"].dimension[1]):
+                    for i in range(dic[f"{n}grid"].dimension[0]):
                         ind = (
                             i
-                            + j * dic[f"{n}grid"].nx
-                            + k * dic[f"{n}grid"].nx * dic[f"{n}grid"].ny
+                            + j * dic[f"{n}grid"].dimension[0]
+                            + k
+                            * dic[f"{n}grid"].dimension[0]
+                            * dic[f"{n}grid"].dimension[1]
                         )
-                        inda = dic[f"{n}grid"].get_active_index(global_index=ind)
+                        inda = dic[f"{n}grid"].active_index(i, j, k)
                         if act[ind] and len(dic[f"k{n}fips"]) == k:
                             dic[f"k{n}fips"].append(dic[f"{n}fip"][inda])
                             break
@@ -575,8 +605,19 @@ def handle_grid_coord(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["sbox"] = dic["sgrid"].get_bounding_box_2d()
-    dic["sbox"] += (dic["sbox"][0],)
+    x0y0 = dic["sgrid"].xyz_from_ijk(0, 0, 0, True)
+    xny0 = dic["sgrid"].xyz_from_ijk(dic["sgrid"].dimension[0] - 1, 0, 0, True)
+    xnyn = dic["sgrid"].xyz_from_ijk(
+        dic["sgrid"].dimension[0] - 1, dic["sgrid"].dimension[1] - 1, 0, True
+    )
+    x0yn = dic["sgrid"].xyz_from_ijk(0, dic["sgrid"].dimension[1] - 1, 0, True)
+    dic["sbox"] = [
+        [x0y0[0][0], x0y0[1][0]],
+        [xny0[0][1], xny0[1][1]],
+        [xnyn[0][3], xnyn[0][3]],
+        [x0yn[0][2], x0yn[1][2]],
+    ]
+    dic["sbox"] += [dic["sbox"][0]]
     c_x, c_y, c_z = [], [], []
     s_x, s_y = [], []
     poly = Polygon(
@@ -587,48 +628,67 @@ def handle_grid_coord(dic):
             (dic["sbox"][3][0], dic["sbox"][3][1]),
         ]
     )
-    ijn = dic["sgrid"].nx * dic["sgrid"].ny - 1
-    for n, cell in enumerate(dic["sgrid"]):
-        if cell.active:
-            s_x.append(cell.coordinate[0])
-            s_y.append(cell.coordinate[1])
-        if n == ijn:
-            break
+    for j in range(dic["sgrid"].dimension[1]):
+        for i in range(dic["sgrid"].dimension[0]):
+            if dic["sgrid"].active_index(i, j, 0) > -1:
+                xyz = np.mean(dic["sgrid"].xyz_from_ijk(i, j, 0, True), axis=1)
+                s_x.append(xyz[0])
+                s_y.append(xyz[1])
     s_x = np.array(s_x)
     s_y = np.array(s_y)
-    for cell in dic["rgrid"]:
-        if cell.active:
-            c_x.append(cell.coordinate[0])
-            c_y.append(cell.coordinate[1])
-            c_z.append(cell.coordinate[2])
-            point = Point(cell.coordinate[0], cell.coordinate[1])
-            if poly.contains(point):
-                ind = pd.Series(abs(c_x[-1] - s_x) + abs(c_y[-1] - s_y)).argmin()
-                ijk = dic["sgrid"].get_ijk(active_index=ind)
-                z_t = dic["sgrid"].get_xyz(ijk=ijk)[2]
-                z_b = dic["sgrid"].get_xyz(
-                    ijk=(ijk[0], ijk[1], ijk[2] + dic["sgrid"].nz - 1)
-                )[2]
-                d_z = 0.5 * dic["sgrid"].cell_dz(ijk=ijk)
-                dic["fipn"].append(f"{cell.k+2}")
-                if (
-                    c_z[-1] + 0.5 * cell.dz >= z_t - d_z
-                    and c_z[-1] - 0.5 * cell.dz <= z_b + d_z
-                ):
-                    dic["oprn"].append("1")
+    dsz = 0.5 * dic["sinit"]["DZ"]
+    drz = 0.5 * dic["rinit"]["DZ"]
+    for k in range(dic["rgrid"].dimension[2]):
+        for j in range(dic["rgrid"].dimension[1]):
+            for i in range(dic["rgrid"].dimension[0]):
+                if dic["rgrid"].active_index(i, j, k) > -1:
+                    xyz = np.mean(dic["rgrid"].xyz_from_ijk(i, j, k, True), axis=1)
+                    c_x.append(xyz[0])
+                    c_y.append(xyz[1])
+                    c_z.append(xyz[2])
+                    point = Point(xyz[0], xyz[1])
+                    if poly.contains(point):
+                        ind = pd.Series(
+                            abs(c_x[-1] - s_x) + abs(c_y[-1] - s_y)
+                        ).argmin()
+                        ijk = dic["sgrid"].ijk_from_active_index(ind)
+                        z_t = np.mean(
+                            dic["sgrid"].xyz_from_ijk(ijk[0], ijk[1], ijk[2], True),
+                            axis=1,
+                        )[2]
+                        z_b = np.mean(
+                            dic["sgrid"].xyz_from_ijk(
+                                ijk[0],
+                                ijk[1],
+                                ijk[2] + dic["sgrid"].dimension[2] - 1,
+                                True,
+                            ),
+                            axis=1,
+                        )[2]
+                        dic["fipn"].append(f"{k+2}")
+                        d_z = drz[dic["rgrid"].active_index(i, j, k)]
+                        if (
+                            c_z[-1] + d_z >= z_t - dsz[ind]
+                            and c_z[-1] - d_z <= z_b + dsz[ind]
+                        ):
+                            dic["oprn"].append("1")
+                        else:
+                            dic["oprn"].append("7")
+                    else:
+                        dic["oprn"].append("8")
+                        dic["fipn"].append("1")
                 else:
-                    dic["oprn"].append("7")
-            else:
-                dic["oprn"].append("8")
-                dic["fipn"].append("1")
-        else:
-            dic["oprn"].append("8")
-            dic["fipn"].append("1")
+                    dic["oprn"].append("8")
+                    dic["fipn"].append("1")
     dic["c_x"] = np.array(c_x)
     dic["c_y"] = np.array(c_y)
     dic["c_z"] = np.array(c_z)
-    dic["rnxy"] = dic["rgrid"].nx * dic["rgrid"].ny
-    dic["rnxyz"] = dic["rgrid"].nx * dic["rgrid"].ny * dic["rgrid"].nz
+    dic["rnxy"] = dic["rgrid"].dimension[0] * dic["rgrid"].dimension[1]
+    dic["rnxyz"] = (
+        dic["rgrid"].dimension[0]
+        * dic["rgrid"].dimension[1]
+        * dic["rgrid"].dimension[2]
+    )
 
 
 def check_regional_neighbours(dic, gind, p, n, d_z):
@@ -646,165 +706,141 @@ def check_regional_neighbours(dic, gind, p, n, d_z):
         dic (dict): Modified global dictionary
 
     """
-    ijk = dic["rgrid"].get_ijk(global_index=gind)
-    if dic["rgrid"].nz > 1:
+    ijk = dic["rgrid"].ijk_from_global_index(gind)
+    if dic["rgrid"].dimension[2] > 1:
         noise = -1e-4 * np.random.rand()
     else:
         noise = 0
     if ijk[1] - 1 >= 0:
-        if dic["rgrid"].get_active_index(
-            global_index=gind - dic["rgrid"].nx
-        ) not in dic[f"ri{p}"] and dic["rgrid"].active(
-            global_index=gind - dic["rgrid"].nx
+        if (
+            dic["rgrid"].active_index(ijk[0], ijk[1] - 1, ijk[2]) not in dic[f"ri{p}"]
+            and dic["ract"][gind - dic["rgrid"].dimension[0]]
         ):
-            dic[f"rx{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[0]
+            kji = dic["rgrid"].ijk_from_global_index(gind - dic["rgrid"].dimension[0])
+            xyz = np.mean(
+                dic["rgrid"].xyz_from_ijk(kji[0], kji[1], kji[2], True), axis=1
             )
-            dic[f"ry{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[1]
-            )
-            dic[f"rz{p}"].append(
-                noise + dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[2]
-            )
-            dic[f"ri{p}"].append(
-                dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
-            )
+            dic[f"rx{p}"].append(xyz[0])
+            dic[f"ry{p}"].append(xyz[1])
+            dic[f"rz{p}"].append(noise + xyz[2])
+            dic[f"ri{p}"].append(dic["rgrid"].active_index(ijk[0], ijk[1] - 1, ijk[2]))
             dic[f"rk{p}"].append(ijk[2])
             dic[f"rf{p}"].append(
-                dic["rfip"][
-                    dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
-                ]
+                dic["rfip"][dic["rgrid"].active_index(ijk[0], ijk[1] - 1, ijk[2])]
             )
             dic[f"rt{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - dic["rgrid"].nx)[2]
-                - d_z[
-                    dic["rgrid"].get_active_index(global_index=gind - dic["rgrid"].nx)
-                ]
+                xyz[2] - d_z[dic["rgrid"].active_index(ijk[0], ijk[1] - 1, ijk[2])]
             )
             dic["oprn"][
-                gind - dic["rgrid"].nx
-            ] = f"{2+n if int(dic['oprn'][gind-dic['rgrid'].nx])==2+n else 6}"
-    if ijk[1] + 1 < dic["rgrid"].ny:
-        if dic["rgrid"].get_active_index(
-            global_index=gind + dic["rgrid"].nx
-        ) not in dic[f"ri{p}"] and dic["rgrid"].active(
-            global_index=gind + dic["rgrid"].nx
+                gind - dic["rgrid"].dimension[0]
+            ] = f"{2+n if int(dic['oprn'][gind-dic['rgrid'].dimension[0]])==2+n else 6}"
+    if ijk[1] + 1 < dic["rgrid"].dimension[1]:
+        if (
+            dic["rgrid"].active_index(ijk[0], ijk[1] + 1, ijk[2]) not in dic[f"ri{p}"]
+            and dic["ract"][gind + dic["rgrid"].dimension[0]]
         ):
-            dic[f"rx{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[0]
+            kji = dic["rgrid"].ijk_from_global_index(gind + dic["rgrid"].dimension[0])
+            xyz = np.mean(
+                dic["rgrid"].xyz_from_ijk(kji[0], kji[1], kji[2], True), axis=1
             )
-            dic[f"ry{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[1]
-            )
-            dic[f"rz{p}"].append(
-                noise + dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[2]
-            )
-            dic[f"ri{p}"].append(
-                dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
-            )
+            dic[f"rx{p}"].append(xyz[0])
+            dic[f"ry{p}"].append(xyz[1])
+            dic[f"rz{p}"].append(noise + xyz[2])
+            dic[f"ri{p}"].append(dic["rgrid"].active_index(ijk[0], ijk[1] + 1, ijk[2]))
             dic[f"rk{p}"].append(ijk[2])
             dic[f"rf{p}"].append(
-                dic["rfip"][
-                    dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
-                ]
+                dic["rfip"][dic["rgrid"].active_index(ijk[0], ijk[1] + 1, ijk[2])]
             )
             dic[f"rt{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + dic["rgrid"].nx)[2]
-                - d_z[
-                    dic["rgrid"].get_active_index(global_index=gind + dic["rgrid"].nx)
-                ]
+                xyz[2] - d_z[dic["rgrid"].active_index(ijk[0], ijk[1] + 1, ijk[2])]
             )
             dic["oprn"][
-                gind + dic["rgrid"].nx
-            ] = f"{2+n if int(dic['oprn'][gind+dic['rgrid'].nx])==2+n else 6}"
+                gind + dic["rgrid"].dimension[0]
+            ] = f"{2+n if int(dic['oprn'][gind+dic['rgrid'].dimension[0]])==2+n else 6}"
     if ijk[0] - 1 >= 0:
-        if dic["rgrid"].get_active_index(global_index=gind - 1) not in dic[
-            f"ri{p}"
-        ] and dic["rgrid"].active(global_index=gind - 1):
-            dic[f"rx{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[0])
-            dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind - 1)[1])
-            dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind - 1)[2])
-            dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind - 1))
+        if (
+            dic["rgrid"].active_index(ijk[0] - 1, ijk[1], ijk[2]) not in dic[f"ri{p}"]
+            and dic["ract"][gind - 1]
+        ):
+            kji = dic["rgrid"].ijk_from_global_index(gind - 1)
+            xyz = np.mean(
+                dic["rgrid"].xyz_from_ijk(kji[0], kji[1], kji[2], True), axis=1
+            )
+            dic[f"rx{p}"].append(xyz[0])
+            dic[f"ry{p}"].append(xyz[1])
+            dic[f"rz{p}"].append(noise + xyz[2])
+            dic[f"ri{p}"].append(dic["rgrid"].active_index(ijk[0] - 1, ijk[1], ijk[2]))
             dic[f"rk{p}"].append(ijk[2])
             dic[f"rf{p}"].append(
-                dic["rfip"][dic["rgrid"].get_active_index(global_index=gind - 1)]
+                dic["rfip"][dic["rgrid"].active_index(ijk[0] - 1, ijk[1], ijk[2])]
             )
             dic[f"rt{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - 1)[2]
-                - d_z[dic["rgrid"].get_active_index(global_index=gind - 1)]
+                xyz[2] - d_z[dic["rgrid"].active_index(ijk[0] - 1, ijk[1], ijk[2])]
             )
             dic["oprn"][gind - 1] = f"{2+n if int(dic['oprn'][gind-1])==2+n else 6}"
-    if ijk[0] + 1 < dic["rgrid"].nx:
-        if dic["rgrid"].get_active_index(global_index=gind + 1) not in dic[
-            f"ri{p}"
-        ] and dic["rgrid"].active(global_index=gind + 1):
-            dic[f"rx{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[0])
-            dic[f"ry{p}"].append(dic["rgrid"].get_xyz(global_index=gind + 1)[1])
-            dic[f"rz{p}"].append(noise + dic["rgrid"].get_xyz(global_index=gind + 1)[2])
-            dic[f"ri{p}"].append(dic["rgrid"].get_active_index(global_index=gind + 1))
+    if ijk[0] + 1 < dic["rgrid"].dimension[0]:
+        if (
+            dic["rgrid"].active_index(ijk[0] + 1, ijk[1], ijk[2]) not in dic[f"ri{p}"]
+            and dic["ract"][gind + 1]
+        ):
+            kji = dic["rgrid"].ijk_from_global_index(gind + 1)
+            xyz = np.mean(
+                dic["rgrid"].xyz_from_ijk(kji[0], kji[1], kji[2], True), axis=1
+            )
+            dic[f"rx{p}"].append(xyz[0])
+            dic[f"ry{p}"].append(xyz[1])
+            dic[f"rz{p}"].append(noise + xyz[2])
+            dic[f"ri{p}"].append(dic["rgrid"].active_index(ijk[0] + 1, ijk[1], ijk[2]))
             dic[f"rk{p}"].append(ijk[2])
             dic[f"rf{p}"].append(
-                dic["rfip"][dic["rgrid"].get_active_index(global_index=gind + 1)]
+                dic["rfip"][dic["rgrid"].active_index(ijk[0] + 1, ijk[1], ijk[2])]
             )
             dic[f"rt{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + 1)[2]
-                - d_z[dic["rgrid"].get_active_index(global_index=gind + 1)]
+                xyz[2] - d_z[dic["rgrid"].active_index(ijk[0] + 1, ijk[1], ijk[2])]
             )
             dic["oprn"][gind + 1] = f"{2+n if int(dic['oprn'][gind+1])==2+n else 6}"
     if gind - dic["rnxy"] >= 0:
-        if dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"]) not in dic[
-            f"ri{p}"
-        ] and dic["rgrid"].active(global_index=gind - dic["rnxy"]):
-            dic[f"rx{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - dic["rnxy"])[0]
+        if (
+            dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] - 1) not in dic[f"ri{p}"]
+            and dic["ract"][gind - dic["rnxy"]]
+        ):
+            kji = dic["rgrid"].ijk_from_global_index(gind - dic["rnxy"])
+            xyz = np.mean(
+                dic["rgrid"].xyz_from_ijk(kji[0], kji[1], kji[2], True), axis=1
             )
-            dic[f"ry{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - dic["rnxy"])[1]
-            )
-            dic[f"rz{p}"].append(
-                noise + dic["rgrid"].get_xyz(global_index=gind - dic["rnxy"])[2]
-            )
-            dic[f"ri{p}"].append(
-                dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])
-            )
+            dic[f"rx{p}"].append(xyz[0])
+            dic[f"ry{p}"].append(xyz[1])
+            dic[f"rz{p}"].append(noise + xyz[2])
+            dic[f"ri{p}"].append(dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] - 1))
             dic[f"rk{p}"].append(ijk[2] - 1)
             dic[f"rf{p}"].append(
-                dic["rfip"][
-                    dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])
-                ]
+                dic["rfip"][dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] - 1)]
             )
             dic[f"rt{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind - dic["rnxy"])[2]
-                - d_z[dic["rgrid"].get_active_index(global_index=gind - dic["rnxy"])]
+                xyz[2] - d_z[dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] - 1)]
             )
             dic["oprn"][
                 gind - dic["rnxy"]
             ] = f"{2+n if int(dic['oprn'][gind- dic['rnxy']])==2+n else 6}"
-    if gind + dic["rnxy"] < dic["rnxy"] * dic["rgrid"].nz:
-        if dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"]) not in dic[
-            f"ri{p}"
-        ] and dic["rgrid"].active(global_index=gind + dic["rnxy"]):
-            dic[f"rx{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + dic["rnxy"])[0]
+    if gind + dic["rnxy"] < dic["rnxy"] * dic["rgrid"].dimension[2]:
+        if (
+            dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] + 1) not in dic[f"ri{p}"]
+            and dic["ract"][gind + dic["rnxy"]]
+        ):
+            kji = dic["rgrid"].ijk_from_global_index(gind + dic["rnxy"])
+            xyz = np.mean(
+                dic["rgrid"].xyz_from_ijk(kji[0], kji[1], kji[2], True), axis=1
             )
-            dic[f"ry{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + dic["rnxy"])[1]
-            )
-            dic[f"rz{p}"].append(
-                noise + dic["rgrid"].get_xyz(global_index=gind + dic["rnxy"])[2]
-            )
-            dic[f"ri{p}"].append(
-                dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])
-            )
+            dic[f"rx{p}"].append(xyz[0])
+            dic[f"ry{p}"].append(xyz[1])
+            dic[f"rz{p}"].append(noise + xyz[2])
+            dic[f"ri{p}"].append(dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] + 1))
             dic[f"rk{p}"].append(ijk[2] + 1)
             dic[f"rf{p}"].append(
-                dic["rfip"][
-                    dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])
-                ]
+                dic["rfip"][dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] + 1)]
             )
             dic[f"rt{p}"].append(
-                dic["rgrid"].get_xyz(global_index=gind + dic["rnxy"])[2]
-                - d_z[dic["rgrid"].get_active_index(global_index=gind + dic["rnxy"])]
+                xyz[2] - d_z[dic["rgrid"].active_index(ijk[0], ijk[1], ijk[2] + 1)]
             )
             dic["oprn"][
                 gind + dic["rnxy"]
@@ -826,28 +862,43 @@ def check_intersection(dic, ind, gind, i, n):
         lines (list): Horizontal and vertical lines in the regional model
 
     """
-    if i > [dic["sgrid"].nx, dic["sgrid"].ny, dic["sgrid"].nx, dic["sgrid"].nx][n]:
+    if (
+        i
+        > [
+            dic["sgrid"].dimension[0],
+            dic["sgrid"].dimension[1],
+            dic["sgrid"].dimension[0],
+            dic["sgrid"].dimension[0],
+        ][n]
+    ):
         lift = -1e-4
     else:
         lift = 1e-4
-    dic[f"rkg{['n', 'w', 's', 'e'][n]}"].append(
-        (dic["rgrid"].get_xyz(active_index=ind)[2] + lift, ind)
-    )
+    xyz = np.mean(dic["rgrid"].xyz_from_active_index(ind, True), axis=1)
+    dic[f"rkg{['n', 'w', 's', 'e'][n]}"].append((xyz[2] + lift, ind))
     lines = []
-    for shift in [dic["rgrid"].nx, 1]:
+    for shift in [dic["rgrid"].dimension[0], 1]:
         x_l, y_l, x_p, y_p = 0, 0, 0, 0
         l_p = [0, 0]
-        x_m = dic["rgrid"].get_xyz(active_index=ind)[0]
-        y_m = dic["rgrid"].get_xyz(active_index=ind)[1]
+        x_m = xyz[0]
+        y_m = xyz[1]
         if gind - shift >= 0:
-            if dic["rgrid"].active(global_index=gind - shift):
-                x_l = dic["rgrid"].get_xyz(global_index=gind - shift)[0]
-                y_l = dic["rgrid"].get_xyz(global_index=gind - shift)[1]
+            if dic["ract"][gind - shift]:
+                ijk = dic["rgrid"].ijk_from_global_index(gind - shift)
+                xyz = np.mean(
+                    dic["rgrid"].xyz_from_ijk(ijk[0], ijk[1], ijk[2], True), axis=1
+                )
+                x_l = xyz[0]
+                y_l = xyz[1]
                 l_p[0] = 1
         if gind + shift < dic["rnxyz"]:
-            if dic["rgrid"].active(global_index=gind + shift):
-                x_p = dic["rgrid"].get_xyz(global_index=gind + shift)[0]
-                y_p = dic["rgrid"].get_xyz(global_index=gind + shift)[1]
+            if dic["ract"][gind + shift]:
+                ijk = dic["rgrid"].ijk_from_global_index(gind + shift)
+                xyz = np.mean(
+                    dic["rgrid"].xyz_from_ijk(ijk[0], ijk[1], ijk[2], True), axis=1
+                )
+                x_p = xyz[0]
+                y_p = xyz[1]
                 l_p[1] = 1
         if sum(l_p) == 2:
             xy = [x_l, y_l, x_p, y_p]
@@ -876,7 +927,7 @@ def find_regional_cells(dic):
     """
     handle_grid_coord(dic)
     count = -1
-    d_z = 0.5 * dic["rinit"].iget_kw("DZ")[0]
+    d_z = 0.5 * dic["rinit"]["DZ"]
     whr = [True] * len(dic["c_y"])
     ntot = 0
     for n, p in enumerate(
@@ -939,7 +990,8 @@ def find_regional_cells(dic):
                         )
                     ).argmin()
                 count += 1
-                gind = dic["rgrid"].global_index(ind)
+                ijk = dic["rgrid"].ijk_from_active_index(ind)
+                gind = dic["rgrid"].global_index(ijk[0], ijk[1], ijk[2])
                 lines = check_intersection(dic, ind, gind, i, n)
                 if lines[0] == 0 and lines[1] == 0:
                     dic["sdel"].append(count)
@@ -956,11 +1008,12 @@ def find_regional_cells(dic):
                 elif lines[1] == 0:
                     lines[1] = lines[0]
                 if lines[0].intersects(border) or lines[1].intersects(border):
-                    ijk = dic["rgrid"].get_ijk(global_index=gind)
+                    ijk = dic["rgrid"].ijk_from_global_index(gind)
+                    xyz = np.mean(dic["rgrid"].xyz_from_active_index(ind, True), axis=1)
                     dic["snum"].append(dic["sai"][count])
-                    dic[f"rx{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[0])
-                    dic[f"ry{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[1])
-                    dic[f"rz{p}"].append(dic["rgrid"].get_xyz(active_index=ind)[2])
+                    dic[f"rx{p}"].append(xyz[0])
+                    dic[f"ry{p}"].append(xyz[1])
+                    dic[f"rz{p}"].append(xyz[2])
                     dic[f"ri{p}"].append(ind)
                     dic[f"rf{p}"].append(dic["rfip"][ind])
                     dic[f"rt{p}"].append(dic[f"rz{p}"][-1] - d_z[int(ind)])
@@ -1030,12 +1083,12 @@ def dynamic_interpolator(dic):
         dic (dict): Modified global dictionary
 
     """
-    dic["rp"] = [[] for _ in range(dic["rrst"].num_report_steps())]
+    dic["rp"] = [[] for _ in range(len(dic["rrst"]))]
     for p in ["n", "w", "s", "e"]:
-        dic[f"rp{p}"] = [[] for _ in range(dic["rrst"].num_report_steps())]
+        dic[f"rp{p}"] = [[] for _ in range(len(dic["rrst"]))]
     print("Dynamic interpolator:")
-    with alive_bar(dic["rrst"].num_report_steps()) as bar_animation:
-        for i in range(dic["rrst"].num_report_steps()):
+    with alive_bar(len(dic["rrst"])) as bar_animation:
+        for i in range(len(dic["rrst"])):
             bar_animation()
             project_pressures(dic, i)
 
@@ -1119,11 +1172,11 @@ def project_pressures(dic, i):
             c_c += len(dic[f"sx{p}"]) + s_s
             s_s = 0
             continue
-        z_p = np.array(dic["rrst"].iget_kw("PRESSURE")[i])[dic[f"ri{p}"]]
-        w_d = np.array(dic["rrst"].iget_kw("WAT_DEN")[i])
+        z_p = np.array(dic["rrst"]["PRESSURE", i])[dic[f"ri{p}"]]
+        w_d = np.array(dic["rrst"]["WAT_DEN", i])
         if not dic["explicit"]:
-            z_p -= np.array(dic["rrst"].iget_kw("PRESSURE")[0])[dic[f"ri{p}"]]
-        if dic["rgrid"].nz > 1:
+            z_p -= np.array(dic["rrst"]["PRESSURE", 0])[dic[f"ri{p}"]]
+        if dic["rgrid"].dimension[2] > 1:
             if not dic["zones"]:
                 interp = LinearNDInterpolator(
                     list(zip(dic[f"rx{p}"], dic[f"ry{p}"], dic[f"rz{p}"])), z_p
@@ -1198,12 +1251,10 @@ def project_pressures(dic, i):
                                     edit[0] = str(dic["sai"][count] + 1)
                                     dic["sbound"][j] = " ".join(edit)
                                     dic["sopn"][
-                                        dic["sgrid"].get_global_index(
-                                            ijk=(
-                                                int(edit[1]) - 1,
-                                                int(edit[3]) - 1,
-                                                int(edit[5]) - 1,
-                                            )
+                                        dic["sgrid"].global_index(
+                                            int(edit[1]) - 1,
+                                            int(edit[3]) - 1,
+                                            int(edit[5]) - 1,
                                         )
                                     ] = "2"
                                 c_c += 1
@@ -1229,12 +1280,10 @@ def project_pressures(dic, i):
                                     edit[0] = str(c_c + s_s)
                                     dic["sbound"][j] = " ".join(edit)
                                     dic["sopn"][
-                                        dic["sgrid"].get_global_index(
-                                            ijk=(
-                                                int(edit[1]) - 1,
-                                                int(edit[3]) - 1,
-                                                int(edit[5]) - 1,
-                                            )
+                                        dic["sgrid"].global_index(
+                                            int(edit[1]) - 1,
+                                            int(edit[3]) - 1,
+                                            int(edit[5]) - 1,
                                         )
                                     ] = "2"
                                 c_c += 1
@@ -1357,10 +1406,10 @@ def find_ij_orientation(dic):
         dic (dict): Modified global dictionary
 
     """
-    y1 = dic["sgrid"].get_xyz(ijk=(0, 0, 0))[1]
-    y2 = dic["sgrid"].get_xyz(ijk=(0, 1, 0))[1]
-    x1 = dic["sgrid"].get_xyz(ijk=(0, 0, 0))[1]
-    x2 = dic["sgrid"].get_xyz(ijk=(1, 0, 0))[1]
+    y1 = dic["sgrid"].xyz_from_ijk(0, 0, 0, True)[1][0]
+    y2 = dic["sgrid"].xyz_from_ijk(0, 1, 0, True)[1][0]
+    x1 = dic["sgrid"].xyz_from_ijk(0, 0, 0, True)[1][0]
+    x2 = dic["sgrid"].xyz_from_ijk(1, 0, 0, True)[1][0]
     if y2 < y1:
         dic["mly"] = 1
     else:
@@ -1383,16 +1432,16 @@ def extract_site_borders(dic):
 
     """
     dic["spres"] = []
-    d_z = 0.5 * dic["sinit"].iget_kw("DZ")[0]
+    d_z = 0.5 * dic["sinit"]["DZ"]
     if dic["boundaries"][0] > -1:
-        for k in range(dic["sgrid"].nz):
+        for k in range(dic["sgrid"].dimension[2]):
             j = dic["boundaries"][0]
-            for i in range(dic["sgrid"].nx):
-                ind = dic["sgrid"].get_active_index(ijk=(i, j, k))
-                if dic["sgrid"].active(ijk=(i, j, k)):
+            for i in range(dic["sgrid"].dimension[0]):
+                ind = dic["sgrid"].active_index(i, j, k)
+                if ind > -1:
                     dic["sai"].append(dic["gc"])
-                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, j, k)))
-                    d_y = 0.5 * dic["sinit"].iget_kw("DY")[0][ind]
+                    xyz = np.mean(dic["sgrid"].xyz_from_ijk(i, j, k, True), axis=1)
+                    d_y = 0.5 * dic["sinit"]["DY"][ind]
                     dic["sbound"].append(
                         f"{dic['gc'] + 1} {i + 1} {i + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'J-' /"
                     )
@@ -1402,17 +1451,17 @@ def extract_site_borders(dic):
                     dic["sfn"].append(dic["sfip"][ind])
                     dic["stn"].append(xyz[2] - d_z[ind])
                 if not dic["explicit"]:
-                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                    dic["spres"].append(dic["srst"]["PRESSURE", 0][ind])
                 dic["gc"] += 1
     if dic["boundaries"][1] > -1:
-        for k in range(dic["sgrid"].nz):
-            i = dic["sgrid"].nx - 1 - dic["boundaries"][1]
-            for j in range(dic["sgrid"].ny):
-                ind = dic["sgrid"].get_active_index(ijk=(i, j, k))
-                if dic["sgrid"].active(ijk=(i, j, k)):
+        for k in range(dic["sgrid"].dimension[2]):
+            i = dic["sgrid"].dimension[0] - 1 - dic["boundaries"][1]
+            for j in range(dic["sgrid"].dimension[1]):
+                ind = dic["sgrid"].active_index(i, j, k)
+                if ind > -1:
                     dic["sai"].append(dic["gc"])
-                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, j, k)))
-                    d_x = 0.5 * dic["sinit"].iget_kw("DX")[0][ind]
+                    xyz = np.mean(dic["sgrid"].xyz_from_ijk(i, j, k, True), axis=1)
+                    d_x = 0.5 * dic["sinit"]["DX"][ind]
                     dic["sbound"].append(
                         f"{dic['gc'] + 1} {i + 1} {i + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'I' /"
                     )
@@ -1422,18 +1471,18 @@ def extract_site_borders(dic):
                     dic["sfw"].append(dic["sfip"][ind])
                     dic["stw"].append(xyz[2] - d_z[ind])
                 if not dic["explicit"]:
-                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                    dic["spres"].append(dic["srst"]["PRESSURE", 0][ind])
                 dic["gc"] += 1
     if dic["boundaries"][2] > -1:
-        for k in range(dic["sgrid"].nz):
-            j = dic["sgrid"].ny - 1 - dic["boundaries"][2]
-            for i in range(dic["sgrid"].nx):
-                ii = dic["sgrid"].nx - i - 1
-                ind = dic["sgrid"].get_active_index(ijk=(ii, j, k))
-                if dic["sgrid"].active(ijk=(ii, j, k)):
+        for k in range(dic["sgrid"].dimension[2]):
+            j = dic["sgrid"].dimension[1] - 1 - dic["boundaries"][2]
+            for i in range(dic["sgrid"].dimension[0]):
+                ii = dic["sgrid"].dimension[0] - i - 1
+                ind = dic["sgrid"].active_index(ii, j, k)
+                if ind > -1:
                     dic["sai"].append(dic["gc"])
-                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(ii, j, k)))
-                    d_y = 0.5 * dic["sinit"].iget_kw("DY")[0][ind]
+                    xyz = np.mean(dic["sgrid"].xyz_from_ijk(ii, j, k, True), axis=1)
+                    d_y = 0.5 * dic["sinit"]["DY"][ind]
                     dic["sbound"].append(
                         f"{dic['gc'] + 1} {ii + 1} {ii + 1} {j + 1} {j + 1} {k + 1} {k + 1} 'J' /"
                     )
@@ -1443,18 +1492,18 @@ def extract_site_borders(dic):
                     dic["sfs"].append(dic["sfip"][ind])
                     dic["sts"].append(xyz[2] - d_z[ind])
                 if not dic["explicit"]:
-                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                    dic["spres"].append(dic["srst"]["PRESSURE", 0][ind])
                 dic["gc"] += 1
     if dic["boundaries"][3] > -1:
-        for k in range(dic["sgrid"].nz):
+        for k in range(dic["sgrid"].dimension[2]):
             i = dic["boundaries"][3]
-            for j in range(dic["sgrid"].ny):
-                jj = dic["sgrid"].ny - j - 1
-                ind = dic["sgrid"].get_active_index(ijk=(i, jj, k))
-                if dic["sgrid"].active(ijk=(i, jj, k)):
+            for j in range(dic["sgrid"].dimension[1]):
+                jj = dic["sgrid"].dimension[1] - j - 1
+                ind = dic["sgrid"].active_index(i, jj, k)
+                if ind > -1:
                     dic["sai"].append(dic["gc"])
-                    xyz = np.array(dic["sgrid"].get_xyz(ijk=(i, jj, k)))
-                    d_x = 0.5 * dic["sinit"].iget_kw("DX")[0][ind]
+                    xyz = np.mean(dic["sgrid"].xyz_from_ijk(i, jj, k, True), axis=1)
+                    d_x = 0.5 * dic["sinit"]["DX"][ind]
                     dic["sbound"].append(
                         f"{dic['gc'] + 1} {i + 1} {i + 1} {jj + 1} {jj + 1} {k + 1} {k + 1} 'I-' /"
                     )
@@ -1464,5 +1513,5 @@ def extract_site_borders(dic):
                     dic["sfe"].append(dic["sfip"][ind])
                     dic["ste"].append(xyz[2] - d_z[ind])
                 if not dic["explicit"]:
-                    dic["spres"].append(dic["srst"].iget_kw("PRESSURE")[0][ind])
+                    dic["spres"].append(dic["srst"]["PRESSURE", 0][ind])
                 dic["gc"] += 1

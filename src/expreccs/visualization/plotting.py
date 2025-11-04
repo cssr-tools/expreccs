@@ -11,14 +11,11 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from alive_progress import alive_bar
+from expreccs.visualization.reading import reading_simulations
 from expreccs.visualization.maps2d import (
     final_time_maps,
     final_time_maps_difference,
     geological_maps,
-)
-from expreccs.visualization.reading import (
-    reading_resdata,
-    reading_opm,
 )
 
 GAS_DEN_REF = 1.86843  # kg/sm3
@@ -70,10 +67,7 @@ def plot_results(dic):
         dic["id"] = dic["folders"][0].split("/")[-1] + "_"
     dic["lfolders"] = [name.split("/")[-1].replace("_", " ") for name in dic["folders"]]
     plotting_settings(dic)
-    if dic["use"] == "resdata":
-        reading_resdata(dic)
-    else:
-        reading_opm(dic)
+    reading_simulations(dic)
     dic["tot"] = 0
     dic["tod"] = 0
     if dic["plot"] in ["reference", "regional", "site"]:
@@ -250,10 +244,7 @@ def wells_site(dic, nquan, nfol, ndeck, nwell):
     fol = dic["folders"][nfol]
     res = dic[f"{fol}_decks"][ndeck]
     opm = ["WBHP", "WGIR", "WWIR"]
-    if dic["use"] == "resdata":
-        yvalues = dic[f"{fol}/{res}_smsp"][f"{opm[nquan]}:{nwell}"].values
-    else:
-        yvalues = dic[f"{fol}/{res}_smsp"][f"{opm[nquan]}:{nwell}"]
+    yvalues = dic[f"{fol}/{res}_smsp"][f"{opm[nquan]}:{nwell}"]
     if opm[nquan] == "WGIR":
         yvalues = [val * GAS_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
     if opm[nquan] == "WWIR":
@@ -334,10 +325,7 @@ def summary_site(dic, nfol, ndeck, opmn):
     #     marker = ""
     fol = dic["folders"][nfol]
     res = dic[f"{fol}_decks"][ndeck]
-    if dic["use"] == "resdata":
-        yvalues = dic[f"{fol}/{res}_smsp"][f"{opmn}"].values
-    else:
-        yvalues = dic[f"{fol}/{res}_smsp"][f"{opmn}"]
+    yvalues = dic[f"{fol}/{res}_smsp"][f"{opmn}"]
     if opmn[1:4] == "GIP":
         yvalues = [val * GAS_DEN_REF * KG_TO_KT for val in yvalues]
     if opmn[:6] == "BFLOWI":
@@ -535,10 +523,7 @@ def over_time_distance(dic):
                 for quantity in dic["quantity"]:
                     dic[f"{fol}/{res}_difference_{quantity}"] = []
                 for nrst in range(dic[f"{fol}/{res}_num_rst"]):
-                    if dic["use"] == "resdata":
-                        points = positions_resdata(dic, fol, res, nrst)
-                    else:
-                        points = positions_opm(dic, fol, res, nrst)
+                    points = positions(dic, fol, res, nrst)
                     if points.size > 0:
                         closest_distance = np.zeros(4)
                         for i, border in enumerate(
@@ -588,7 +573,7 @@ def over_time_distance(dic):
     plt.close()
 
 
-def positions_opm(dic, fol, res, nrst):
+def positions(dic, fol, res, nrst):
     """
     Extract the point coordinates using opm
 
@@ -698,40 +683,6 @@ def positions_opm(dic, fol, res, nrst):
         [np.array(x_a).flatten(), np.array(y_a).flatten(), np.array(z_a).flatten()],
         axis=-1,
     )
-    return points
-
-
-def positions_resdata(dic, fol, res, nrst):
-    """
-    Extract the point coordinates using resdata
-
-    Args:
-        dic (dict): Global dictionary\n
-        fol (str): Name of the output folder\n
-        res (str): Name of the reservoir\n
-        nrst (int): Indice for the schedule
-
-    Returns:
-        points (list): x,y,z coordinates
-
-    """
-    points = []
-    if res == "reference":
-        indx = dic[f"{fol}/{res}_phiv"] < 0
-        indx[dic[f"{fol}/{res}_mask"]] = [
-            dic[f"{fol}/{res}_indicator_array"][nrst][k]
-            and dic[f"{fol}/reference_fipn"][k] == 1
-            for k in range(len(dic[f"{fol}/reference_fipn"]))
-        ]
-        points = dic[f"{fol}/{res}_grid"].export_position(
-            dic[f"{fol}/{res}_grid"].export_index()[indx]
-        )
-    else:
-        points = dic[f"{fol}/{res}_grid"].export_position(
-            dic[f"{fol}/{res}_grid"].export_index()[
-                dic[f"{fol}/{res}_indicator_array"][nrst]
-            ]
-        )
     return points
 
 
