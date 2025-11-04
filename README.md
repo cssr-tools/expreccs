@@ -20,15 +20,15 @@ To install the _expreccs_ executable in an existing Python environment:
 pip install git+https://github.com/cssr-tools/expreccs.git
 ```
 
-If you are interested in a specific version (e.g., v2025.04) or in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
+If you are interested in a specific version (e.g., v2025.10) or in modifying the source code, then you can clone the repository and install the Python requirements in a virtual environment with the following commands:
 
 ```bash
 # Clone the repo
 git clone https://github.com/cssr-tools/expreccs.git
 # Get inside the folder
 cd expreccs
-# For a specific version (e.g., v2025.04), or skip this step (i.e., edge version)
-git checkout v2025.04
+# For a specific version (e.g., v2025.10), or skip this step (i.e., edge version)
+git checkout v2025.10
 # Create the virtual environment
 python3 -m venv vexpreccs
 # Activate the virtual environment
