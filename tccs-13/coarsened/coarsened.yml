@@ -3,6 +3,7 @@ controls:
     type: generic_control
     min: 1
     control_type: integer
+    perturbation_magnitude: 0.01 # Not used for scipy/differential_evolution, but requiered by everest
     variables:
       - name: i00
         max: 181
@@ -135,22 +136,24 @@ objective_functions:
   - name: func
 
 optimization:
-  backend: scipy
-  algorithm: differential_evolution
+  algorithm: scipy/differential_evolution
   max_function_evaluations: 1000000
-  backend_options:
-    seed: 18
+  min_realizations_success: 0
+  options:
+    rng: 18
   parallel: True
 
 install_jobs:
   - name: locations
-    source: jobs/LOCATIONS
+    executable: jobs/locations.py
 
 model:
   realizations: [0]
 
 simulator:
-  cores: 7
+  queue_system:
+    max_running: 7
+    name: local
 
 forward_model:
   - locations

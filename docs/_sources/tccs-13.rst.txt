@@ -4,7 +4,7 @@ TCCS-13
 
 Here we describe the steps to reproduce the results in:
 
-Landa-Marbán, D., Sandve, T.H., and Gasda, S.E. 2025. A Coarsening Approach to the Troll Aquifer Model. Submitted to SINTEF Proceedings. https://doi.org/10.13140/RG.2.2.24886.41283
+* Landa-Marbán, D., Sandve, T.H., and Gasda, S.E. 2025. A Coarsening Approach to the Troll Aquifer Model. Submitted to SINTEF Proceedings. https://doi.org/10.13140/RG.2.2.24886.41283
 
 To this end, the deck `ORIGINAL.DATA <https://github.com/cssr-tools/expreccs/blob/main/tccs-13/ORIGINAL.DATA>`_ has the 
 same dimensions and number of total cells (12,450,809) as the Troll aquifer model, and the rest of the properties are 
@@ -23,6 +23,13 @@ For the first figures, `plopm <https://github.com/cssr-tools/plopm.git>`_ and `p
     pip install git+https://github.com/cssr-tools/plopm.git
     pip install git+https://github.com/cssr-tools/pycopm.git
 
+To run the optimization, `Everest <https://github.com/equinor/everest-tutorials>`_ is needed,
+which is installed via `ert <https://github.com/equinor/ert>`_ when `pycopm <https://github.com/cssr-tools/pycopm>`_ is installed with the command above.
+
+.. note::
+
+    Python 3.14 was not supported for ert at the time this was written, then you need Python 3.12 or 3.13.
+
 The following commands generate Figures 1 and 2 (a few features such as the transmissibilities, wells, and sensor are added using PowerPoint) using 
 `FIG1.DATA <https://github.com/cssr-tools/expreccs/blob/main/tccs-13/methodology/FIG1.DATA>`_:
 
@@ -36,7 +43,7 @@ The following commands generate Figures 1 and 2 (a few features such as the tran
     plopm -i FIG1 -v poro -c '#bfebf2' -z 0 -grid 'black,1e0' -y '[5,-1]' -ylnum 5 -xlnum 7 -r 0 -remove 0,0,1,1 -d 24,16 -f 60 -save fig1
     plopm -i 'COARSENED_PERMS FIG1 COARSENED_TRANS' -v 'pressure - 0pressure' -subfigs 3,1 -r 1 -z 0 -delax 1 -y '[5,-1]' -cformat .0f -grid 'black,1e0' -cbsfax 0.1,0.95,0.8,0.02 -suptitle 0 -clabel 'Pressure increase [bar]' -cnum 5 -t 'Coarsened (permeabilities)  Before coarsening  Coarsened (transmissibilities)' -d 24,48 -f 80 -save fig2
 
-For Figs. 3b, 5, 6, and 8, 9, and 10:
+For Figs. 3b, 5, 6, and 8, 9, and 10 using ORIGINAL.DATA in the `expreccs/tccs-13/original <https://github.com/cssr-tools/expreccs/blob/main/tccs-13/original/>`_ folder:
 
 .. code-block:: bash
 
@@ -53,21 +60,13 @@ For Figs. 3b, 5, 6, and 8, 9, and 10:
     plopm -i 'ORIGINAL' -v 'imbnum' -s ',,1:217' -r 0 -translate '[-495000,-6.605e6]' -x '[0,95000]' -xunits km -xlnum 2 -y '[0,160000]' -yunits km -yformat .0f -ylnum 2 -xformat .0f -remove 0,0,1,1 -c '203;203;203' -save fig10a
     plopm -i 'ORIGINAL COARSENED' -v 'overpres' -s ',,1:217 ,,1:5' -translate '[-495000,-6.605e6]' -x '[0,95000]' -xunits km -xlnum 2 -y '[0,160000]' -yunits km -yformat .0f -ylnum 2 -xformat .0f -subfigs 1,2 -d 16,12 -cbsfax 0.1,0.95,0.8,0.02 -f 24 -cnum 5 -suptitle 0 -clabel 'Overpressure (p - p$_{lim}$) [bar], t=25 years' -delax 1 -remove 1,0,0,0 -t 'Troll aquifer model  Coarsened version' -b '[-126.7,-1.1]' -c cet_diverging_rainbow_bgymr_45_85_c67 -save fig10bc
 
-Figs. 4 and 7 are generated using `ResInsight <https://resinsight.org>`_. To run the optimization, `Everest <https://github.com/equinor/everest>`_ is needed. Since it has been merged to 
-`ERT <https://github.com/equinor/ert>`_, it seems there are some issues using it via ERT. Then, the walk around is to use the version before merging. One way to get this installed is to
-create a new virtual environment (to avoid version conflicts, tested with Python 3.13) and execute:
+Figs. 4 and 7 are generated using `ResInsight <https://resinsight.org>`_. 
+ 
+Using the coarsened files from pycopm, you could adapt the exisiting files in the `coarsened folder <https://github.com/cssr-tools/expreccs/blob/main/tccs-13/coarsened/>`_ to run the optimization:
 
 .. code-block:: bash
 
-    pip install ert==11.0.8
-    pip install git+https://github.com/equinor/everest.git
-    pip install mako
-
-Once installed, then you could adapt the coarsened generated files in the `coarsened folder <https://github.com/cssr-tools/expreccs/blob/main/tccs-13/coarsened/>`_ to run the optimization:
-
-.. code-block:: bash
-
-    everest run coarsened.yml
+    everest run coarsened.yml --skip-prompt
 
 .. note::
 
@@ -79,7 +78,7 @@ After the study, to generate Fig. 11, execute the `postprocessing.py file <https
 
     python3 postprocessing.py
 
-Finally, you can look at the improved well locations in the generated figures/optimal_solution folder, and take those locations in the ORGININAL.DATA deck 
+Finally, you can look at the improved well locations in the generated figures/optimal_solution folder, and take those locations into the ORGININAL.DATA deck 
 and save it as IMPROVED.DATA, similar to the coarsened version to COARSENED_IMPROVED.DATA, to generate Fig. 12:
 
 .. code-block:: bash
