@@ -8,6 +8,9 @@ on:
    
 jobs:
   run-expreccs-local:
+    permissions:
+      contents: read
+      pull-requests: write
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
