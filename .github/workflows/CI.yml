@@ -45,13 +45,14 @@ jobs:
         
     - name: Check code style and linting 
       run: |
-        black --target-version py312 --check src/ tests/ examples/
+        black --target-version py312 src/ tests/ examples/ --check
         pylint src/ tests/ examples/
+        ruff check src/ tests/ examples/
         mypy --ignore-missing-imports src/ tests/ examples/
       
     - name: Run the tests
       run: |
-        pytest --cov=expreccs --exitfirst --cov-report term-missing tests/
+        pytest --cov=expreccs --cov-report term-missing --basetemp=test_outputs --exitfirst tests/
         
     - name: Build documentation
       run: |

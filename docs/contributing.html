@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Contributing &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -96,7 +96,7 @@ documentation about collaborating with pull request; also, looking at previous m
 <h2>Ground Rules<a class="headerlink" href="#ground-rules" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>We use Black code formatting</p></li>
-<li><p>We use Pylint</p></li>
+<li><p>We use Pylint and Ruff code analysis tools</p></li>
 <li><p>We document our code</p></li>
 </ul>
 </section>
@@ -108,16 +108,17 @@ documentation about collaborating with pull request; also, looking at previous m
 <blockquote>
 <div><ol class="arabic simple">
 <li><p><strong>pip install -r dev-requirements.txt</strong> (this installs the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/dev-requirements.txt">dev-requirements.txt</a>)</p></li>
-<li><p><strong>black –target-version py312 src/ tests/</strong> (this formats the code)</p></li>
+<li><p><strong>black --target-version py312 src/ tests/</strong> (this formats the code)</p></li>
 <li><p><strong>pylint src/ tests/</strong> (this analyses the code, and might rise issues that need to be fixed before the pull request)</p></li>
+<li><p><strong>ruff check src/ tests/ convergence/</strong> (this also analyses the code, and might rise issues that need to be fixed before the pull request)</p></li>
 <li><p><strong>mypy --ignore-missing-imports src/ tests/</strong> (this is a static checker, and might rise issues that need to be fixed before the pull request)</p></li>
-<li><p><strong>pytest --cov=expreccs --cov-report term-missing tests/</strong> (this runs locally the tests, and might rise issues that need to be fixed before the pull request)</p></li>
+<li><p><strong>pytest --cov=expreccs --cov-report term-missing tests/ -n auto</strong> (this runs locally the tests, and might rise issues that need to be fixed before the pull request)</p></li>
 <li><p><strong>pushd docs &amp; make html</strong> (this generates the documentation, and might rise issues that need to be fixed before the pull request; if the build succeeds and if the contribution changes the documentation, then copy all content from the docs/_build/html/ folder and replace the files in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/tree/main/docs">docs</a> folder)</p></li>
 </ol>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>See the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml">CI.yml</a> script and the <a class="reference external" href="https://github.com/cssr-tools/expreccs/actions">Actions</a> for installation of expreccs, OPM Flow (binary packages), and dependencies, as well as the execution of the six previous steps in Ubuntu 24.04 using Python 3.12.
-For macOS users, see the <a class="reference external" href="https://github.com/daavid00/OPM-Flow_macOS/blob/main/.github/workflows/ci_pycopm_macos.yml">ci_pycopm_macos.yml</a> script and the <a class="reference external" href="https://github.com/cssr-tools/pycopm/actions">OPM-Flow_macOS Actions</a> for installation of pycopm (a related tool to expreccs), OPM Flow (source build), and dependencies in macOS 26 using Python 3.13.
+For macOS users, see the <a class="reference external" href="https://github.com/daavid00/OPM-Flow_macOS/blob/main/.github/workflows/ci_pycopm_macos.yml">ci_pycopm_macos.yml</a> script and the <a class="reference external" href="https://github.com/cssr-tools/pycopm/actions">OPM-Flow_macOS Actions</a> for installation of pycopm (a related tool to expreccs), OPM Flow (source build), and dependencies in macOS 26 using Python 3.14.
 In addition for macOS, you need to add the directory containing the OPM Flow executable to your system’s PATH environment variable (e.g., export PATH=$PATH:/Users/yourname/pyopmspe11/build/opm-simulators/bin).</p>
 </div>
 </div></blockquote>

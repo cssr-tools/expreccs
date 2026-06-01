@@ -10,6 +10,8 @@ import argparse
 import json
 import sys
 import os
+import subprocess
+from pathlib import Path
 import numpy as np
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import EGrid as OpmGrid
@@ -24,18 +26,16 @@ STRESSC = 0.134
 
 def delete():
     """Remove the files with the following extensions"""
-    for ext in [
-        "DATA",
-        "DBG",
-        "EGRID",
-        "PRT",
-        "SMSPEC",
-        "UNRST",
-        "UNSMRY",
-        "INC",
-        "INIT",
-    ]:
-        os.system(f"rm *.{ext}")
+    target_dir = Path(".")
+    extensions = [
+        "DATA", "DBG", "EGRID", "PRT", "SMSPEC",
+        "UNRST", "UNSMRY", "INC", "INIT",
+    ]
+    for ext in extensions:
+        for f in target_dir.glob(f"*.{ext}"):
+            if f.is_file():
+                f.unlink()
+
 
 
 def input_constraints(options):
@@ -103,7 +103,10 @@ def locations():
         encoding="utf8",
     ) as file:
         file.write(filledtemplate)
-    os.system(f"{config['flow']} {name}.DATA")
+    subprocess.run(
+        [config["flow"], f"{name}.DATA"],
+        check=True
+    )
 
     output_constraints(options, config, name)
 

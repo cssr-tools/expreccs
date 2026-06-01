@@ -1,37 +1,89 @@
 # SPDX-FileCopyrightText: 2025-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
-"""Test the expreccs functionality in a site and regional deck"""
+"""Test the expreccs functionality in a site/regional deck with nonregular boundaries"""
 
-import os
-import pathlib
+import shutil
+import subprocess
+from pathlib import Path
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
+from expreccs.core.expreccs import main
+
+EPS = 1e-3
+
+testpth = Path(__file__).parent
 
 
-def test_site_regional():
-    """See regional/ and site/"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    os.chdir(f"{testpth}/output")
-    os.system(f"cp -R {testpth}/site .")
-    os.system(f"cp -R {testpth}/regional .")
-    flow = "flow --relaxed-max-pv-fraction=0 "
+def test_4_site_regional(tmp_path, monkeypatch):
+    """Run site/regional workflow and check outputs."""
+    shutil.copytree(testpth / "site", tmp_path / "site")
+    shutil.copytree(testpth / "regional", tmp_path / "regional")
+
+    flow_relaxed = ["flow", "--relaxed-max-pv-fraction=0"]
+    flow = ["flow"]
+
     for name in ["site", "regional"]:
-        os.chdir(f"{testpth}/output/{name}")
-        os.system(f"{flow} {name.upper()}.DATA")
-    base = "expreccs -i 'regional/REGIONAL site/SITE' -o expreccs"
-    for name, flag, nlines in zip(
-        ["", "_dpincrease", "_perfipnum"], ["", " -e 0", " -z 1"], [65, 65, 35]
-    ):
-        os.chdir(f"{testpth}/output")
-        os.system(f"{base}{name}{flag}")
-        os.chdir(f"{testpth}/output/expreccs{name}")
-        os.system(f"{flow} EXPRECCS{name.upper()}.DATA")
-        assert os.path.exists(
-            f"{testpth}/output/expreccs{name}/EXPRECCS{name.upper()}.UNRST"
+        subprocess.run(
+            flow_relaxed + [f"{name.upper()}.DATA"],
+            cwd=tmp_path / name,
+            check=True,
         )
+
+    monkeypatch.chdir(tmp_path)
+
+    base_cmd = ["-i", "regional/REGIONAL site/SITE"]
+
+    for name, flag, nlines, pressure in zip(
+        ["", "_dpincrease", "_perfipnum"],
+        [[], ["-e", "0"], ["-z", "1"]],
+        [65, 65, 35],
+        [367.6365236622162, 367.63575533221535, 365.74737548828125],
+    ):
+        outname = f"expreccs{name}"
+
+        main(base_cmd + ["-o", outname] + flag)
+
+        exdir = tmp_path / outname
+
+        subprocess.run(
+            flow_relaxed + [f"{outname.upper()}.DATA"],
+            cwd=exdir,
+            check=True,
+        )
+
+        assert (exdir / f"{outname.upper()}.UNRST").exists()
+
+        with open(exdir / "bc" / "BCPROP6.INC", encoding="utf8") as f:
+            lines = f.readlines()
+        assert len(lines) == nlines
+        assert abs(float(lines[-2].split(" ")[-2]) - pressure) < EPS
+
+    for i, (name, flag, nlines, pressure) in enumerate(
+        zip(
+            ["_zones", "_frequency"],
+            [["-z", "1"], ["-f", "2"]],
+            [29, 53],
+            [365.74737548828125, 367.6366322835287],
+        )
+    ):
+        outname = f"expreccs{name}"
+
+        main(base_cmd + ["-n", "1", "-o", outname] + flag)
+
+        exdir = tmp_path / outname
+
+        subprocess.run(
+            flow + [f"{outname.upper()}.DATA"],
+            cwd=exdir,
+            check=True,
+        )
+
+        assert (exdir / f"{outname.upper()}.UNRST").exists()
+
         with open(
-            f"{testpth}/output/expreccs{name}/bc/BCPROP6.INC", "r", encoding="utf8"
-        ) as file:
-            assert len(file.readlines()) == nlines
+            exdir / "bc" / f"BCPROP{6 * (i + 1)}.INC",
+            encoding="utf8",
+        ) as f:
+            lines = f.readlines()
+        assert len(lines) == nlines
+        assert abs(float(lines[-2].split(" ")[-2]) - pressure) < EPS

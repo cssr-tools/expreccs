@@ -2,13 +2,14 @@
 # SPDX-FileCopyrightText: 2025-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
-"""
-Script to postprocess everest optimization (differential_evolution) studies.
-"""
+"""Script to postprocess everest optimization (differential_evolution) studies"""
 
 import argparse
 import json
 import os
+import shutil
+import subprocess
+from pathlib import Path
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -39,8 +40,7 @@ def postprocessing():
         dic = {**json.load(f), **dic}
 
     # Make the figures folder
-    if not os.path.exists(f"{dic['folder']}/figures"):
-        os.system(f"mkdir {dic['folder']}/figures")
+    (Path(dic['folder']) / "figures").mkdir(parents=True, exist_ok=True)
 
     dic["ind_batch"], dic["ind_sim"] = [0, 0], [0, 0]
     for i in range(4):
@@ -89,17 +89,23 @@ def process_optimization_results(dic):
 
 def find_optimal(dic):
     """Find the well locations and folder for the 'optimal' obtained solution"""
-    
+    base = Path(dic["folder"])
     for i, name in enumerate(["initial_guess", "optimal_solution"]):
-        if not os.path.exists(f"{dic['folder']}/figures/{name}"):
-            os.system(f"mkdir {dic['folder']}/figures/{name}")
-        os.chdir(f"{dic['folder']}/figures/{name}")
-        os.system(
-            f"cp {dic['folder']}/everest_output/sim_output/"
-            + f"batch_{dic['ind_batch'][i]}/realization_0/evaluation_"
-            + f"{dic['ind_sim'][i]}/point_0.json ."
+        target = base / "figures" / name
+        target.mkdir(parents=True, exist_ok=True)
+        shutil.copy(
+            base / "everest_output" / "sim_output"
+            / f"batch_{dic['ind_batch'][i]}"
+            / "realization_0"
+            / f"evaluation_{dic['ind_sim'][i]}"
+            / "point_0.json",
+            target,
         )
-        os.system(f"python3 {dic['folder']}/jobs/locations.py --mode post")
+        subprocess.run(
+            ["python3", base / "jobs" / "locations.py", "--mode", "post"],
+            cwd=target,
+            check=True,
+        )
 
 
 def plot_optimization_details(dic):

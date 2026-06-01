@@ -3,39 +3,94 @@
 
 """Test the expreccs functionality to rotate grids and to handle generic 2D decks"""
 
-import os
-import pathlib
+import shutil
+import subprocess
+from pathlib import Path
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
+testpth = Path(__file__).parent
 
 
-def test_generic_deck_2d():
-    """See configs/rotate_2d.toml"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    os.chdir(f"{testpth}/output")
-    os.system(
-        f"expreccs -i {testpth}/configs/rotate_2d.toml -o rotate_2d -m all -t 30 -p site"
+def test_1_generic_deck_2d(tmp_path, monkeypatch):
+    """Run rotate_2d and check outputs."""
+    monkeypatch.chdir(tmp_path)
+
+    subprocess.run(
+        [
+            "expreccs",
+            "-i",
+            str(testpth / "configs" / "rotate_2d.toml"),
+            "-o",
+            "rotate_2d",
+            "-m",
+            "all",
+            "-t",
+            "30",
+            "-p",
+            "site",
+        ],
+        check=True,
     )
-    assert os.path.exists(
-        f"{testpth}/output/rotate_2d/postprocessing/rotate_2d_site_closed_pressure.png"
+
+    base = tmp_path / "rotate_2d"
+
+    assert (base / "postprocessing" / "rotate_2d_site_closed_pressure.png").exists()
+
+    shutil.copytree(
+        base / "preprocessing" / "regional",
+        base / "simulations" / "regional",
+        dirs_exist_ok=True,
     )
-    os.system(
-        f"scp -r {testpth}/output/rotate_2d/preprocessing/regional/. "
-        f"{testpth}/output/rotate_2d/simulations/regional"
+    shutil.copytree(
+        base / "preprocessing" / "site_closed",
+        base / "simulations" / "site_closed",
+        dirs_exist_ok=True,
     )
-    os.system(
-        f"scp -r {testpth}/output/rotate_2d/preprocessing/site_closed/. "
-        f"{testpth}/output/rotate_2d/simulations/site_closed"
+
+    simdir = base / "simulations"
+    monkeypatch.chdir(simdir)
+
+    subprocess.run(
+        [
+            "expreccs",
+            "-o",
+            "expreccs",
+            "-i",
+            "regional/REGIONAL site_closed/SITE_CLOSED",
+            "-f",
+            "3",
+            "-a",
+            "3.2",
+        ],
+        check=True,
     )
-    os.chdir(f"{testpth}/output/rotate_2d/simulations")
-    os.system(
-        "expreccs -o expreccs -i 'regional/REGIONAL site_closed/SITE_CLOSED' "
-        "-f 3 -a 3.2"
+
+    exdir = simdir / "expreccs"
+
+    name = exdir / "EXPRECCS.DATA"
+    with open(name, "r", encoding="utf8") as f:
+        lines = f.readlines()
+    content = "".join(lines)
+    assert "BCCON" in content
+    assert "INCLUDE\n'bc/BCPROP270.INC' /" in content
+
+    name = exdir / "BCCON.INC"
+    with open(name, "r", encoding="utf8") as f:
+        lines = f.readlines()
+    content = "".join(lines)
+    assert "BCCON" in content
+    assert "69 1 1 1 1 1 1 'I-' /\n/" in content
+
+    name = exdir / "bc" / "BCPROP270.INC"
+    with open(name, "r", encoding="utf8") as f:
+        lines = f.readlines()
+    content = "".join(lines)
+    assert "100 DIRICHLET WATER 1*" in content
+
+    monkeypatch.chdir(exdir)
+
+    subprocess.run(
+        ["flow", "EXPRECCS.DATA", "--enable-tuning=true"],
+        check=True,
     )
-    assert os.path.exists(f"{testpth}/output/rotate_2d/simulations/expreccs/BCCON.INC")
-    os.chdir(f"{testpth}/output/rotate_2d/simulations/expreccs")
-    os.system("flow EXPRECCS.DATA --enable-tuning=true")
-    assert os.path.exists(
-        f"{testpth}/output/rotate_2d/simulations/expreccs/EXPRECCS.UNRST"
-    )
+
+    assert (exdir / "EXPRECCS.UNRST").exists()

@@ -134,7 +134,7 @@ not by pressure values. If you run that test, then using plopm:
 
 .. figure:: figs/regional_rpr3.png
     
-    Comparison of the different functionality to mapp the dynamic boundary conditions. Here, rpr:3 (fipnum equal to 3) corresponds to the top part of the sandwich (three layers with the middel layer inactive) 
+    Comparison of the different functionality to map the dynamic boundary conditions. Here, rpr:3 (fipnum equal to 3) corresponds to the top part of the sandwich (three layers with the middel layer inactive) 
     in the regional model, while to the bottom part in the site model.
 
 Non-regular boundaries

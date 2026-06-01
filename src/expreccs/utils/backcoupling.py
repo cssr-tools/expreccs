@@ -1,34 +1,24 @@
 # SPDX-FileCopyrightText: 2023-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
+# pylint: disable=R1702
 
-"""
-Utiliy functions to back-couple from site to regional model used by expreccs.
-"""
+"""Utiliy functions to back-couple from site to regional model"""
 
 import os
 import numpy as np
 
-from expreccs.visualization.reading import reading_simulations
+from expreccs.visualization.reading import read_fluxes, read_mask
 from expreccs.utils.runs import simulations
 from expreccs.utils.writefile import write_files
 
 
 def backcoupling(dic):
-    """
-    Function to update regional model based on the
+    """Function to update regional model based on the
     site model. A multiplier that compensate for the
     difference in fluxes are computed
     MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
     and added to the regional model. This is done
-    iterativly for number of iterations given in the input
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    iterativly for number of iterations given in the input"""
     for iteration in range(1, int(dic["iterations"])):
         fil = ""
         if iteration > 1:
@@ -56,34 +46,17 @@ def backcoupling(dic):
 
 
 def write_folder_iter(dic, fil):
-    """
-    Write folders for the _{iteration} models
-
-    Args:
-        dic (dict): Global dictionary\n
-        fil (str): Name of the geological model
-
-    Returns:
-        None
-
-    """
-    if not os.path.exists(f"{dic['fol']}/preprocessing/{fil}"):
-        os.system(f"mkdir {dic['fol']}/preprocessing/{fil}")
-    if not os.path.exists(f"{dic['fol']}/simulations/{fil}"):
-        os.system(f"mkdir {dic['fol']}/simulations/{fil}")
+    """Write folders for the _{iteration} models"""
+    path_pre = f"{dic['fol']}/preprocessing/{fil}"
+    path_sim = f"{dic['fol']}/simulations/{fil}"
+    if not os.path.exists(path_pre):
+        os.makedirs(path_pre, exist_ok=True)
+    if not os.path.exists(path_sim):
+        os.makedirs(path_sim, exist_ok=True)
 
 
 def init_multipliers(dic):
-    """
-    Function initialize input for regional multipliers
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Initialize input for regional multipliers"""
     numcells = (
         dic["regional_num_cells"][0]
         * dic["regional_num_cells"][1]
@@ -94,152 +67,88 @@ def init_multipliers(dic):
 
 
 def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0915
-    """
-    Function to compute multiplier that compensate for the
-    difference in fluxes
-    MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
-    and added to the regional model
-
-    Args:
-        dic (dict): Global dictionary\n
-        iteration (int): Current iteration number
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Compute multiplier that compensate for the difference in fluxes"""
     dic["folders"] = [dic["fol"]]
-    dic["rhog_ref"] = 1.86843  # CO2 reference density
-    dic["sat_thr"] = 1e-2  # Threshold for the gas saturation
+    dic["rhog_ref"], dic["sat_thr"] = 1.86843, 1e-2
+    dic["quantity"] = ["FLOWATI+", "FLOWATJ+", "FLOWATI-", "FLOWATJ-"]
 
-    dic["quantity"] = [
-        "FLOWATI+",
-        "FLOWATJ+",
-        "FLOWATI-",
-        "FLOWATJ-",
-    ]
-
-    reading_simulations(dic, False)
-
-    # Check for refinement
-    numx = (int)(dic["site_num_cells"][0])
-    numy = (int)(dic["site_num_cells"][1])
-    numz = (int)(dic["site_num_cells"][2])
-    dx = (int)(dic["reference_num_cells"][0] / dic["regional_num_cells"][0])
-    dy = (int)(dic["reference_num_cells"][1] / dic["regional_num_cells"][1])
-    dz = (int)(dic["reference_num_cells"][2] / dic["regional_num_cells"][2])
-    # We dont support refinement in z
+    numx, numy, numz = (
+        int(dic["site_num_cells"][0]),
+        int(dic["site_num_cells"][1]),
+        int(dic["site_num_cells"][2]),
+    )
+    dx = int(dic["reference_num_cells"][0] / dic["regional_num_cells"][0])
+    dy = int(dic["reference_num_cells"][1] / dic["regional_num_cells"][1])
+    dz = int(dic["reference_num_cells"][2] / dic["regional_num_cells"][2])
     assert dz == 1
     refine = dx > 1 or dy > 1
-    nx_reg = (int)(numx / dx)
-    ny_reg = (int)(numy / dy)
-    nz_reg = (int)(numz / dz)
-
-    # pylint: disable=R1702
+    nx_reg, ny_reg, nz_reg = int(numx / dx), int(numy / dy), int(numz / dz)
+    stride_xy = numx * numy
+    res = "site_" + dic["site_bctype"][0]
     for fol in dic["folders"]:
-        for res in dic[f"{fol}_sites"]:
-            if "site_porvproj" in res or "site_pres" in res:
-                for j, quantity in enumerate(dic["quantity"]):
-                    if "FLOWAT" in quantity:
-                        regional_fluxes = 0.0
-                        local_fluxes = 0.0
-                        for k, b in enumerate(dic[f"{fol}/{res}_{quantity}_array"]):
-                            a = dic[f"{fol}/regional{iteration}_{quantity}_array"][k][
-                                dic[f"{fol}/regional_fipn"] == 1
-                            ]
-                            regional_fluxes += a
-                            local_fluxes += b
+        if dic["site_bctype"][0] in ["porvproj", "pres"]:
+            case = f"{fol}/simulations/regional{iteration}/REGIONAL{iteration}"
+            rqs = read_fluxes(case)
+            case = f"{fol}/simulations/{res}/{res.upper()}"
+            lqs = read_fluxes(case)
+            case = f"{fol}/simulations/regional/REGIONAL"
+            mask = read_mask(case)
+            for quantity, regional_arr, local_arr in zip(dic["quantity"], rqs, lqs):
 
-                        regional_fluxes = np.abs(regional_fluxes)
-                        local_fluxes = np.abs(local_fluxes)
+                regional_fluxes = sum(
+                    regional_arr[k][mask] for k in range(len(local_arr))
+                )
+                local_fluxes = sum(local_arr[k] for k in range(len(local_arr)))
 
-                        if not refine:
-                            sum_local_fluxes = local_fluxes
-                        else:
-                            sum_local_fluxes = 0 * regional_fluxes
-                            for k_reg in range(nz_reg):
-                                for j_reg in range(ny_reg):
-                                    for i_reg in range(nx_reg):
-                                        ind = (
-                                            i_reg
-                                            + j_reg * nx_reg
-                                            + k_reg * nx_reg * ny_reg
-                                        )
-                                        if quantity == "FLOWATI+":
-                                            for j in range(dy):
-                                                # for k in range(dz):
-                                                ind_loc = (
-                                                    i_reg * dx
-                                                    + (j_reg * dy + j) * numx
-                                                    + k_reg * dz * numx * numy
-                                                    + dx
-                                                    - 1
-                                                )
-                                                sum_local_fluxes[ind] += local_fluxes[
-                                                    ind_loc
-                                                ]
-                                        elif quantity == "FLOWATI-":
-                                            for j in range(dy):
-                                                # for k in range(dz):
-                                                ind_loc = (
-                                                    i_reg * dx
-                                                    + (j_reg * dy + j) * numx
-                                                    + k_reg * dz * numx * numy
-                                                )
-                                                sum_local_fluxes[ind] += local_fluxes[
-                                                    ind_loc
-                                                ]
-                                        elif quantity == "FLOWATJ+":
-                                            for i in range(dx):
-                                                # for k in range(dz):
-                                                ind_loc = (
-                                                    i_reg * dx
-                                                    + j_reg * dy * numx
-                                                    + k_reg * dz * numx * numy
-                                                    + (dy - 1) * numx
-                                                    + i
-                                                )
-                                                sum_local_fluxes[ind] += local_fluxes[
-                                                    ind_loc
-                                                ]
-                                        elif quantity == "FLOWATJ-":
-                                            for i in range(dx):
-                                                # for k in range(dz):
-                                                ind_loc = (
-                                                    i_reg * dx
-                                                    + j_reg * dy * numx
-                                                    + k_reg * dz * numx * numy
-                                                    + i
-                                                )
-                                                sum_local_fluxes[ind] += local_fluxes[
-                                                    ind_loc
-                                                ]
+                regional_fluxes, local_fluxes = np.abs(regional_fluxes), np.abs(
+                    local_fluxes
+                )
 
-                        # compute multipliers
-                        mult = sum_local_fluxes / regional_fluxes
-                        mult[np.isinf(mult)] = 1
-                        mult[np.isnan(mult)] = 1
+                if not refine:
+                    sum_local_fluxes = local_fluxes
+                else:
+                    sum_local_fluxes = np.zeros_like(regional_fluxes)
 
-                        # use 1 on the boundary
-                        if quantity == "FLOWATI-":
-                            for i in range(1, nx_reg):
-                                for j in range(0, ny_reg):
-                                    mult[i + j * nx_reg] = 1
-                        elif quantity == "FLOWATJ-":
-                            for i in range(0, nx_reg):
-                                for j in range(1, ny_reg):
-                                    mult[i + j * nx_reg] = 1
-                        ll = 0
+                    for k_reg in range(nz_reg):
+                        base_k = k_reg * stride_xy * dz
 
-                        direction = "x"
-                        if quantity == "FLOWATJ+":
-                            direction = "y"
-                        elif quantity == "FLOWATI-":
-                            direction = "x-"
-                        elif quantity == "FLOWATJ-":
-                            direction = "y-"
+                        for j_reg in range(ny_reg):
+                            row_base = base_k + j_reg * dy * numx
 
-                        for l, inside in enumerate(dic[f"{fol}/regional_fipn"] == 1):
-                            if inside:
-                                dic["regional_mult" + direction][l] = mult[ll]
-                                ll += 1
+                            for i_reg in range(nx_reg):
+                                ind = i_reg + j_reg * nx_reg + k_reg * nx_reg * ny_reg
+                                col_base = row_base + i_reg * dx
+
+                                if quantity == "FLOWATI+":
+                                    idxs = col_base + (np.arange(dy) * numx) + (dx - 1)
+                                elif quantity == "FLOWATI-":
+                                    idxs = col_base + (np.arange(dy) * numx)
+                                elif quantity == "FLOWATJ+":
+                                    idxs = col_base + (dy - 1) * numx + np.arange(dx)
+                                else:
+                                    idxs = col_base + np.arange(dx)
+
+                                sum_local_fluxes[ind] = np.sum(local_fluxes[idxs])
+
+                mult = sum_local_fluxes / regional_fluxes
+                mult[np.isinf(mult)] = 1
+                mult[np.isnan(mult)] = 1
+
+                if quantity == "FLOWATI-":
+                    mult.reshape(ny_reg, nx_reg)[:, 1:] = 1
+                elif quantity == "FLOWATJ-":
+                    mult.reshape(ny_reg, nx_reg)[1:, :] = 1
+
+                direction = "x"
+                if quantity == "FLOWATJ+":
+                    direction = "y"
+                elif quantity == "FLOWATI-":
+                    direction = "x-"
+                elif quantity == "FLOWATJ-":
+                    direction = "y-"
+
+                ll = 0
+                for o, inside in enumerate(mask):
+                    if inside:
+                        dic["regional_mult" + direction][o] = mult[ll]
+                        ll += 1

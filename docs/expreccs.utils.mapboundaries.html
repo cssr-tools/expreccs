@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>expreccs.utils.mapboundaries module &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -90,99 +90,55 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.aquaflux">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">aquaflux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.aquaflux" title="Link to this definition"></a></dt>
-<dd><p>Function to read the fluxes and pressures from the regional</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Read the fluxes and pressures from the regional</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.utils.mapboundaries.cache_grid_coordinates">
+<span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">cache_grid_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.cache_grid_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Precompute xyz centers only for needed indices</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.handle_pressure_correction">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">handle_pressure_correction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.handle_pressure_correction" title="Link to this definition"></a></dt>
 <dd><p>Correct for the REG pres to the SITE on the z dir if refinement</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.handle_stencil">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">handle_stencil</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.handle_stencil" title="Link to this definition"></a></dt>
-<dd><p>Function to project the cell pressures to the cell faces</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>i (int): Counter for the time in the schedule</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Project the cell pressures to the cell faces</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.handle_stencil_2p">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">handle_stencil_2p</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.handle_stencil_2p" title="Link to this definition"></a></dt>
-<dd><p>Function to project the cell pressures to the cell faces</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>i (int): Counter for the time in the schedule</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Project the cell pressures to the cell faces</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.porv_projections">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">porv_projections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.porv_projections" title="Link to this definition"></a></dt>
-<dd><p>Function to project the pore volumes from the regional to the site.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Project the pore volumes from the regional to the site</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.porv_regional_segmentation">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">porv_regional_segmentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.porv_regional_segmentation" title="Link to this definition"></a></dt>
-<dd><p>Function to locate the different sides for the pv projections</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Locate the different sides for the pv projections</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.temporal_interpolation_flux">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">temporal_interpolation_flux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.temporal_interpolation_flux" title="Link to this definition"></a></dt>
-<dd><p>Function to interpolate the BC fluxes values in time</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Interpolate the BC fluxes values in time</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.mapboundaries.temporal_interpolation_pressure">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.mapboundaries.</span></span><span class="sig-name descname"><span class="pre">temporal_interpolation_pressure</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.mapboundaries.temporal_interpolation_pressure" title="Link to this definition"></a></dt>
-<dd><p>Function to interpolate the BC pressure values in time</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Interpolate the BC pressure values in time</p>
 </dd></dl>
 
 </section>

@@ -3,19 +3,30 @@
 
 """Test the expreccs functionality for back-coupling"""
 
-import os
-import pathlib
+import subprocess
+from pathlib import Path
 
-testpth: pathlib.Path = pathlib.Path(__file__).parent
+testpth = Path(__file__).parent
 
 
-def test_back_coupling():
-    """See configs/back-coupling.toml"""
-    if not os.path.exists(f"{testpth}/output"):
-        os.system(f"mkdir {testpth}/output")
-    os.system(
-        f"expreccs -i {testpth}/configs/back-coupling.toml -o {testpth}/output/back -p yes"
+def test_3_back_coupling(tmp_path):
+    """Run back-coupling and check output."""
+    subprocess.run(
+        [
+            "expreccs",
+            "-i",
+            str(testpth / "configs" / "back-coupling.toml"),
+            "-o",
+            str(tmp_path / "back"),
+            "-p",
+            "all",
+        ],
+        check=True,
     )
-    assert os.path.exists(
-        f"{testpth}/output/back/postprocessing/back_difference_site_porvproj_watfluxi+.png"
-    )
+
+    assert (
+        tmp_path
+        / "back"
+        / "postprocessing"
+        / "back_difference_site_porvproj_watfluxi+.png"
+    ).exists()

@@ -1,9 +1,7 @@
 # SPDX-FileCopyrightText: 2023-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 
-"""
-Utiliy functions to set the requiried input values by expreccs.
-"""
+"""Utiliy functions to set the requiried input values by expreccs"""
 
 import sys
 import tomllib
@@ -12,22 +10,14 @@ import numpy as np
 
 
 def process_input(dic, in_file):
-    """
-    Function to process the configuration file
-
-    Args:
-        dic (dict): Global dictionary\n
-        in_file (str): Name of the input toml file
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    dic["hysteresis"] = False
-    dic["salinity"] = 0.0
-    dic["rock_comp"] = 0.0
-    dic["iterations"] = 0
-    dic["z_xy"] = 0.0
+    """Process the configuration file"""
+    (
+        dic["hysteresis"],
+        dic["salinity"],
+        dic["rock_comp"],
+        dic["iterations"],
+        dic["z_xy"],
+    ) = (False, 0.0, 0.0, 0, 0.0)
     with open(in_file, "rb") as file:
         dic.update(tomllib.load(file))
     check_entries(dic)
@@ -46,22 +36,12 @@ def process_input(dic, in_file):
 
 
 def process_tuning(dic):
-    """
-    Preprocess tuning
-
-    Args:
-        dic (dict): Global dictionary with required parameters
-
-    Returns:
-        dic (dict): Global dictionary with new added parameters
-
-    """
+    """Preprocess tuning"""
     dic["tuning"] = False
     for value in dic["flow"].split():
-        if "--enable-tuning" in value:
-            if value[16:] in ["true", "True", "1"]:
-                dic["tuning"] = True
-                break
+        if "--enable-tuning" in value and value[16:] in ["true", "True", "1"]:
+            dic["tuning"] = True
+            break
     if len(dic["inj"][0][0]) == 4:
         print(
             "\nAfter the 2025.04 release, column 4 in the first entry for the maximum "
@@ -83,27 +63,15 @@ def process_tuning(dic):
 
 
 def check_entries(dic):
-    """
-    Check the entries from the toml configuration file
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        None
-
-    """
+    """Check the entries from the toml configuration file"""
     if (
         subprocess.call(
-            dic["flow"],
-            shell=True,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.STDOUT,
+            dic["flow"], shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
         )
         != 1
     ):
         print(
-            f"\nThe executable 'flow = {dic['flow']}' is not found, "
-            f"see the information about installation in the documentation.\n"
+            f"\nThe executable 'flow = {dic['flow']}' is not found, see the information about "
+            "installation in the documentation.\n"
         )
         sys.exit()
