@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>expreccs.utils.backcoupling module &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -86,7 +86,7 @@
              
   <section id="module-expreccs.utils.backcoupling">
 <span id="expreccs-utils-backcoupling-module"></span><h1>expreccs.utils.backcoupling module<a class="headerlink" href="#module-expreccs.utils.backcoupling" title="Link to this heading"></a></h1>
-<p>Utiliy functions to back-couple from site to regional model used by expreccs.</p>
+<p>Utiliy functions to back-couple from site to regional model</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.backcoupling.backcoupling">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">backcoupling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.backcoupling" title="Link to this definition"></a></dt>
@@ -96,53 +96,24 @@ difference in fluxes are computed
 MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
 and added to the regional model. This is done
 iterativly for number of iterations given in the input</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.backcoupling.compute_multipliers">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">compute_multipliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iteration</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.compute_multipliers" title="Link to this definition"></a></dt>
-<dd><p>Function to compute multiplier that compensate for the
-difference in fluxes
-MULT[-X, X, -Y , Y] = Flux_site / Flux_regional
-and added to the regional model</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>iteration (int): Current iteration number</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Compute multiplier that compensate for the difference in fluxes</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.backcoupling.init_multipliers">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">init_multipliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.init_multipliers" title="Link to this definition"></a></dt>
-<dd><p>Function initialize input for regional multipliers</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Initialize input for regional multipliers</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.utils.backcoupling.write_folder_iter">
 <span class="sig-prename descclassname"><span class="pre">expreccs.utils.backcoupling.</span></span><span class="sig-name descname"><span class="pre">write_folder_iter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fil</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.utils.backcoupling.write_folder_iter" title="Link to this definition"></a></dt>
 <dd><p>Write folders for the _{iteration} models</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>fil (str): Name of the geological model</p>
-</dd>
-<dt>Returns:</dt><dd><p>None</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>

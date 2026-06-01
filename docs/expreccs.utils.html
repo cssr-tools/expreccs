@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>expreccs.utils package &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -104,6 +104,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.mapboundaries.html">expreccs.utils.mapboundaries module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.aquaflux"><code class="docutils literal notranslate"><span class="pre">aquaflux()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.cache_grid_coordinates"><code class="docutils literal notranslate"><span class="pre">cache_grid_coordinates()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_pressure_correction"><code class="docutils literal notranslate"><span class="pre">handle_pressure_correction()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_stencil"><code class="docutils literal notranslate"><span class="pre">handle_stencil()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.mapboundaries.html#expreccs.utils.mapboundaries.handle_stencil_2p"><code class="docutils literal notranslate"><span class="pre">handle_stencil_2p()</span></code></a></li>
@@ -123,10 +124,123 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html">expreccs.utils.reg_sit_given_decks module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.check_intersection"><code class="docutils literal notranslate"><span class="pre">check_intersection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon"><code class="docutils literal notranslate"><span class="pre">BCCon</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon.coords"><code class="docutils literal notranslate"><span class="pre">BCCon.coords</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon.ksfips"><code class="docutils literal notranslate"><span class="pre">BCCon.ksfips</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon.sbound"><code class="docutils literal notranslate"><span class="pre">BCCon.sbound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon.sopn"><code class="docutils literal notranslate"><span class="pre">BCCon.sopn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon.spres"><code class="docutils literal notranslate"><span class="pre">BCCon.spres</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.BCCon.stmin"><code class="docutils literal notranslate"><span class="pre">BCCon.stmin</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders"><code class="docutils literal notranslate"><span class="pre">Borders</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.sai"><code class="docutils literal notranslate"><span class="pre">Borders.sai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.sbound"><code class="docutils literal notranslate"><span class="pre">Borders.sbound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.sf"><code class="docutils literal notranslate"><span class="pre">Borders.sf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.st"><code class="docutils literal notranslate"><span class="pre">Borders.st</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.sx"><code class="docutils literal notranslate"><span class="pre">Borders.sx</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.sy"><code class="docutils literal notranslate"><span class="pre">Borders.sy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Borders.sz"><code class="docutils literal notranslate"><span class="pre">Borders.sz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config"><code class="docutils literal notranslate"><span class="pre">Config</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.acoeff"><code class="docutils literal notranslate"><span class="pre">Config.acoeff</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.boundaries"><code class="docutils literal notranslate"><span class="pre">Config.boundaries</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.explicit"><code class="docutils literal notranslate"><span class="pre">Config.explicit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.fol"><code class="docutils literal notranslate"><span class="pre">Config.fol</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.freq"><code class="docutils literal notranslate"><span class="pre">Config.freq</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.fsit"><code class="docutils literal notranslate"><span class="pre">Config.fsit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.nonregular"><code class="docutils literal notranslate"><span class="pre">Config.nonregular</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Config.zones"><code class="docutils literal notranslate"><span class="pre">Config.zones</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData"><code class="docutils literal notranslate"><span class="pre">InterpData</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.rf"><code class="docutils literal notranslate"><span class="pre">InterpData.rf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.ri"><code class="docutils literal notranslate"><span class="pre">InterpData.ri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.rk"><code class="docutils literal notranslate"><span class="pre">InterpData.rk</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.rkg"><code class="docutils literal notranslate"><span class="pre">InterpData.rkg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.rt"><code class="docutils literal notranslate"><span class="pre">InterpData.rt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.rx"><code class="docutils literal notranslate"><span class="pre">InterpData.rx</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.ry"><code class="docutils literal notranslate"><span class="pre">InterpData.ry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.rz"><code class="docutils literal notranslate"><span class="pre">InterpData.rz</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.sai"><code class="docutils literal notranslate"><span class="pre">InterpData.sai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.sf"><code class="docutils literal notranslate"><span class="pre">InterpData.sf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.snum"><code class="docutils literal notranslate"><span class="pre">InterpData.snum</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.st"><code class="docutils literal notranslate"><span class="pre">InterpData.st</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.sx"><code class="docutils literal notranslate"><span class="pre">InterpData.sx</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.sy"><code class="docutils literal notranslate"><span class="pre">InterpData.sy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.InterpData.sz"><code class="docutils literal notranslate"><span class="pre">InterpData.sz</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional"><code class="docutils literal notranslate"><span class="pre">Regional</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional.act"><code class="docutils literal notranslate"><span class="pre">Regional.act</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional.grid"><code class="docutils literal notranslate"><span class="pre">Regional.grid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional.init"><code class="docutils literal notranslate"><span class="pre">Regional.init</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional.rdays"><code class="docutils literal notranslate"><span class="pre">Regional.rdays</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional.rfip"><code class="docutils literal notranslate"><span class="pre">Regional.rfip</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Regional.rst"><code class="docutils literal notranslate"><span class="pre">Regional.rst</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells"><code class="docutils literal notranslate"><span class="pre">RegionalCells</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.rf"><code class="docutils literal notranslate"><span class="pre">RegionalCells.rf</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.ri"><code class="docutils literal notranslate"><span class="pre">RegionalCells.ri</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.rk"><code class="docutils literal notranslate"><span class="pre">RegionalCells.rk</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.rkg"><code class="docutils literal notranslate"><span class="pre">RegionalCells.rkg</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.rt"><code class="docutils literal notranslate"><span class="pre">RegionalCells.rt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.rx"><code class="docutils literal notranslate"><span class="pre">RegionalCells.rx</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.ry"><code class="docutils literal notranslate"><span class="pre">RegionalCells.ry</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.rz"><code class="docutils literal notranslate"><span class="pre">RegionalCells.rz</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.RegionalCells.sbound"><code class="docutils literal notranslate"><span class="pre">RegionalCells.sbound</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Site"><code class="docutils literal notranslate"><span class="pre">Site</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Site.grid"><code class="docutils literal notranslate"><span class="pre">Site.grid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Site.init"><code class="docutils literal notranslate"><span class="pre">Site.init</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Site.rst"><code class="docutils literal notranslate"><span class="pre">Site.rst</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Site.sdata"><code class="docutils literal notranslate"><span class="pre">Site.sdata</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.Site.sfip"><code class="docutils literal notranslate"><span class="pre">Site.sfip</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders"><code class="docutils literal notranslate"><span class="pre">SiteBorders</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sai"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sbound"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sbound</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sfe"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sfe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sfn"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sfn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sfs"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sfs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sfw"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sfw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.spres"><code class="docutils literal notranslate"><span class="pre">SiteBorders.spres</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.ste"><code class="docutils literal notranslate"><span class="pre">SiteBorders.ste</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.stn"><code class="docutils literal notranslate"><span class="pre">SiteBorders.stn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sts"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sts</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.stw"><code class="docutils literal notranslate"><span class="pre">SiteBorders.stw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sxe"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sxe</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sxn"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sxn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sxs"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sxs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sxw"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sxw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sye"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sye</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.syl"><code class="docutils literal notranslate"><span class="pre">SiteBorders.syl</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.syn"><code class="docutils literal notranslate"><span class="pre">SiteBorders.syn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.syw"><code class="docutils literal notranslate"><span class="pre">SiteBorders.syw</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.sze"><code class="docutils literal notranslate"><span class="pre">SiteBorders.sze</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.szn"><code class="docutils literal notranslate"><span class="pre">SiteBorders.szn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.szs"><code class="docutils literal notranslate"><span class="pre">SiteBorders.szs</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.SiteBorders.szw"><code class="docutils literal notranslate"><span class="pre">SiteBorders.szw</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps"><code class="docutils literal notranslate"><span class="pre">XYMaps</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.fipr"><code class="docutils literal notranslate"><span class="pre">XYMaps.fipr</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.inds"><code class="docutils literal notranslate"><span class="pre">XYMaps.inds</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.offset"><code class="docutils literal notranslate"><span class="pre">XYMaps.offset</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.oprn"><code class="docutils literal notranslate"><span class="pre">XYMaps.oprn</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.rtmin"><code class="docutils literal notranslate"><span class="pre">XYMaps.rtmin</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.x_i"><code class="docutils literal notranslate"><span class="pre">XYMaps.x_i</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.y_i"><code class="docutils literal notranslate"><span class="pre">XYMaps.y_i</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.XYMaps.z_i"><code class="docutils literal notranslate"><span class="pre">XYMaps.z_i</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.check_regional_neighbours"><code class="docutils literal notranslate"><span class="pre">check_regional_neighbours()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.compact_format_numeric"><code class="docutils literal notranslate"><span class="pre">compact_format_numeric()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.create_deck"><code class="docutils literal notranslate"><span class="pre">create_deck()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.dynamic_interpolator"><code class="docutils literal notranslate"><span class="pre">dynamic_interpolator()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.extract_site_borders"><code class="docutils literal notranslate"><span class="pre">extract_site_borders()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.find_ij_orientation"><code class="docutils literal notranslate"><span class="pre">find_ij_orientation()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="expreccs.utils.reg_sit_given_decks.html#expreccs.utils.reg_sit_given_decks.find_regional_cells"><code class="docutils literal notranslate"><span class="pre">find_regional_cells()</span></code></a></li>

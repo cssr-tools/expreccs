@@ -26,10 +26,6 @@ For the first figures, `plopm <https://github.com/cssr-tools/plopm>`_ and `pycop
 To run the optimization, `Everest <https://github.com/equinor/everest-tutorials>`_ is needed,
 which is installed via `ert <https://github.com/equinor/ert>`_ when pycopm is installed with the command above.
 
-.. note::
-
-    Python 3.14 was not supported for ert at the time this was written, then you need Python 3.12 or 3.13.
-
 The following commands generate Figures 1 and 2 (a few features such as the transmissibilities, wells, and sensor are added using PowerPoint) using 
 `FIG1.DATA <https://github.com/cssr-tools/expreccs/blob/main/tccs-13/methodology/FIG1.DATA>`_:
 

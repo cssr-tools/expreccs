@@ -1,13 +1,13 @@
 # SPDX-FileCopyrightText: 2023-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0914,C0302,E1102,R0912,C0301
+# pylint: disable=C0302,E1102,R0912,R0914,R0915,C0301
 
-"""
-Script to plot the top surface for the reference, regional, and site reservoirs.
-"""
+"""Plot top surface for the reference, regional, and site reservoirs"""
 
 import os
 import shutil
+import sys
+from contextlib import nullcontext
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -26,16 +26,7 @@ KG_TO_MT = 1e-9
 
 
 def plot_results(dic):
-    """
-    Plot the 2D maps/1D projections for the different quantities
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        None
-
-    """
+    """Plot the 2D maps/1D projections for the different quantities"""
     font = {"family": "normal", "weight": "normal", "size": 16}
     matplotlib.rc("font", **font)
     plt.rcParams.update(
@@ -51,21 +42,23 @@ def plot_results(dic):
             "figure.figsize": (10, 5),
         }
     )
-    dic["rhog_ref"] = 1.86843  # CO2 reference density
-    dic["sat_thr"] = 0.01  # Threshold for the plume location [-]
+    dic["rhog_ref"] = 1.86843
+    dic["sat_thr"] = 0.01
     if dic["compare"]:
         dic["where"] = "compare/"
         dic["folders"] = sorted(
             [os.path.abspath(name) for name in os.listdir(".") if os.path.isdir(name)]
         )
-        if f"{os.getcwd()}/compare" not in dic["folders"]:
+        compare_path = f"{os.getcwd()}/compare"
+        if compare_path not in dic["folders"]:
             os.system("mkdir compare")
         else:
-            dic["folders"].remove(f"{os.getcwd()}/compare")
+            dic["folders"].remove(compare_path)
         dic["id"] = "compare" + dic["folders"][0].split("/")[-1] + "_"
     else:
-        dic["where"] = f"{dic['folders'][0]}/postprocessing"
-        dic["id"] = dic["folders"][0].split("/")[-1] + "_"
+        folder0 = dic["folders"][0]
+        dic["where"] = f"{folder0}/postprocessing"
+        dic["id"] = folder0.split("/")[-1] + "_"
     dic["lfolders"] = [name.split("/")[-1].replace("_", " ") for name in dic["folders"]]
     plotting_settings(dic)
     reading_simulations(dic)
@@ -90,41 +83,37 @@ def plot_results(dic):
         "BGIPL",
         "BGIPG",
     ]
-    # quantites += ["BFLOWI" "BFLOWJ"]
     over_time_distance(dic)
     for i, quantity in enumerate(quantites):
         summary_plot(dic, i, quantity)
     dic["fig"], dic["axis"], dic["figs"], dic["axiss"] = [], [], [], []
     print("Over time maximum difference and sensor:")
-    with alive_bar(len(dic["quantity"])) as bar_animation:
+    show_progress = sys.stdout.isatty()
+    if show_progress:
+        bar_ctx = alive_bar(len(dic["quantity"]), bar="fish")
+    else:
+        bar_ctx = nullcontext()
+    with bar_ctx as bar_animation:
         for nqua, quantity in enumerate(dic["quantity"]):
-            bar_animation()
+            if show_progress:
+                bar_animation()
             over_time_max_difference(dic, nqua, quantity)
             over_time_sensor(dic, nqua, quantity)
     if dic["compare"]:
         return
     plt.rcParams.update({"axes.grid": False})
     for fol in dic["folders"]:
-        for _ in dic[f"{fol}_decks"]:
-            dic["tot"] += 1
-        for _ in dic[f"{fol}_sites"]:
-            dic["tod"] += 1
+        decks = dic[fol]["decks"]
+        sites = dic[fol]["sites"]
+        dic["tot"] += len(decks)
+        dic["tod"] += len(sites)
     geological_maps(dic)
     final_time_maps(dic)
     final_time_maps_difference(dic)
 
 
 def plotting_settings(dic):
-    """
-    Set the color/line styles and labels
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Set the color/line styles and labels"""
     dic["colors"] = [
         "#1f77b4",
         "#ff7f0e",
@@ -134,8 +123,8 @@ def plotting_settings(dic):
         "k",
         "#e377c2",
         "#8c564b",
-        "#bcbd22",
         "#17becf",
+        "#bcbd22",
         "k",
         "r",
     ]
@@ -228,129 +217,61 @@ def plotting_settings(dic):
 
 
 def wells_site(dic, nquan, nfol, ndeck, nwell):
-    """
-    Plot the injection rates and BHP
-
-    Args:
-        dic (dict): Global dictionary\n
-        nquan (int): Current number of quantity\n
-        nfol (int): Current number of folder\n
-        ndeck (int): Current number of deck\n
-        nwell (str): Name of well
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Plot the injection rates and BHP"""
     fol = dic["folders"][nfol]
-    res = dic[f"{fol}_decks"][ndeck]
+    res = dic[fol]["decks"][ndeck]
+    smsp = dic[fol][res]["smsp"]
+    dates = dic[fol][res]["smsp_dates"]
     opm = ["WBHP", "WGIR", "WWIR"]
-    yvalues = dic[f"{fol}/{res}_smsp"][f"{opm[nquan]}:{nwell}"]
+    key = f"{opm[nquan]}:{nwell}"
+    yvalues = smsp[key]
     if opm[nquan] == "WGIR":
         yvalues = [val * GAS_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
     if opm[nquan] == "WWIR":
         yvalues = [val * WAT_DEN_REF * KG_TO_MT * 365.25 for val in yvalues]
-    if int(nwell[4:]) > 0:
-        marker = dic["markers"][int(nwell[4:])]
-    else:
-        marker = ""
+    marker = dic["markers"][int(nwell[4:])] if int(nwell[4:]) > 0 else ""
     dic["axis"].step(
-        dic[f"{fol}/{res}_smsp_dates"],
+        dates,
         yvalues,
         label=f"{nwell} "
         + dic[f"l{res}"]
         + f" {' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
         color=dic["colors"][-ndeck - 1],
-        linestyle=dic["linestyle"][-ndeck - 1 - nfol * len(dic[f"{fol}_decks"])],
+        linestyle=dic["linestyle"][-ndeck - 1 - nfol * len(dic[fol]["decks"])],
         marker=marker,
         lw=2,
     )
-    # if ndeck == 0 and nfol > 0:
-    #     return
-    # if ndeck == 0:
-    #     dic["axis"].step(
-    #         dic[f"{fol}/{res}_smsp_dates"],
-    #         yvalues,
-    #         label=f"reference",
-    #         color=dic["colors"][ - 1],
-    #         lw=3,
-    #     )
-    # else:
-    #     dic["axis"].step(
-    #         dic[f"{fol}/{res}_smsp_dates"],
-    #         yvalues,
-    #         label=f"{res}",
-    #         color=dic["colors"][ - ndeck],
-    #         linestyle=dic["linestyle"][ - ndeck],
-    #         lw=3,
-    #     )
-    # if ndeck > 0:
-    #     return
-    # dic["axis"].step(
-    #     dic[f"{fol}/{res}_smsp_dates"],
-    #     yvalues,
-    #     label=f"INJ{nwell}",
-    #     color=dic["colors"][nwell],
-    #     linestyle=dic["linestyle"][-1 + nwell],
-    #     lw=3,
-    # )
-    # if ndeck != 1 or nfol > 0:  # or nwell > 0:
-    #     return
-    # dic["axis"].step(
-    #     dic[f"{fol}/{res}_smsp_dates"],
-    #     yvalues,
-    #     label=f"INJ{nwell}",
-    #     color=dic["colors"][nwell],
-    #     linestyle=dic["linestyle"][-1 + nwell],
-    #     lw=3,
-    # )
 
 
 def summary_site(dic, nfol, ndeck, opmn):
-    """
-    Plot summary quantities
-
-    Args:
-        dic (dict): Global dictionary\n
-        nfol (int): Current number of folder\n
-        ndeck (int): Current number of deck\n
-        opmn (str): Summary name to plot
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
-    # if dic["compare"]:
-    #     marker = dic["markers"][nfol]
-    # else:
-    #     marker = ""
+    """Plot summary quantities"""
     fol = dic["folders"][nfol]
-    res = dic[f"{fol}_decks"][ndeck]
-    yvalues = dic[f"{fol}/{res}_smsp"][f"{opmn}"]
+    res = dic[fol]["decks"][ndeck]
+    smsp = dic[fol][res]["smsp"]
+    dates = dic[fol][res]["smsp_dates"]
+    sensor = dic[fol][res]["sensor"]
+    yvalues = smsp[f"{opmn}"]
     if opmn[1:4] == "GIP":
         yvalues = [val * GAS_DEN_REF * KG_TO_KT for val in yvalues]
     if opmn[:6] == "BFLOWI":
-        dy = dic[f"{fol}/{res}_dy"][dic[f"{fol}/{res}_sensor"]]
-        dz = dic[f"{fol}/{res}_dz"][dic[f"{fol}/{res}_sensor"]]
-        poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
+        dy = dic[fol][res]["dy"][sensor]
+        dz = dic[fol][res]["dz"][sensor]
+        poro = dic[fol][res]["poro"][sensor]
         yvalues = [val / (poro * dy * dz) for val in yvalues]
     if opmn[:6] == "BFLOWJ":
-        dx = dic[f"{fol}/{res}_dx"][dic[f"{fol}/{res}_sensor"]]
-        dz = dic[f"{fol}/{res}_dz"][dic[f"{fol}/{res}_sensor"]]
-        poro = dic[f"{fol}/{res}_poro"][dic[f"{fol}/{res}_sensor"]]
+        dx = dic[fol][res]["dx"][sensor]
+        dz = dic[fol][res]["dz"][sensor]
+        poro = dic[fol][res]["poro"][sensor]
         yvalues = [val / (poro * dx * dz) for val in yvalues]
     if ndeck == 0 and nfol > 0:
         return
     if ndeck == 0:
         dic["axis"].step(
-            dic[f"{fol}/{res}_smsp_dates"],
-            yvalues,
-            label=dic["lreference"],
-            color=dic["colors"][-ndeck - 1],
+            dates, yvalues, label=dic["lreference"], color=dic["colors"][-ndeck - 1]
         )
     else:
         dic["axis"].step(
-            dic[f"{fol}/{res}_smsp_dates"],
+            dates,
             yvalues,
             label=dic[f"l{res}"]
             + f"{' ('+dic['lfolders'][nfol]+')' if dic['compare'] else ''}",
@@ -360,64 +281,35 @@ def summary_site(dic, nfol, ndeck, opmn):
 
 
 def handle_site_summary(dic, i, quantity):
-    """
-    Routine for the summary quantities at the site location
-
-    Args:
-        dic (dict): Global dictionary\n
-        i (int): Index of the quantity\n
-        quantity (str): Name of the quantity
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Routine for the summary quantities at the site location"""
     for nfol, fol in enumerate(dic["folders"]):
-        for ndeck, res in enumerate(dic[f"{fol}_decks"]):
+        decks = dic[fol]["decks"]
+        lfolder = dic["lfolders"][nfol]
+        for ndeck, res in enumerate(decks):
             if "regional" in res:
                 continue
+            title = "SITE " + f"{'' if dic['compare'] else '('+lfolder+')'}"
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
                 summary_site(dic, nfol, ndeck, f"R{quantity}:1")
-                dic["axis"].set_title(
-                    "SITE "
-                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
-                )
+                dic["axis"].set_title(title)
             elif quantity in ["BPR", "BGIP", "BGIPL", "BGIPG", "BFLOWI", "BFLOWJ"]:
+                sensorijk = dic[fol][res]["sensorijk"]
                 summary_site(
                     dic,
                     nfol,
                     ndeck,
-                    f"{quantity}:{dic[f'{fol}/{res}_sensorijk'][0]+1},"
-                    + f"{dic[f'{fol}/{res}_sensorijk'][1]+1},"
-                    + f"{dic[f'{fol}/{res}_sensorijk'][2]+1}",
+                    f"{quantity}:{sensorijk[0]+1},{sensorijk[1]+1},{sensorijk[2]+1}",
                 )
-                dic["axis"].set_title(
-                    "SITE "
-                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
-                )
+                dic["axis"].set_title(title)
             else:
-                for nwell in dic[f"{fol}/{res}_nowells"]:
+                for nwell in dic[fol][res]["nowells"]:
                     if nwell[3] == "S":
                         wells_site(dic, i, nfol, ndeck, nwell)
-                dic["axis"].set_title(
-                    "SITE "
-                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
-                )
+                dic["axis"].set_title(title)
 
 
 def summary_plot(dic, i, quantity):
-    """
-    Plot the summary quantities
-
-    Args:
-        dic (dict): Global dictionary\n
-        i (int): Index of the quantity\n
-        quantity (str): Name of the quantity
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Plot the summary quantities"""
     units = [
         "W$_{BHP}$ [bar]",
         "Rate [Mtpa]",
@@ -448,35 +340,28 @@ def summary_plot(dic, i, quantity):
     plt.close()
     dic["fig"], dic["axis"] = plt.subplots()
     for nfol, fol in enumerate(dic["folders"]):
-        for ndeck, res in enumerate(dic[f"{fol}_decks"]):
+        decks = dic[fol]["decks"]
+        lfolder = dic["lfolders"][nfol]
+        for ndeck, res in enumerate(decks):
             if "site" in res:
                 continue
+            title = "REGION " + f"{'' if dic['compare'] else '('+lfolder+')'}"
             if quantity in ["PR", "GIP", "GIPL", "GIPG"]:
                 summary_site(dic, nfol, ndeck, f"F{quantity}")
-                dic["axis"].set_title(
-                    "REGION "
-                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
-                )
+                dic["axis"].set_title(title)
             elif quantity in ["BPR", "BGIP", "BGIPL", "BGIPG", "BFLOWI", "BFLOWJ"]:
+                sensorijk = dic[fol][res]["sensorijk"]
                 summary_site(
                     dic,
                     nfol,
                     ndeck,
-                    f"{quantity}:{dic[f'{fol}/{res}_sensorijk'][0]+1},"
-                    + f"{dic[f'{fol}/{res}_sensorijk'][1]+1},"
-                    + f"{dic[f'{fol}/{res}_sensorijk'][2]+1}",
+                    f"{quantity}:{sensorijk[0]+1},{sensorijk[1]+1},{sensorijk[2]+1}",
                 )
-                dic["axis"].set_title(
-                    "REGION "
-                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
-                )
+                dic["axis"].set_title(title)
             else:
-                for nwell in dic[f"{fol}/{res}_nowells"]:
+                for nwell in dic[fol][res]["nowells"]:
                     wells_site(dic, i, nfol, ndeck, nwell)
-                dic["axis"].set_title(
-                    "REGION "
-                    + f"{'' if dic['compare'] else '('+dic['lfolders'][nfol]+')'}"
-                )
+                dic["axis"].set_title(title)
     dic["axis"].set_ylabel(units[i])
     dic["axis"].set_xlabel("Time")
     handles, labels = plt.gca().get_legend_handles_labels()
@@ -491,70 +376,56 @@ def summary_plot(dic, i, quantity):
 
 
 def over_time_distance(dic):
-    """
-    Plot the distance from the closest saturation cell to the site border
-
-    Args:
-        dic (dict): Global dictionary
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Plot the distance from the closest saturation cell to the site border"""
     dic["fig"], dic["axis"], dic["nmarker"] = [], [], 0
     fig, axis = plt.subplots()
     dic["fig"].append(fig)
     dic["axis"].append(axis)
     ntot = 0
     for nfol, fol in enumerate(dic["folders"]):
-        for j, res in enumerate(["reference"] + dic[f"{fol}_sites"]):
-            ntot += 1
+        ntot += len(["reference"] + dic[fol]["sites"])
     print("Over time distance:")
-    with alive_bar(ntot) as bar_animation:
+    show_progress = sys.stdout.isatty()
+    if show_progress:
+        bar_ctx = alive_bar(ntot, bar="fish")
+    else:
+        bar_ctx = nullcontext()
+    with bar_ctx as bar_animation:
         for nfol, fol in enumerate(dic["folders"]):
-            dic["dx_half_size"] = 0.5 * (
-                dic[f"{fol}/site_xmx"][1:] - dic[f"{fol}/site_xmx"][:-1]
-            )
-            dic["dy_half_size"] = 0.5 * (
-                dic[f"{fol}/site_ymy"][1:] - dic[f"{fol}/site_ymy"][:-1]
-            )
-            for j, res in enumerate(["reference"] + dic[f"{fol}_sites"]):
-                bar_animation()
-                dic[f"{fol}/{res}_indicator_plot"] = []
+            xmx = dic[fol]["site"]["xmx"]
+            ymy = dic[fol]["site"]["ymy"]
+            boxi = dic[fol]["site_boxi"]
+            boxf = dic[fol]["site_boxf"]
+            dic["dx_half_size"] = 0.5 * (xmx[1:] - xmx[:-1])
+            dic["dy_half_size"] = 0.5 * (ymy[1:] - ymy[:-1])
+            bx0 = boxi[0] + dic["dx_half_size"][0]
+            bx1 = boxf[0] - dic["dx_half_size"][-1]
+            by0 = boxi[1] + dic["dy_half_size"][0]
+            by1 = boxf[1] - dic["dy_half_size"][-1]
+            for j, res in enumerate(["reference"] + dic[fol]["sites"]):
+                if show_progress:
+                    bar_animation()
+                dic[fol][res]["indicator_plot"] = []
                 for quantity in dic["quantity"]:
-                    dic[f"{fol}/{res}_difference_{quantity}"] = []
-                for nrst in range(dic[f"{fol}/{res}_num_rst"]):
+                    dic[fol][res][f"difference_{quantity}"] = []
+                num_rst = dic[fol][res]["num_rst"]
+                for nrst in range(num_rst):
                     points = positions(dic, fol, res, nrst)
                     if points.size > 0:
-                        closest_distance = np.zeros(4)
-                        for i, border in enumerate(
-                            [
-                                dic[f"{fol}/site_boxi"][0] + dic["dx_half_size"][0],
-                                dic[f"{fol}/site_boxf"][0] - dic["dx_half_size"][-1],
-                            ]
-                        ):
-                            closest_distance[i] = np.min(
-                                np.array([abs(row[0] - border) for row in points])
-                            )
-                        for i, border in enumerate(
-                            [
-                                (dic[f"{fol}/site_boxi"][1] + dic["dy_half_size"][0]),
-                                (dic[f"{fol}/site_boxf"][1] - dic["dy_half_size"][-1]),
-                            ]
-                        ):
-                            closest_distance[i + 2] = np.min(
-                                np.array([abs(row[1] - border) for row in points])
-                            )
-                        dic[f"{fol}/{res}_indicator_plot"].append(
-                            np.min(closest_distance) / 1000.0
+                        xs = points[:, 0]
+                        ys = points[:, 1]
+                        d0 = np.min(np.abs(xs - bx0))
+                        d1 = np.min(np.abs(xs - bx1))
+                        d2 = np.min(np.abs(ys - by0))
+                        d3 = np.min(np.abs(ys - by1))
+                        dic[fol][res]["indicator_plot"].append(
+                            min(d0, d1, d2, d3) / 1000.0
                         )
                     else:
-                        dic[f"{fol}/{res}_indicator_plot"].append(
-                            (dic[f"{fol}/site_boxf"][0] - dic[f"{fol}/site_boxi"][0])
-                            / (2.0 * 1000.0)
+                        dic[fol][res]["indicator_plot"].append(
+                            (boxf[0] - boxi[0]) / (2.0 * 1000.0)
                         )
                 handle_labels_distance(dic, nfol, res, fol, j)
-
     dic["axis"][-1].set_title(
         "Minimum "
         + r"CO$_2$"
@@ -575,139 +446,45 @@ def over_time_distance(dic):
 
 
 def positions(dic, fol, res, nrst):
-    """
-    Extract the point coordinates using opm
-
-    Args:
-        dic (dict): Global dictionary\n
-        fol (str): Name of the output folder\n
-        res (str): Name of the reservoir\n
-        nrst (int): Indice for the schedule
-
-    Returns:
-        points (list): x,y,z coordinates
-
-    """
-    x_a = [
-        0.5
-        * (
-            dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][-1]
-            - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][0]
-        )
-        + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][0]
-        for i in np.nonzero(dic[f"{fol}/{res}_indicator_array"][1])[0]
-    ]
-    y_a = [
-        0.5
-        * (
-            dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][-1]
-            - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][0]
-        )
-        + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][0]
-        for i in np.nonzero(dic[f"{fol}/{res}_indicator_array"][1])[0]
-    ]
-    z_a = [
-        0.5
-        * (
-            dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][-1]
-            - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][0]
-        )
-        + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][0]
-        for i in np.nonzero(dic[f"{fol}/{res}_indicator_array"][1])[0]
-    ]
-    points = np.stack(
-        [np.array(x_a).flatten(), np.array(y_a).flatten(), np.array(z_a).flatten()],
-        axis=-1,
-    )
+    """Get the cell centers"""
+    grid = dic[fol][res]["grid"]
+    indicator = dic[fol][res]["indicator_array"]
     if res == "reference":
-        indx = [
-            dic[f"{fol}/{res}_indicator_array"][nrst][k]
-            and dic[f"{fol}/reference_fipn"][k] == 1
-            for k in range(len(dic[f"{fol}/reference_fipn"]))
-        ]
-        x_a = [
-            0.5
-            * (
-                dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][-1]
-                - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][0]
-            )
-            + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][0]
-            for i in np.nonzero(indx)[0]
-        ]
-        y_a = [
-            0.5
-            * (
-                dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][-1]
-                - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][0]
-            )
-            + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][0]
-            for i in np.nonzero(indx)[0]
-        ]
-        z_a = [
-            0.5
-            * (
-                dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][-1]
-                - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][0]
-            )
-            + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][0]
-            for i in np.nonzero(indx)[0]
-        ]
+        fipn = dic[fol]["reference"]["fipn"]
+        indx = indicator[nrst] & (fipn == 1)
+        indices = np.nonzero(indx)[0]
     else:
-        x_a = [
-            0.5
-            * (
-                dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][-1]
-                - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][0]
-            )
-            + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[0][0]
-            for i in np.nonzero(dic[f"{fol}/{res}_indicator_array"][nrst])[0]
-        ]
-        y_a = [
-            0.5
-            * (
-                dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][-1]
-                - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][0]
-            )
-            + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[1][0]
-            for i in np.nonzero(dic[f"{fol}/{res}_indicator_array"][nrst])[0]
-        ]
-        z_a = [
-            0.5
-            * (
-                dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][-1]
-                - dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][0]
-            )
-            + dic[f"{fol}/{res}_grid"].xyz_from_active_index(i)[2][0]
-            for i in np.nonzero(dic[f"{fol}/{res}_indicator_array"][nrst])[0]
-        ]
-    points = np.stack(
-        [np.array(x_a).flatten(), np.array(y_a).flatten(), np.array(z_a).flatten()],
-        axis=-1,
-    )
+        indices = np.nonzero(indicator[nrst])[0]
+    if indices.size == 0:
+        return np.empty((0, 3))
+    x_a = []
+    y_a = []
+    z_a = []
+    for index in indices:
+        coords = grid.xyz_from_active_index(index)
+        x_coords = coords[0]
+        y_coords = coords[1]
+        z_coords = coords[2]
+        x_center = 0.5 * (x_coords[-1] - x_coords[0]) + x_coords[0]
+        y_center = 0.5 * (y_coords[-1] - y_coords[0]) + y_coords[0]
+        z_center = 0.5 * (z_coords[-1] - z_coords[0]) + z_coords[0]
+        x_a.append(x_center)
+        y_a.append(y_center)
+        z_a.append(z_center)
+    points = np.stack([np.array(x_a), np.array(y_a), np.array(z_a)], axis=-1)
     return points
 
 
 def handle_labels_distance(dic, nfol, res, fol, j):
-    """
-    Manage the labeling for better visualization.
-
-    Args:
-        dic (dict): Global dictionary\n
-        nfol (int): Indice for the color\n
-        res (str): Name of the reservoir\n
-        fol (str): Name of the output folder\n
-        j (int): Indice for the reservoir
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Manage the labeling for better visualization"""
+    dates = dic[fol][res]["dates"]
+    values = dic[fol][res]["indicator_plot"]
     if dic["compare"]:
         if nfol == 0 and res == "reference":
             label = dic[f"l{res}"]
             dic["axis"][-1].step(
-                dic[f"{fol}/{res}_dates"],
-                dic[f"{fol}/{res}_indicator_plot"],
+                dates,
+                values,
                 color=dic["colors"][-1],
                 linestyle=dic["linestyle"][-1],
                 label=label,
@@ -715,8 +492,8 @@ def handle_labels_distance(dic, nfol, res, fol, j):
         if res != "reference":
             label = dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})"
             dic["axis"][-1].step(
-                dic[f"{fol}/{res}_dates"],
-                dic[f"{fol}/{res}_indicator_plot"],
+                dates,
+                values,
                 color=dic["colors"][-j - 1],
                 linestyle=dic["linestyle"][-nfol - 2],
                 label=label,
@@ -730,8 +507,8 @@ def handle_labels_distance(dic, nfol, res, fol, j):
             j_j = j + 1
         label = dic[f"l{res}"]
         dic["axis"][-1].step(
-            dic[f"{fol}/{res}_dates"],
-            dic[f"{fol}/{res}_indicator_plot"],
+            dates,
+            values,
             color=dic["colors"][-1 - j_j],
             linestyle=dic["linestyle"][-nfol - 2],
             label=label,
@@ -739,56 +516,61 @@ def handle_labels_distance(dic, nfol, res, fol, j):
 
 
 def over_time_max_difference(dic, nqua, quantity):
-    """
-    Plot the max difference between pressure/saturation.
-
-    Args:
-        dic (dict): Global dictionary\n
-        nqua (int): Index of the quantity\n
-        quantity (str): Name of the quantity
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Plot the max difference between pressure/saturation"""
     fig, axis = plt.subplots()
     dic["fig"].append(fig)
     dic["axis"].append(axis)
     dic[f"reference_maximum_{quantity}"] = []
     for nfol, fol in enumerate(dic["folders"]):
-        for j, res in enumerate(dic[f"{fol}_sites"]):
-            dic[f"{fol}/{res}_difference_{quantity}"] = []
-            dic[f"{fol}/{res}_maximum_{quantity}"] = []
-            for nrst in range(dic[f"{fol}/{res}_num_rst"]):
-                quant = np.abs(
-                    np.array(dic[f"{fol}/reference_{quantity}_array"][nrst])[
-                        dic[f"{fol}/reference_fipn"] == 1
-                    ]
-                    - dic[f"{fol}/{res}_{quantity}_array"][nrst]
-                )
-                if quantity == "FLOWATI+":
-                    for k in range(len(dic[f"{fol}/site_ymy"]) - 1):
-                        quant[(k + 1) * (len(dic[f"{fol}/site_xmx"]) - 1) - 1] = 0
-                if quantity == "FLOWATJ+":
-                    for k in range(len(dic[f"{fol}/site_xmx"]) - 1):
-                        quant[
-                            (len(dic[f"{fol}/site_ymy"]) - 2)
-                            * (len(dic[f"{fol}/site_xmx"]) - 1)
-                            + k
-                        ] = 0
-                dic[f"{fol}/{res}_difference_{quantity}"].append(np.max(quant))
-                dic[f"{fol}/{res}_maximum_{quantity}"].append(
-                    np.max(dic[f"{fol}/{res}_{quantity}_array"][nrst])
-                )
+        ref_array = dic[fol]["reference"][f"{quantity}_array"]
+        ref_fipn = dic[fol]["reference"]["fipn"]
+        site_xmx = dic[fol]["site"]["xmx"]
+        site_ymy = dic[fol]["site"]["ymy"]
+        nx = len(site_xmx) - 1
+        ny = len(site_ymy) - 1
+
+        mask_ref = ref_fipn == 1
+
+        if quantity == "FLOWATI+":
+            boundary_mask_site = np.ones(np.sum(mask_ref), dtype=bool)
+            boundary_mask_site[np.arange(nx - 1, nx * ny, nx)] = False
+        elif quantity == "FLOWATJ+":
+            boundary_mask_site = np.ones(np.sum(mask_ref), dtype=bool)
+            boundary_mask_site[(ny - 1) * nx : ny * nx] = False
+        else:
+            boundary_mask_site = None
+
+        for j, res in enumerate(dic[fol]["sites"]):
+            dic[fol][res][f"difference_{quantity}"] = []
+            dic[fol][res][f"maximum_{quantity}"] = []
+            res_array = dic[fol][res][f"{quantity}_array"]
+            num_rst = dic[fol][res]["num_rst"]
+
+            for nrst in range(num_rst):
+                ref_values_full = np.asarray(ref_array[nrst])
+                res_values = np.asarray(res_array[nrst])
+
+                ref_masked = ref_values_full[mask_ref]
+
+                if boundary_mask_site is not None:
+                    ref_masked = ref_masked[boundary_mask_site]
+                    res_effective = res_values[boundary_mask_site]
+                else:
+                    res_effective = res_values
+
+                quant = np.abs(ref_masked - res_effective)
+
+                max_diff = np.max(quant)
+                max_res = np.max(res_values)
+
+                dic[fol][res][f"difference_{quantity}"].append(max_diff)
+                dic[fol][res][f"maximum_{quantity}"].append(max_res)
+
                 if j == 0:
-                    dic[f"reference_maximum_{quantity}"].append(
-                        np.max(
-                            dic[f"{fol}/reference_{quantity}_array"][nrst][
-                                dic[f"{fol}/reference_fipn"] == 1
-                            ]
-                        )
-                    )
+                    dic[f"reference_maximum_{quantity}"].append(np.max(ref_masked))
+
             handle_labels_difference(dic, res, j, nqua, nfol)
+
     dic["axis"][nqua].set_title(
         r"$\max|$REF-SITE|, $\max$(REF)="
         + f"{np.max(dic[f'reference_maximum_{quantity}']):.2E}"
@@ -805,65 +587,49 @@ def over_time_max_difference(dic, nqua, quantity):
 
 
 def over_time_sensor(dic, nqua, quantity):
-    """
-    Plot the quantities on the sensor.
-
-    Args:
-        dic (dict): Global dictionary\n
-        nqua (int): Index of the quantity\n
-        quantity (str): Name of the quantity
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Plot the quantities on the sensor"""
     fig, axis = plt.subplots()
     dic["figs"].append(fig)
     dic["axiss"].append(axis)
     dic["nmarker"] = 0
     for nfol, fol in enumerate(dic["folders"]):
-        for j, res in enumerate(["reference"] + dic[f"{fol}_sites"]):
-            dic[f"{fol}/{res}_sensor_{quantity}"] = []
-            for nrst in range(dic[f"{fol}/{res}_num_rst"]):
-                dic[f"{fol}/{res}_sensor_{quantity}"].append(
-                    dic[f"{fol}/{res}_{quantity}_array"][nrst][
-                        dic[f"{fol}/{res}_sensor"]
-                    ]
-                )
+        for j, res in enumerate(["reference"] + dic[fol]["sites"]):
+            sensor = dic[fol][res]["sensor"]
+            dates = dic[fol][res]["dates"]
+            array = dic[fol][res][f"{quantity}_array"]
+            num_rst = dic[fol][res]["num_rst"]
+            dic[fol][res][f"sensor_{quantity}"] = []
+            for nrst in range(num_rst):
+                dic[fol][res][f"sensor_{quantity}"].append(array[nrst][sensor])
+            values = dic[fol][res][f"sensor_{quantity}"]
             if dic["compare"]:
                 if nfol == 0 and res == "reference":
                     label = dic[f"l{res}"]
                     dic["axiss"][nqua].step(
-                        dic[f"{fol}/{res}_dates"],
-                        dic[f"{fol}/{res}_sensor_{quantity}"],
+                        dates,
+                        values,
                         color=dic["colors"][-1],
                         linestyle=dic["linestyle"][-1],
-                        label=label,  # +" (Grid 0 40m)"
+                        label=label,
                     )
-                    # referror = np.array(dic[f"{fol}/{res}_sensor_{quantity}"])
                 if res != "reference":
                     label = dic[f"l{res}"] + f" ({dic['lfolders'][nfol]})"
                     dic["axiss"][nqua].step(
-                        dic[f"{fol}/{res}_dates"],
-                        dic[f"{fol}/{res}_sensor_{quantity}"],
+                        dates,
+                        values,
                         color=dic["colors"][-j - 1],
                         linestyle=dic["linestyle"][-nfol - 2],
                         label=label,
                     )
                     dic["nmarker"] += 1
-                    # quanti = np.array(dic[f"{fol}/{res}_sensor_{quantity}"])
-                    # #error = np.max(np.abs(referror - quanti))
-                    # error = np.linalg.norm(referror - quanti)
-                    # #if quantity == "pressure":
-                    # print(fol, res, quantity, f"{error:.2f}")
             else:
                 if j == 0:
                     j_j = 0
                 else:
                     j_j = j + 1
                 dic["axiss"][nqua].step(
-                    dic[f"{fol}/{res}_dates"],
-                    dic[f"{fol}/{res}_sensor_{quantity}"],
+                    dates,
+                    values,
                     color=dic["colors"][-1 - j_j],
                     linestyle=dic["linestyle"][-1 - j],
                     label=dic[f"l{res}"],
@@ -871,7 +637,6 @@ def over_time_sensor(dic, nqua, quantity):
     dic["axiss"][nqua].set_title("Sensor")
     dic["axiss"][nqua].set_ylabel(f"{dic['units'][nqua]}")
     dic["axiss"][nqua].set_xlabel("Time")
-    # if quantity != "pressure":
     dic["axiss"][nqua].legend()
     dic["axiss"][nqua].xaxis.set_tick_params(rotation=45)
     dic["figs"][nqua].savefig(
@@ -882,45 +647,31 @@ def over_time_sensor(dic, nqua, quantity):
 
 
 def handle_labels_difference(dic, res, j, nqua, nfol):
-    """
-    Manage the labeling to improve the visualization.
-
-    Args:
-        dic (dict): Global dictionary\n
-        res (str): Name of the reservoir\n
-        j (int): Indice for the reservoir\n
-        nqua (int): Current number of quantity\n
-        nfol (int): Current number of folder
-
-    Returns:
-        dic (dict): Modified global dictionary
-
-    """
+    """Manage the labeling to improve the visualization"""
     quantity = dic["quantity"][nqua]
     fol = dic["folders"][nfol]
+    dates = dic[fol][res]["dates"]
+    diff = dic[fol][res][f"difference_{quantity}"]
+    maxv = np.max(dic[fol][res][f"maximum_{quantity}"])
     if dic["compare"]:
         label = (
             dic[f"l{res}"]
             + f" ({dic['lfolders'][nfol]})"
             + r", $\max$="
-            + f"{np.max(dic[f'{fol}/{res}_maximum_{quantity}']):.2E}"
+            + f"{maxv:.2E}"
         )
         dic["axis"][nqua].step(
-            dic[f"{fol}/{res}_dates"],
-            dic[f"{fol}/{res}_difference_{quantity}"],
+            dates,
+            diff,
             color=dic["colors"][nfol % len(dic["colors"])],
             linestyle=dic["linestyle"][j % len(dic["linestyle"])],
             label=label,
         )
     else:
-        label = (
-            dic[f"l{res}"]
-            + r", $\max$="
-            + f"{np.max(dic[f'{fol}/{res}_maximum_{quantity}']):.2E}"
-        )
+        label = dic[f"l{res}"] + r", $\max$=" + f"{maxv:.2E}"
         dic["axis"][nqua].step(
-            dic[f"{fol}/{res}_dates"],
-            dic[f"{fol}/{res}_difference_{quantity}"],
+            dates,
+            diff,
             color=dic["colors"][-j - 2],
             linestyle=dic["linestyle"][-j - 2],
             label=label,

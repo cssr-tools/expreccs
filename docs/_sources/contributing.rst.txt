@@ -11,7 +11,7 @@ Ground Rules
 ============
 
 - We use Black code formatting
-- We use Pylint
+- We use Pylint and Ruff code analysis tools
 - We document our code
 
 ==========================
@@ -22,15 +22,16 @@ Contribute to the software
 #. In the main repo execute:
 
     #. **pip install -r dev-requirements.txt** (this installs the `dev-requirements.txt <https://github.com/cssr-tools/expreccs/blob/main/dev-requirements.txt>`_)
-    #. **black --target-version py312 src/ tests/** (this formats the code)
+    #. **black \-\-target-version py312 src/ tests/** (this formats the code)
     #. **pylint src/ tests/** (this analyses the code, and might rise issues that need to be fixed before the pull request)
+    #. **ruff check src/ tests/ convergence/** (this also analyses the code, and might rise issues that need to be fixed before the pull request)
     #. **mypy \-\-ignore-missing-imports src/ tests/** (this is a static checker, and might rise issues that need to be fixed before the pull request)
-    #. **pytest \-\-cov=expreccs \-\-cov-report term-missing tests/** (this runs locally the tests, and might rise issues that need to be fixed before the pull request)
+    #. **pytest \-\-cov=expreccs \-\-cov-report term-missing tests/ -n auto** (this runs locally the tests, and might rise issues that need to be fixed before the pull request)
     #. **pushd docs & make html** (this generates the documentation, and might rise issues that need to be fixed before the pull request; if the build succeeds and if the contribution changes the documentation, then copy all content from the docs/_build/html/ folder and replace the files in the `docs <https://github.com/cssr-tools/expreccs/tree/main/docs>`_ folder)
     
     .. tip::
         See the `CI.yml <https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml>`_ script and the `Actions <https://github.com/cssr-tools/expreccs/actions>`_ for installation of expreccs, OPM Flow (binary packages), and dependencies, as well as the execution of the six previous steps in Ubuntu 24.04 using Python 3.12.
-        For macOS users, see the `ci_pycopm_macos.yml <https://github.com/daavid00/OPM-Flow_macOS/blob/main/.github/workflows/ci_pycopm_macos.yml>`_ script and the `OPM-Flow_macOS Actions <https://github.com/cssr-tools/pycopm/actions>`_ for installation of pycopm (a related tool to expreccs), OPM Flow (source build), and dependencies in macOS 26 using Python 3.13.
+        For macOS users, see the `ci_pycopm_macos.yml <https://github.com/daavid00/OPM-Flow_macOS/blob/main/.github/workflows/ci_pycopm_macos.yml>`_ script and the `OPM-Flow_macOS Actions <https://github.com/cssr-tools/pycopm/actions>`_ for installation of pycopm (a related tool to expreccs), OPM Flow (source build), and dependencies in macOS 26 using Python 3.14.
         In addition for macOS, you need to add the directory containing the OPM Flow executable to your system's PATH environment variable (e.g., export PATH=$PATH:/Users/yourname/pyopmspe11/build/opm-simulators/bin).
 
 #. Squash your commits into a single commit (see this `nice tutorial <https://gist.github.com/lpranam/4ae996b0a4bc37448dc80356efbca7fa>`_ if you are not familiar with this)

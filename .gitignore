@@ -125,6 +125,9 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# ruff
+.ruff_cache/
+
 # Pyre type checker
 .pyre/
 
@@ -144,12 +147,6 @@ opm-models/
 opm-simulators/
 
 # Extra folders
-**/tests/configs/*/
-/tests/expreccs/
-/tests/expreccs_perfipnum/
-/tests/expreccs_dpincrease/
-/tests/expreccs_frequency/
-/tests/expreccs_zones/
 examples/hello_world
 developing
 playground
@@ -159,8 +156,8 @@ vexpreccs
 workshop
 results
 cssr
+test_outputs
 
 # Extra files
-tests/output
 regional_rpr-3.png
 reference_sgas_i,j,1_t90.png

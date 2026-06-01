@@ -444,7 +444,7 @@ ${i+1+len(dic['PRESSURE_left'][0][0])+len(dic['PRESSURE_right'][0][0])+len(dic['
 % endif
 /
 %elif dic['site_bctype'][0] == "open":
-BCPROP 
+BCPROP
 1 FREE /
 2 FREE /
 3 FREE /

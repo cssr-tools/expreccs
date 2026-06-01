@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>expreccs.visualization.reading module &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -90,56 +90,43 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.define_cases">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">define_cases</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folders</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.define_cases" title="Link to this definition"></a></dt>
-<dd><p>Only plot the first two and last cases for the back-coupling</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>fol (str): Name of the output folder</p>
-<p>folders (list): Names of the cases</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<dd><p>Handle the site folder names</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.make_arrays">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">make_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doplot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.make_arrays" title="Link to this definition"></a></dt>
-<dd><p>From simulation data to arrays</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>fol (str): Name of the output folder</p>
-<p>res (str): Complete name of the simulated model</p>
-<p>doplot (bool): True for plotting, False for back-coupling</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">make_arrays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.make_arrays" title="Link to this definition"></a></dt>
+<dd><p>Handle the quantities to plot</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.manage_names">
 <span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">manage_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.manage_names" title="Link to this definition"></a></dt>
 <dd><p>Figure out the folder names</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>res (str): Complete name of the simulated model</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.reading.read_fluxes">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">read_fluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.read_fluxes" title="Link to this definition"></a></dt>
+<dd><p>Fluxes for the back coupling</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.reading.read_mask">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">read_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">case</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.read_mask" title="Link to this definition"></a></dt>
+<dd><p>Mask for the back coupling</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="expreccs.visualization.reading.reading_simulations">
-<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">reading_simulations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">doplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.reading_simulations" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">reading_simulations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dic</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.reading_simulations" title="Link to this definition"></a></dt>
 <dd><p>Read the deck quantities using opm</p>
-<dl>
-<dt>Args:</dt><dd><p>dic (dict): Global dictionary</p>
-<p>doplot (bool): True for plotting, False for back-coupling</p>
-</dd>
-<dt>Returns:</dt><dd><p>dic (dict): Modified global dictionary</p>
-</dd>
-</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="expreccs.visualization.reading.strip_trailing_digits">
+<span class="sig-prename descclassname"><span class="pre">expreccs.visualization.reading.</span></span><span class="sig-name descname"><span class="pre">strip_trailing_digits</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#expreccs.visualization.reading.strip_trailing_digits" title="Link to this definition"></a></dt>
+<dd><p>Handle the digits on the folder name</p>
 </dd></dl>
 
 </section>

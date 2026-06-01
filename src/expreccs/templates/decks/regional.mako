@@ -247,7 +247,7 @@ INJR${i-len(dic["site_wellijk"])} WAT ${'OPEN' if dic['inj'][j][1][2*i+1] > 0 el
 % endfor
 /
 % if dic['regional_bctype'][0] == 'open':
-BCPROP 
+BCPROP
 1 FREE /
 2 FREE /
 3 FREE /

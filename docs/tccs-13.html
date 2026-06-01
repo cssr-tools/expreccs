@@ -8,14 +8,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TCCS-13 &mdash; expreccs  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
@@ -103,10 +103,6 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 </div>
 <p>To run the optimization, <a class="reference external" href="https://github.com/equinor/everest-tutorials">Everest</a> is needed,
 which is installed via <a class="reference external" href="https://github.com/equinor/ert">ert</a> when pycopm is installed with the command above.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Python 3.14 was not supported for ert at the time this was written, then you need Python 3.12 or 3.13.</p>
-</div>
 <p>The following commands generate Figures 1 and 2 (a few features such as the transmissibilities, wells, and sensor are added using PowerPoint) using
 <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tccs-13/methodology/FIG1.DATA">FIG1.DATA</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pycopm<span class="w"> </span>-i<span class="w"> </span>FIG1.DATA<span class="w"> </span>-z<span class="w"> </span><span class="m">1</span>:4<span class="w"> </span>-m<span class="w"> </span>all<span class="w"> </span>-a<span class="w"> </span>max<span class="w"> </span>-w<span class="w"> </span>COARSENED_TRANS<span class="w"> </span>-l<span class="w"> </span>TRANS<span class="w"> </span>-t<span class="w"> </span><span class="m">2</span>
