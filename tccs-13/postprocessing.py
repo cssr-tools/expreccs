@@ -122,7 +122,6 @@ def plot_optimization_details(dic):
     for i in range(4):
         allw += np.array(dic[f"s{i}"])
     allw = np.array(allw)
-    indc = np.argsort(allw)
     indc = range(len(allw))
     ax.bar(range(1,len(allw)+1), allw, color=colors[0], label=names[0])
     for i in range(3):
