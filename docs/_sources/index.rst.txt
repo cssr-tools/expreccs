@@ -11,6 +11,7 @@ Welcome to the expreccs's documentation!
    configuration_file
    examples
    tccs-13
+   ecmor2026
    api
    contributing
    output_folder
