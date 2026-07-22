@@ -35,12 +35,12 @@ plt.rcParams.update(
 def postprocessing():
     """Main function to postprocess everest results (differential_evolution)"""
     cmdargs = load_parser()
-    dic = {"folder": os.path.abspath(cmdargs['folder'].strip())}
+    dic = {"folder": os.path.abspath(cmdargs["folder"].strip())}
     with open(f"{dic['folder']}/configuration.json", "r", encoding="utf-8") as f:
         dic = {**json.load(f), **dic}
 
     # Make the figures folder
-    (Path(dic['folder']) / "figures").mkdir(parents=True, exist_ok=True)
+    (Path(dic["folder"]) / "figures").mkdir(parents=True, exist_ok=True)
 
     dic["ind_batch"], dic["ind_sim"] = [0, 0], [0, 0]
     for i in range(4):
@@ -94,7 +94,9 @@ def find_optimal(dic):
         target = base / "figures" / name
         target.mkdir(parents=True, exist_ok=True)
         shutil.copy(
-            base / "everest_output" / "sim_output"
+            base
+            / "everest_output"
+            / "sim_output"
             / f"batch_{dic['ind_batch'][i]}"
             / "realization_0"
             / f"evaluation_{dic['ind_sim'][i]}"
@@ -123,21 +125,23 @@ def plot_optimization_details(dic):
         allw += np.array(dic[f"s{i}"])
     allw = np.array(allw)
     indc = range(len(allw))
-    ax.bar(range(1,len(allw)+1), allw, color=colors[0], label=names[0])
+    ax.bar(range(1, len(allw) + 1), allw, color=colors[0], label=names[0])
     for i in range(3):
         allw -= np.array([dic[f"s{i}"][r] for r in indc])
-        ax.bar(range(1,len(allw)+1), allw, color=colors[i + 1], label=names[i + 1])
+        ax.bar(range(1, len(allw) + 1), allw, color=colors[i + 1], label=names[i + 1])
     ax.set_title(f"Details on failed and succeed simulations (Total={dic['tot_eval']})")
     ax.set_ylabel(r"Occurence [\#]")
     ax.set_xlabel(r"Step [\#]")
-    if len(allw)+1 < 20:
+    if len(allw) + 1 < 20:
         ax.xaxis.set_major_locator(MaxNLocator(integer=True))
     else:
-        ax.set_xticks(np.linspace(
+        ax.set_xticks(
+            np.linspace(
                 1,
-                len(allw)+1,
+                len(allw) + 1,
                 7,
-            ))
+            )
+        )
     ax.legend()
     fig.savefig(f"{dic['folder']}/figures/details.png", bbox_inches="tight", dpi=900)
 
@@ -157,11 +161,13 @@ def plot_optimization_results(dic):
     if len(dic["optimization"]) < 20:
         axis.xaxis.set_major_locator(MaxNLocator(integer=True))
     else:
-        axis.set_xticks(np.linspace(
-            0,
-            len(dic["optimization"]) + 1,
-            7,
-        ))
+        axis.set_xticks(
+            np.linspace(
+                0,
+                len(dic["optimization"]) + 1,
+                7,
+            )
+        )
     fig.savefig(
         f"{dic['folder']}/figures/optimization_results.png", bbox_inches="tight"
     )

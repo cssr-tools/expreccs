@@ -1,0 +1,223 @@
+-- This reservoir simulation deck is made available under the Open Database
+-- License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in
+-- individual contents of the database are licensed under the Database Contents
+-- License: http://opendatacommons.org/licenses/dbcl/1.0/
+-- Copyright (C) 2026 NORCE Research AS
+----------------------------------------------------------------------------
+RUNSPEC
+----------------------------------------------------------------------------
+DIMENS 
+4 1 4 /
+
+EQLDIMS
+/
+
+TABDIMS
+/
+
+CO2STORE
+GAS
+WATER
+
+METRIC
+
+START
+1 JAN 2025 /
+
+WELLDIMS
+/
+
+UNIFIN
+UNIFOUT
+----------------------------------------------------------------------------
+GRID
+----------------------------------------------------------------------------
+INIT
+
+DX
+16*1E2 /
+
+DY
+16*1E2 /
+
+DZ
+16*1E2 /
+
+TOPS
+4*0 /
+
+FLUXNUM
+1 1 1 2
+2 1 2 2
+2 1 1 2
+1 1 1 1 /
+
+EQUALREG
+PORO        0 0 F /
+PORO     0.25 1 F /
+PORO     1e-1 2 F /
+PERMX       0 0 F /
+PERMX 1.172745396974317 1 F /
+PERMX    1.172745396974317e-2 2 F /
+PERMY       0 0 F /
+PERMY 1.172745396974317 1 F /
+PERMY    1.172745396974317e-2 2 F /
+PERMZ       0 0 F /
+PERMZ 1.172745396974317 1 F /
+PERMZ    1.172745396974317e-2 2 F /
+/
+----------------------------------------------------------------------------
+PROPS
+----------------------------------------------------------------------------
+SGWFN
+0 0 1 0
+1 1 0 0 /
+
+SALINITY
+2.92 /
+
+ROCK
+276 4.934e-05 /
+----------------------------------------------------------------------------
+SOLUTION
+----------------------------------------------------------------------------
+EQUIL
+0 200.0 0 0 0 0 1 1 0 /
+
+RTEMPVD
+0 40
+1000.0 40 /
+
+RPTRST 
+BASIC=2 DEN PCGW /
+----------------------------------------------------------------------------
+SUMMARY
+----------------------------------------------------------------------------
+FPR
+FGIP
+FWIP
+FAMIP
+FGIR
+FGIT
+FAMIR
+FAMIT
+FWIR
+FWIT
+FGIP
+FGIPL
+FGIPG
+RPR
+/
+RGIP
+/
+RGIPL
+/
+RGIPG
+/
+BPR
+3 1 2 /
+/
+BGIP
+3 1 2 /
+/
+BGIPG
+3 1 2 /
+/
+BGIPL
+3 1 2 /
+/
+BFLOWI
+3 1 2 /
+/
+BFLOWJ
+3 1 2 /
+/
+----------------------------------------------------------------------------
+SCHEDULE
+----------------------------------------------------------------------------
+RPTRST
+BASIC=2 DEN PCGW /
+
+
+TUNING
+/
+/
+/
+SOURCE
+1 1 1 WATER 8.015165E+06 /
+/
+TSTEP
+1*9131.25 /
+
+TUNING
+/
+/
+/
+SOURCE
+1 1 1 WATER 0 /
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /
+
+TUNING
+/
+/
+/
+TSTEP
+1*365.25 /

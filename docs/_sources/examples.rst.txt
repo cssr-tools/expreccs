@@ -67,7 +67,7 @@ Layered model
 -------------
 
 The configuration file example2.toml set a more complex geological model with more grid cells (1 417 500). This was used
-to generate the animation (using ResInsight) in the :doc:`introduction section <./introduction>` by running
+to generate the animation (using `ResInsight <https://resinsight.org>`_) in the :doc:`introduction section <./introduction>` by running
 
 .. code-block:: bash
 

@@ -1,0 +1,168 @@
+-- This reservoir simulation deck is made available under the Open Database
+-- License: http://opendatacommons.org/licenses/odbl/1.0/. Any rights in
+-- individual contents of the database are licensed under the Database Contents
+-- License: http://opendatacommons.org/licenses/dbcl/1.0/
+-- Copyright (C) 2026 NORCE Research AS
+----------------------------------------------------------------------------
+RUNSPEC
+----------------------------------------------------------------------------
+WELLDIMS
+14 217 1 14 /
+START
+1 JAN 2025 /
+METRIC
+DIMENS
+181 317 217 /
+TABDIMS
+/
+EQLDIMS
+/
+CO2STORE
+GAS
+WATER
+DISGASW
+UNIFOUT
+----------------------------------------------------------------------------
+GRID
+----------------------------------------------------------------------------
+INIT
+DX
+12450809*500 /
+DY
+12450809*500 /
+DZ
+12450809*1 /
+TOPS
+57377*0 /
+PORO
+12450809*0.2 /
+PERMX
+12450809*1000 /
+COPY
+PERMX PERMY /
+PERMX PERMZ /
+/
+--EQUALREG --Uncomment this to assign the non-net porosity and permeability
+--PORO    0.1 0 F /
+--PERMX  0.01 0 F /
+--PERMY  0.01 0 F /
+--PERMZ 0.001 0 F /
+--/
+----------------------------------------------------------------------------
+PROPS
+----------------------------------------------------------------------------
+SALINITY
+2.92 /
+ROCK
+276.0 1.95e-4 /
+SGWFN
+0 0 1 0
+1 1 0 0 /
+----------------------------------------------------------------------------
+SOLUTION
+----------------------------------------------------------------------------
+EQUIL 
+0 200 0 0 0 0 1 1 0 /
+RPTRST
+BASIC=2 DEN RPORV /
+----------------------------------------------------------------------------
+SUMMARY
+----------------------------------------------------------------------------
+PERFORMA
+RPR
+/
+RPRP
+/
+RGMDS
+/
+RGMIP
+/
+FPR
+FPRP
+FGMIP
+FGMDS
+FGMIR
+FGMIT
+WGMIR
+/
+WGMIT
+/
+WBHP
+/
+----------------------------------------------------------------------------
+SCHEDULE
+----------------------------------------------------------------------------
+RPTRST
+BASIC=2 DEN RPORV /
+
+WELSPECS
+INJ00 G1 33 89 1* GAS /
+INJ01 G1 84 66 1* GAS /
+INJ02 G1 94 47 1* GAS /
+INJ03 G1 22 108 1* GAS /
+INJ04 G1 99 104 1* GAS /
+INJ05 G1 102 81 1* GAS /
+INJ06 G1 30 79 1* GAS /
+INJ07 G1 95 19 1* GAS /
+INJ08 G1 87 22 1* GAS /
+INJ09 G1 85 64 1* GAS /
+INJ10 G1 80 75 1* GAS /
+INJ11 G1 129 48 1* GAS /
+INJ12 G1 40 215 1* GAS /
+INJ13 G1 29 100 1* GAS /
+/
+
+COMPDAT
+INJ00 33 89 117 217 OPEN 2* 0.2 /
+INJ01 84 66 1 111 OPEN 2* 0.2 /
+INJ02 94 47 117 217 OPEN 2* 0.2 /
+INJ03 22 108 117 217 OPEN 2* 0.2 /
+INJ04 99 104 1 111 OPEN 2* 0.2 /
+INJ05 102 81 1 111 OPEN 2* 0.2 /
+INJ06 30 79 117 217 OPEN 2* 0.2 /
+INJ07 95 19 117 217 OPEN 2* 0.2 /
+INJ08 87 22 117 217 OPEN 2* 0.2 /
+INJ09 85 64 1 111 OPEN 2* 0.2 /
+INJ10 80 75 1 111 OPEN 2* 0.2 /
+INJ11 129 48 1 111 OPEN 2* 0.2 /
+INJ12 40 215 117 217 OPEN 2* 0.2 /
+INJ13 29 100 117 217 OPEN 2* 0.2 /
+/
+
+WCONINJE
+INJ00 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ01 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ02 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ03 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ04 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ05 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ06 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ07 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ08 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ09 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ10 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ11 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ12 GAS OPEN RATE 2093313.1721548035 1* 480/
+INJ13 GAS OPEN RATE 2093313.1721548035 1* 480/
+/
+TSTEP
+25*365.25 /
+
+WCONINJE
+INJ00 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ01 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ02 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ03 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ04 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ05 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ06 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ07 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ08 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ09 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ10 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ11 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ12 GAS SHUT RATE 2093313.1721548035 1* 480/
+INJ13 GAS SHUT RATE 2093313.1721548035 1* 480/
+/
+TSTEP
+5*36525 /
