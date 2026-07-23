@@ -79,7 +79,7 @@ supported either via source builds or through running a virtual machine.
 .. tip::
 
     See the `CI.yml <https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml>`_ script 
-    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the expreccs package in Ubuntu 24.04 and Python 3.12. 
+    for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the expreccs package in Ubuntu 26.04 and Python 3.14. 
 
 Source build in Linux/Windows
 +++++++++++++++++++++++++++++

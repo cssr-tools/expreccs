@@ -55,7 +55,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#results">Results</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#d-synthetic-model">2D synthetic model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id1">3D synthetic model</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#troll-aqifer-model">Troll aqifer model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#troll-aquifer-model">Troll aquifer model</a></li>
 </ul>
 </li>
 </ul>
@@ -105,7 +105,7 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 </div>
 <section id="method">
 <h2>Method<a class="headerlink" href="#method" title="Link to this heading"></a></h2>
-<p>Run <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/method/figure1.sh">figure1.sh</a>:</p>
+<p>Run <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/method/figure1.sh">figure1.sh</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./figure1.sh
 </pre></div>
 </div>
@@ -118,7 +118,7 @@ pip<span class="w"> </span>install<span class="w"> </span>git+https://github.com
 <h2>Results<a class="headerlink" href="#results" title="Link to this heading"></a></h2>
 <section id="d-synthetic-model">
 <h3>2D synthetic model<a class="headerlink" href="#d-synthetic-model" title="Link to this heading"></a></h3>
-<p>Run <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_2d_synthetic_model/figure2.sh">figure2.sh</a> and <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_2d_synthetic_model/figure3_table1.py">figure3_table1.py</a>:</p>
+<p>Run <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_2d_synthetic_model/figure2.sh">figure2.sh</a> and <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_2d_synthetic_model/figure3_table1.py">figure3_table1.py</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./figure2.sh
 python3<span class="w"> </span>figure3_table1.py
 </pre></div>
@@ -130,7 +130,7 @@ python3<span class="w"> </span>figure3_table1.py
 </section>
 <section id="id1">
 <h3>3D synthetic model<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
-<p>Run <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_3d_synthetic_model/figure4_table2.py">figure4_table2.py</a>:</p>
+<p>Run <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_3d_synthetic_model/figure4_table2.py">figure4_table2.py</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>figure4_table2.py
 </pre></div>
 </div>
@@ -139,29 +139,29 @@ python3<span class="w"> </span>figure3_table1.py
 <p>The graphics in Figure 4 are generated via screenshots using <a class="reference external" href="https://resinsight.org">ParaView</a>.</p>
 </div>
 </section>
-<section id="troll-aqifer-model">
-<h3>Troll aqifer model<a class="headerlink" href="#troll-aqifer-model" title="Link to this heading"></a></h3>
-<p>To this end, the decks <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/results/MODEL.DATA">MODEL.DATA</a> and
-<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/results/FILLED_MODEL">FILLED_MODEL.DATA</a> have the
+<section id="troll-aquifer-model">
+<h3>Troll aquifer model<a class="headerlink" href="#troll-aquifer-model" title="Link to this heading"></a></h3>
+<p>To this end, the decks <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/results/MODEL.DATA">MODEL.DATA</a> and
+<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/results/FILLED_MODEL.DATA">FILLED_MODEL.DATA</a> have the
 same dimensions and number of total cells (12,450,809) as the Troll aquifer model, and the rest of the properties are
 set to common homogeneous values from literature, while the well locations match the ones described in the ecmor2026 paper.
 Then, you could contact the <a class="reference external" href="https://www.sodir.no/en/">Norwegian Offshore Directorate</a> to get the actual Troll aquifer model,
-and adapt those files to the ones in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/results">results_troll folder</a>.
+and adapt those files to the ones in the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/results">results_troll folder</a>.
 To get the FILLED_MODEL, using the petrel model provided by the Norwegian Offshore Directorate one can export the non-net cells IDs to FLUXNUM and set those
-values to 0, then EQUALREG can be used to assign the PORO and PERMS in the non-net cells (see the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/results/FILLED_MODEL">FILLED_MODEL.DATA</a>).</p>
+values to 0, then EQUALREG can be used to assign the PORO and PERMS in the non-net cells (see the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/results/FILLED_MODEL.DATA">FILLED_MODEL.DATA</a>).</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>You should not run the MODEL.DATA and FILLED_MODEL.DATA decks before adapting it with the actual Troll aquifer model, since they have a lot of active cells.</p>
 </div>
-<p>First, we generate the results by creating the dual models and running all simulations (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/run_results.sh">run_results.sh</a>):</p>
+<p>First, we generate the results by creating the dual models and running all simulations (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/run_results.sh">run_results.sh</a>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./run_results.sh
 </pre></div>
 </div>
-<p>Then, we can obtained Table 3 (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/table3.py">table3.py</a>):</p>
+<p>Then, we can obtained Table 3 (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/table3.py">table3.py</a>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>table3.py
 </pre></div>
 </div>
-<p>Finally, we generate figures 5 to 9 (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/results_troll/figure5-9.sh">figure5-9.sh</a>):</p>
+<p>Finally, we generate figures 5 to 9 (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/publications/ecmor2026/results_troll/figure5-9.sh">figure5-9.sh</a>):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./figure5-9.sh
 </pre></div>
 </div>

@@ -1,9 +1,6 @@
 name: Run expreccs
 
 on:
- push:
-   branches:
-     - main
  pull_request:
    
 jobs:
@@ -12,17 +9,17 @@ jobs:
       contents: read
       pull-requests: write
     timeout-minutes: 60
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
     - uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Set up Python 3.12
+    - name: Set up Python 3.14
       uses: actions/setup-python@v2
       with:
-        python-version: 3.12
+        python-version: 3.14
 
     - name: Install Flow Simulator
       run: |
