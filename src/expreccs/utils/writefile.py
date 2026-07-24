@@ -4,9 +4,10 @@
 
 """Utiliy functions for necessary files and variables to run OPM Flow"""
 
-import os
 import csv
+import os
 import subprocess
+
 from mako.template import Template
 
 

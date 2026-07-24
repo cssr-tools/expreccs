@@ -3,8 +3,8 @@
 
 """Script to run Case 3 in https://doi.org/10.1016/j.geoen.2025.213733"""
 
-import subprocess
 import os
+import subprocess
 from pathlib import Path
 
 whr = Path(__file__).resolve().parent

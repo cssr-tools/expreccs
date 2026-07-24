@@ -8,16 +8,18 @@ import os
 import shutil
 import sys
 from contextlib import nullcontext
-import numpy as np
+
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from alive_progress import alive_bar
-from expreccs.visualization.reading import reading_simulations
+
 from expreccs.visualization.maps2d import (
     final_time_maps,
     final_time_maps_difference,
     geological_maps,
 )
+from expreccs.visualization.reading import reading_simulations
 
 GAS_DEN_REF = 1.86843  # kg/sm3
 WAT_DEN_REF = 998.108  # kg/sm3

@@ -4,13 +4,14 @@
 
 """Script to read OPM Flow output files"""
 
-import os
 import datetime
+import os
+
 import numpy as np
-from opm.io.ecl import ESmry as OpmSmry
 from opm.io.ecl import EclFile as OpmFile
-from opm.io.ecl import ERst as OpmRst
 from opm.io.ecl import EGrid as OpmGrid
+from opm.io.ecl import ERst as OpmRst
+from opm.io.ecl import ESmry as OpmSmry
 
 GAS_DEN_REF = 1.86843
 WAT_DEN_REF = 998.108
@@ -78,7 +79,8 @@ def reading_simulations(dic):
             ]
             dic[fol][res]["sensorijk"] = []
             dic[fol][res]["nowells"] = []
-            for keys in dic[fol][res]["smsp"].keys():
+            smsp_keys = dic[fol][res]["smsp"].keys()
+            for keys in smsp_keys:
                 if keys.split(":")[0] == "BFLOWI":
                     for ijk in keys.split(":")[1].split(","):
                         dic[fol][res]["sensorijk"].append(int(ijk) - 1)
@@ -183,7 +185,7 @@ def make_arrays(dic, fol, res):
                 dic[fol][res][f"{quantity}_array"].append(co2_d * KG_TO_KT)
             elif quantity == "gas":
                 dic[fol][res][f"{quantity}_array"].append(co2_g * KG_TO_KT)
-            elif quantity.endswith("I+") or quantity.endswith("J+"):
+            elif quantity.endswith(("I+", "J+")):
                 base = quantity[:-2]
                 flow = np.array(rst[f"{base}{quantity[-2:]}", i])
                 area = dy * dz * poro if quantity.endswith("I+") else dx * dz * poro

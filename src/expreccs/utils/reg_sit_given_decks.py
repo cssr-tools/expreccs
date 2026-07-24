@@ -1,26 +1,25 @@
 # SPDX-FileCopyrightText: 2025-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
 # pylint: disable=C0302,R0902,R0913,R0914,R0917,R1702,R0912,R0915,E1102,C0321
-# ruff: noqa: E702
 
 """Utiliy script for creating a deck with projected pressures from given
 regional and site decks"""
 
-import os
 import csv
+import os
 import sys
 from contextlib import nullcontext
 from dataclasses import dataclass
-from typing import List
-from alive_progress import alive_bar
+
 import numpy as np
+from alive_progress import alive_bar
 from numpy.typing import NDArray
-from shapely.geometry import LineString, Polygon, Point
-from scipy.interpolate import LinearNDInterpolator, interp1d
-from scipy.spatial import cKDTree
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import EGrid as OpmGrid
 from opm.io.ecl import ERst as OpmRestart
+from scipy.interpolate import LinearNDInterpolator, interp1d
+from scipy.spatial import cKDTree
+from shapely.geometry import LineString, Point, Polygon
 
 HEADER = (
     "-- Copyright (C) 2025-2026 NORCE Research AS\n"
@@ -57,17 +56,17 @@ class Config:
     zones: bool
     freq: NDArray
     acoeff: NDArray
-    boundaries: List[int]
+    boundaries: list[int]
     nonregular: bool
 
 @dataclass(slots=True)
 class InterpData:
     """Interpolation variables"""
-    ri: List[NDArray]; rx: List[NDArray]; ry: List[NDArray]; rz: List[NDArray]
-    sx: List[List[float]]; sy: List[List[float]]; sz: List[List[float]]
-    rf: List[NDArray]; rk: List[NDArray]; rt: List[NDArray]; rkg: List[List[tuple[float, int]]]
-    sf: List[List[int]]; st: List[List[float]]
-    sai: List[int]; snum: List[int]
+    ri: list[NDArray]; rx: list[NDArray]; ry: list[NDArray]; rz: list[NDArray]
+    sx: list[list[float]]; sy: list[list[float]]; sz: list[list[float]]
+    rf: list[NDArray]; rk: list[NDArray]; rt: list[NDArray]; rkg: list[list[tuple[float, int]]]
+    sf: list[list[int]]; st: list[list[float]]
+    sai: list[int]; snum: list[int]
 
 @dataclass(slots=True)
 class XYMaps:
@@ -75,47 +74,47 @@ class XYMaps:
     x_i: NDArray
     y_i: NDArray
     z_i: NDArray
-    inds: List[int]
+    inds: list[int]
     fipr: NDArray
-    offset: List[float]
+    offset: list[float]
     oprn: NDArray
     rtmin: float
 
 @dataclass(slots=True)
 class BCCon:
     """Boundary variables"""
-    coords: List[List[float]]
-    sbound: List[str]
-    spres: List[float]
-    ksfips: List[int]
+    coords: list[list[float]]
+    sbound: list[str]
+    spres: list[float]
+    ksfips: list[int]
     stmin: float
     sopn: NDArray
 
 @dataclass(slots=True)
 class Borders:
     """Border variables"""
-    sx: List[List[float]]; sy: List[List[float]]; sz: List[List[float]]
-    sf: List[List[int]]; st: List[List[float]]
-    sbound: List[str]
-    sai: List[int]
+    sx: list[list[float]]; sy: list[list[float]]; sz: list[list[float]]
+    sf: list[list[int]]; st: list[list[float]]
+    sbound: list[str]
+    sai: list[int]
 
 @dataclass(slots=True)
 class RegionalCells:
     """Regional variables"""
-    ri:List;rx:List;ry:List;rz:List
-    rf:List[NDArray];rt:List;rk:List;rkg: List[List[tuple[float, int]]]
-    sbound:List[str]
+    ri:list;rx:list;ry:list;rz:list
+    rf:list[NDArray];rt:list;rk:list;rkg: list[list[tuple[float, int]]]
+    sbound:list[str]
 
 @dataclass(slots=True)
 class SiteBorders:
     """Site variables"""    
-    spres: List[float]
-    sai: List[int]
-    sbound: List[str]
-    sxn: List[float]; syn: List[float]; szn: List[float]; sfn: List[int]; stn: List[float]
-    sxw: List[float]; syw: List[float]; szw: List[float]; sfw: List[int]; stw: List[float]
-    sxs: List[float]; syl: List[float]; szs: List[float]; sfs: List[int]; sts: List[float]
-    sxe: List[float]; sye: List[float]; sze: List[float]; sfe: List[int]; ste: List[float]
+    spres: list[float]
+    sai: list[int]
+    sbound: list[str]
+    sxn: list[float]; syn: list[float]; szn: list[float]; sfn: list[int]; stn: list[float]
+    sxw: list[float]; syw: list[float]; szw: list[float]; sfw: list[int]; stw: list[float]
+    sxs: list[float]; syl: list[float]; szs: list[float]; sfs: list[int]; sts: list[float]
+    sxe: list[float]; sye: list[float]; sze: list[float]; sfe: list[int]; ste: list[float]
 # fmt: on
 
 
@@ -126,7 +125,7 @@ def create_deck(
     freq: NDArray,
     nonregular: bool,
     acoeff: NDArray,
-    boundaries: List[int],
+    boundaries: list[int],
     reg: str,
     freg: str,
     sit: str,
@@ -188,7 +187,7 @@ def create_deck(
 
     mly, mlx = find_ij_orientation(sgrid)
 
-    rp: List[List[tuple[int, float]]] = [[] for _ in range(len(rrst))]
+    rp: list[list[tuple[int, float]]] = [[] for _ in range(len(rrst))]
 
     if nonregular:
         start_point = []
@@ -411,7 +410,7 @@ def get_xymaps(
     regional: Regional,
     ufip: NDArray,
     zones: bool,
-    coords: List[List[float]],
+    coords: list[list[float]],
 ) -> XYMaps:
     """Get the coordinates"""
     rgrid = regional.grid
@@ -589,10 +588,10 @@ def get_xymaps(
 def get_bccon(
     site: Site,
     regional: Regional,
-    boundaries: List[int],
+    boundaries: list[int],
     explicit: bool,
     boundary: NDArray,
-    dire: List[int],
+    dire: list[int],
     sopn: NDArray,
 ) -> BCCon:
     """Handle the boundary"""
@@ -690,8 +689,8 @@ def get_bccon(
 
 def site_contour(
     grid: NDArray,
-    start: List[int],
-) -> tuple[List[List[int]], List[int]]:
+    start: list[int],
+) -> tuple[list[list[int]], list[int]]:
     """Process the site contour"""
     directions = [(-1, -1), (-1, 0), (-1, 1), (0, 1), (1, 1), (1, 0), (1, -1), (0, -1)]
     boundary, dire = [], []
@@ -759,7 +758,7 @@ def handle_grid_coord(
     rgrid: OpmGrid,
     sinit: OpmFile,
     rinit: OpmFile,
-) -> tuple[NDArray, NDArray, NDArray, NDArray, NDArray, int, int, List[List[float]]]:
+) -> tuple[NDArray, NDArray, NDArray, NDArray, NDArray, int, int, list[list[float]]]:
     """Handle the grid coordinates"""
     sdim = sgrid.dimension
     rdim = rgrid.dimension
@@ -848,13 +847,13 @@ def check_regional_neighbours(
     ract: NDArray,
     rfip: NDArray,
     rnxy: int,
-    ri: List[int],
-    rx: List[float],
-    ry: List[float],
-    rz: List[float],
-    rk: List[int],
-    rf: List[int],
-    rt: List[float],
+    ri: list[int],
+    rx: list[float],
+    ry: list[float],
+    rz: list[float],
+    rk: list[int],
+    rf: list[int],
+    rt: list[float],
     gind: int,
     n: int,
     d_z: NDArray,
@@ -906,7 +905,7 @@ def find_regional_cells(
     zones: bool,
     borders: Borders,
     ract: NDArray,
-) -> tuple[RegionalCells, List[int]]:
+) -> tuple[RegionalCells, list[int]]:
     """Find the regional cells"""
     sx, sy, sz, sf = borders.sx, borders.sy, borders.sz, borders.sf
     sbound = borders.sbound
@@ -926,14 +925,14 @@ def find_regional_cells(
 
     print("\nFind the regional cells to build the interpolator:")
 
-    ri: List[List[int]] = [[], [], [], []]
-    rx: List[List[float]] = [[], [], [], []]
-    ry: List[List[float]] = [[], [], [], []]
-    rz: List[List[float]] = [[], [], [], []]
-    rf: List[List[int]] = [[], [], [], []]
-    rt: List[List[float]] = [[], [], [], []]
-    rk: List[List[int]] = [[], [], [], []]
-    rkg: List[List[tuple[float, int]]] = [[], [], [], []]
+    ri: list[list[int]] = [[], [], [], []]
+    rx: list[list[float]] = [[], [], [], []]
+    ry: list[list[float]] = [[], [], [], []]
+    rz: list[list[float]] = [[], [], [], []]
+    rf: list[list[int]] = [[], [], [], []]
+    rt: list[list[float]] = [[], [], [], []]
+    rk: list[list[int]] = [[], [], [], []]
+    rkg: list[list[tuple[float, int]]] = [[], [], [], []]
 
     count = -1
     d_z = 0.5 * rinit["DZ"]
@@ -1102,10 +1101,10 @@ def temporal_interpolation(
     sdays: NDArray,
     isdays: NDArray,
     rdays: NDArray,
-    rp: List[List[tuple[int, float]]],
+    rp: list[list[tuple[int, float]]],
     explicit: bool,
-    spres: List[float],
-) -> tuple[NDArray, NDArray, List[str]]:
+    spres: list[float],
+) -> tuple[NDArray, NDArray, list[str]]:
     """Temporal interpolator"""
     if np.max(freq) > 0:
         ddays = sdays[1:] - sdays[:-1]
@@ -1156,13 +1155,13 @@ def project_pressures(
     rgrid: OpmGrid,
     sgrid: OpmGrid,
     data: InterpData,
-    sbound: List[str],
+    sbound: list[str],
     ufip: NDArray,
     explicit: bool,
     zones: bool,
     sopn: NDArray,
     i: int,
-) -> tuple[List[tuple[int, float]], List[str]]:
+) -> tuple[list[tuple[int, float]], list[str]]:
     """Project the pressures"""
     ri, rx, ry, rz = data.ri, data.rx, data.ry, data.rz
     sx, sy, sz = data.sx, data.sy, data.sz
@@ -1173,7 +1172,7 @@ def project_pressures(
     count, c_c, s_s, d_t, whr = 0, 1, 0, 0, 0
     snum_set = set(snum)
     pressure0 = np.array(rrst["PRESSURE", 0])
-    rp_out: List[tuple[int, float]] = []
+    rp_out: list[tuple[int, float]] = []
 
     def update_boundary(key, z_b):
         nonlocal sbound, c_c, s_s
@@ -1301,8 +1300,8 @@ def write_files(
     freq: NDArray,
     ddays: NDArray,
     sdata: str,
-    sbound: List[str],
-    sbc: List[str],
+    sbound: list[str],
+    sbc: list[str],
     sdays: NDArray,
     sopn: NDArray,
 ) -> None:
@@ -1403,7 +1402,7 @@ def extract_site_borders(
     sdim: NDArray,
     sinit: OpmFile,
     srst: OpmRestart,
-    boundaries: List[int],
+    boundaries: list[int],
     explicit: bool,
     mly: int,
     mlx: int,
