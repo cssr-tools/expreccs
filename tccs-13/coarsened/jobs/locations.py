@@ -6,16 +6,17 @@
 
 import argparse
 import json
-import sys
 import os
 import subprocess
+import sys
 from pathlib import Path
+
 import numpy as np
+from mako.template import Template
 from opm.io.ecl import EclFile as OpmFile
 from opm.io.ecl import EGrid as OpmGrid
 from opm.io.ecl import ERst as OpmRestart
 from opm.io.ecl import ESmry as OpmSummary
-from mako.template import Template
 
 KG_TO_MT = 1e-9
 RDEN = 1.868433  # kg/sm3

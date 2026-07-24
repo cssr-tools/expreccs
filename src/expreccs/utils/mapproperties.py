@@ -281,14 +281,17 @@ def positions_site(dic):
         for k, cord in enumerate(["xmx", "ymy", "zmz"]):
             midpoints = dic[f"site_{cord}_mid"]
 
-            if dic["fault_site"][-1][0] != 1 and dic["fault_site"][-1][1] != 1:
-                if k < 2:
-                    dic["site_fault"][0][k] = np.abs(
-                        dic["fault_site"][0][k] - midpoints
-                    ).argmin()
-                    dic["site_fault"][1][k] = np.abs(
-                        dic["fault_site"][1][k] - midpoints
-                    ).argmin()
+            if (
+                dic["fault_site"][-1][0] != 1
+                and dic["fault_site"][-1][1] != 1
+                and k < 2
+            ):
+                dic["site_fault"][0][k] = np.abs(
+                    dic["fault_site"][0][k] - midpoints
+                ).argmin()
+                dic["site_fault"][1][k] = np.abs(
+                    dic["fault_site"][1][k] - midpoints
+                ).argmin()
 
             dic["site_sensor"][k] = np.abs(dic["sensor_coords"][k] - midpoints).argmin()
 

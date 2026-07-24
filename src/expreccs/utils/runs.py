@@ -5,8 +5,7 @@
 
 import os
 import subprocess
-from expreccs.visualization.plotting import plot_results
-from expreccs.utils.writefile import write_files
+
 from expreccs.utils.mapboundaries import (
     aquaflux,
     porv_projections,
@@ -14,6 +13,8 @@ from expreccs.utils.mapboundaries import (
     temporal_interpolation_flux,
     temporal_interpolation_pressure,
 )
+from expreccs.utils.writefile import write_files
+from expreccs.visualization.plotting import plot_results
 
 
 def simulations(dic, name):

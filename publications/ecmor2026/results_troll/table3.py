@@ -6,8 +6,9 @@
 
 import subprocess
 from pathlib import Path
-from opm.io.ecl import EclFile as OpmFile
+
 import numpy as np
+from opm.io.ecl import EclFile as OpmFile
 
 text = "model, #active cells, # connections with T > 0, Run time [h], Error (global)\n"
 

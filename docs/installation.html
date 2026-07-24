@@ -101,7 +101,9 @@ The supported Python versions are 3.11 to 3.14.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>There are binary packages for Linux and Windows to install Resinsight, see the <a class="reference external" href="https://resinsight.org/releases/">ResInsight Documentation</a>. For macOS users, you could try to install it using <a class="reference external" href="https://brew.sh">brew</a> by executing:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>cssr-tools/opm/resinsight
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>tap<span class="w"> </span>cssr-tools/opm
+brew<span class="w"> </span>trust<span class="w"> </span>cssr-tools/opm
+brew<span class="w"> </span>install<span class="w"> </span>cssr-tools/opm/resinsight<span class="w"> </span>-y
 </pre></div>
 </div>
 <p>Then, you should be able to open resinsight by typing in the terminal <strong>resinsight</strong>.</p>
@@ -157,7 +159,7 @@ supported either via source builds or through running a virtual machine.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>See the <a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/.github/workflows/CI.yml">CI.yml</a> script
-for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the expreccs package in Ubuntu 24.06 and Python 3.14.</p>
+for installation of OPM Flow (binary packages), LaTeX (optional) libraries, and the expreccs package in Ubuntu 26.04 and Python 3.14.</p>
 </div>
 </section>
 <section id="source-build-in-linux-windows">
@@ -192,8 +194,10 @@ in the terminal the following lines (which in turn should build flow in the fold
 <span id="macos"></span><h3>Brew formula for macOS<a class="headerlink" href="#brew-formula-for-macos" title="Link to this heading"></a></h3>
 <p>For macOS, there are no available binary packages, so OPM Flow needs to be built from source. Recently, a formula to build flow using brew has
 been added in <a class="reference external" href="https://github.com/cssr-tools/homebrew-opm">https://github.com/cssr-tools/homebrew-opm</a>.
-Then, you can try to install flow (v2026.04) by simply typing:</p>
-<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brew install cssr-tools/opm/opm-simulators</span>
+Then, you can try to install flow (v2026.07 interim release) by simply typing:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">brew tap cssr-tools/opm</span>
+<span class="go">brew trust cssr-tools/opm</span>
+<span class="go">brew install cssr-tools/opm/opm-simulators -y</span>
 </pre></div>
 </div>
 <p>You can check if the installation of OPM Flow succeded by typing in the terminal <strong>flow --help</strong>.</p>
@@ -204,7 +208,7 @@ Then, you can try to install flow (v2026.04) by simply typing:</p>
 </section>
 <section id="source-build-in-macos">
 <h3>Source build in macOS<a class="headerlink" href="#source-build-in-macos" title="Link to this heading"></a></h3>
-<p>See <a class="reference external" href="https://github.com/daavid00/OPM-Flow_macOS">this repository</a> dedicated to build OPM Flow from source in the latest macOS (GitHub actions), and tested with <strong>pycopm</strong>, another repository in cssr-tools.</p>
+<p>See <a class="reference external" href="https://github.com/daavid00/OPM-Flow_macOS">this repository</a> dedicated to build OPM Flow from source in macOS 26 (GitHub actions), and tested with <strong>pycopm</strong>, another repository in cssr-tools.</p>
 </section>
 </section>
 </section>

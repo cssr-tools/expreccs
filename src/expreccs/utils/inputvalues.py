@@ -3,9 +3,10 @@
 
 """Utiliy functions to set the requiried input values by expreccs"""
 
+import subprocess
 import sys
 import tomllib
-import subprocess
+
 import numpy as np
 
 

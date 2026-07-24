@@ -5,13 +5,14 @@
 """Utiliy script for mapping to the site boundaries"""
 
 import math as mt
+
 import numpy as np
 from alive_progress import alive_bar
+from opm.io.ecl import EclFile as OpmFile
+from opm.io.ecl import EGrid as OpmGrid
 from scipy.interpolate import RegularGridInterpolator, interp1d
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
-from opm.io.ecl import EGrid as OpmGrid
-from opm.io.ecl import EclFile as OpmFile
 
 
 def porv_regional_segmentation(dic):

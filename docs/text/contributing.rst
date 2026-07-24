@@ -22,7 +22,7 @@ Contribute to the software
 #. In the main repo execute:
 
     #. **pip install -r dev-requirements.txt** (this installs the `dev-requirements.txt <https://github.com/cssr-tools/expreccs/blob/main/dev-requirements.txt>`_)
-    #. **black \-\-target-version py312 src/ tests/ examples/ publications/ tccs-13/** (this formats the code)
+    #. **black \-\-target-version py314 src/ tests/ examples/ publications/ tccs-13/** (this formats the code)
     #. **pylint src/ tests/ examples/ publications/ tccs-13/** (this analyses the code, and might rise issues that need to be fixed before the pull request)
     #. **ruff check src/ tests/ examples/ publications/ tccs-13/** (this also analyses the code, and might rise issues that need to be fixed before the pull request)
     #. **mypy \-\-ignore-missing-imports src/ tests/ examples/ publications/ tccs-13/** (this is a static checker, and might rise issues that need to be fixed before the pull request)

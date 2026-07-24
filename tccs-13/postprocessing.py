@@ -10,9 +10,10 @@ import os
 import shutil
 import subprocess
 from pathlib import Path
-import numpy as np
+
 import matplotlib
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib.ticker import MaxNLocator
 
 font = {"family": "normal", "weight": "normal", "size": 14}

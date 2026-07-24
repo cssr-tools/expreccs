@@ -6,10 +6,11 @@
 
 import sys
 from contextlib import nullcontext
-import numpy as np
+
 import matplotlib.pyplot as plt
-from matplotlib import colors
+import numpy as np
 from alive_progress import alive_bar
+from matplotlib import colors
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 

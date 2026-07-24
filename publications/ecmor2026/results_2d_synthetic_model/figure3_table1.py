@@ -5,11 +5,11 @@
 """Script to generate Figure 3 and Table 1 in ecmor2026_Landa-Marban"""
 
 import csv
+import itertools
 import shutil
 import subprocess
-import itertools
-from pathlib import Path
 from collections import deque
+from pathlib import Path
 
 import numpy as np
 from mako.template import Template
@@ -430,7 +430,7 @@ write_error_summary_csv(
 
 
 def write_plot_case(index, model_folder):
-    filled = template.render(**{"configuration": configurations[index]})
+    filled = template.render(configuration=configurations[index])
     confi_directory = Path(f"{model_folder}/configuration_{index}")
     confi_directory.mkdir(exist_ok=True)
     with open(
@@ -486,7 +486,7 @@ def plot_error_extremes(model, case, order):
     plot_case_indices = lowest_error_cases + highest_error_cases
     run_plot_cases(plot_case_indices, str(model_folder))
     plopm_inputs = " ".join(
-        f"{str(model_folder)}/configuration_{case_index}/CONFIGURATION_{case_index}"
+        f"{model_folder!s}/configuration_{case_index}/CONFIGURATION_{case_index}"
         for case_index in plot_case_indices
     )
     low_titles = "  ".join(plot_title(case_index) for case_index in lowest_error_cases)

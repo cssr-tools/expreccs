@@ -4,21 +4,21 @@
 
 """Main script for expreccs"""
 
-import os
-import sys
-import shutil
 import argparse
+import os
+import shutil
+import sys
 
-from expreccs.utils.inputvalues import process_input
-from expreccs.utils.runs import run_models, plotting
-from expreccs.utils.writefile import write_folders, write_properties
-from expreccs.utils.mapproperties import mapping_properties
-from expreccs.visualization.plotting import plot_results
-from expreccs.utils.reg_sit_given_decks import create_deck
 from expreccs.utils.backcoupling import (
-    init_multipliers,
     backcoupling,
+    init_multipliers,
 )
+from expreccs.utils.inputvalues import process_input
+from expreccs.utils.mapproperties import mapping_properties
+from expreccs.utils.reg_sit_given_decks import create_deck
+from expreccs.utils.runs import plotting, run_models
+from expreccs.utils.writefile import write_folders, write_properties
+from expreccs.visualization.plotting import plot_results
 
 
 def main(argv=None) -> None:
@@ -273,11 +273,12 @@ def load_parser(argv):
 
 def check_cmdargs(cmdargs):
     """Check for invalid combinations of command arguments"""
-    if len((cmdargs["input"]).split(" ")) == 1:
-        if not (cmdargs["input"]).endswith(".toml"):
-            print(
-                f"\nInvalid extension for '-i {cmdargs['input']}', "
-                "the valid extension is .toml, or give the path to the "
-                "two folders to apply the dynamic pressure bcs.\n"
-            )
-            sys.exit()
+    if len((cmdargs["input"]).split(" ")) == 1 and not (cmdargs["input"]).endswith(
+        ".toml"
+    ):
+        print(
+            f"\nInvalid extension for '-i {cmdargs['input']}', "
+            "the valid extension is .toml, or give the path to the "
+            "two folders to apply the dynamic pressure bcs.\n"
+        )
+        sys.exit()
