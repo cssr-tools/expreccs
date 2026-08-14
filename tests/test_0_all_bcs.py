@@ -5,7 +5,6 @@
 """Test the expreccs framework"""
 
 import shutil
-import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -25,7 +24,7 @@ def test_0_all_bcs(tmp_path, monkeypatch):
 
     shutil.copy(testpth / "configs" / "input.toml", tmp_path)
 
-    main()
+    main([])
 
     name = tmp_path / "output" / "preprocessing" / "site_pres" / "SITE_PRES.DATA"
     with open(name, "r", encoding="utf8") as f:
@@ -62,11 +61,7 @@ def test_0_all_bcs(tmp_path, monkeypatch):
         assert abs(max(init["DZ"]) - dzmax[i]) < EPS
 
     for name in ["wells", "interp", "porvproj", "open", "closed"]:
-        subprocess.run(
-            ["expreccs", "-i", str(testpth / "configs" / f"{name}.toml"), "-m", "site"],
-            cwd=tmp_path,
-            check=True,
-        )
+        main(["-i", str(testpth / "configs" / f"{name}.toml"), "-m", "site"])
 
     config = str(testpth / "configs" / "flux.toml")
     main(["-i", config, "-m", "site", "-p", "all"])
@@ -106,11 +101,7 @@ def test_0_all_bcs(tmp_path, monkeypatch):
 
     assert len(list(Path(post).glob("*.png"))) == 191
 
-    subprocess.run(
-        ["expreccs", "-c", "compare"],
-        cwd=tmp_path,
-        check=True,
-    )
+    main(["-c", "compare"])
 
     compare = tmp_path / "compare"
 

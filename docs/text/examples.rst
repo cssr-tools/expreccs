@@ -62,6 +62,13 @@ Below are some of the figures generated inside the postprocessing folder:
     hello_world_sensor_pressure_over_time.png, hello_world_summary_BHP_site_reference.png, and 
     hello_world_distance_from_border.png respectively
 
+.. tip::
+
+    All previous commands can be executed as (`docs_hello_world.sh <https://github.com/cssr-tools/expreccs/blob/main/tests/scripts/docs_hello_world.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_hello_world.sh
 
 Layered model
 -------------
@@ -130,12 +137,20 @@ not by pressure values. If you run that test, then using plopm:
 
 .. code-block:: bash
 
-    plopm -i 'tests/regional/REGIONAL tests/expreccs/EXPRECCS tests/expreccs_dpincrease/EXPRECCS_DPINCREASE tests/expreccs_perfipnum/EXPRECCS_PERFIPNUM' -v rpr:3
+    plopm -i 'tests/regional/REGIONAL tests/expreccs/EXPRECCS tests/expreccs_dpincrease/EXPRECCS_DPINCREASE tests/expreccs_perfipnum/EXPRECCS_PERFIPNUM' -v rpr:3 -step 1
 
 .. figure:: figs/regional_rpr3.png
     
     Comparison of the different functionality to map the dynamic boundary conditions. Here, rpr:3 (fipnum equal to 3) corresponds to the top part of the sandwich (three layers with the middel layer inactive) 
     in the regional model, while to the bottom part in the site model.
+
+.. tip::
+
+    All previous commands can be executed as (`docs_regular_boundaries.sh <https://github.com/cssr-tools/expreccs/blob/main/tests/scripts/docs_regular_boundaries.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_regular_boundaries.sh
 
 Non-regular boundaries
 ----------------------
@@ -184,3 +199,11 @@ For the following figure, it is necessary to include in the REGIONS section of t
     
     In the regional model (left), **expreccs** writes the location of the overlapping cells with the site model in the OPERNUM variable, while in the 
     site model this variable is used to label the ij direction of the boundary conditions.
+
+.. tip::
+
+    All previous commands can be executed as (`docs_non-regular_boundaries.sh <https://github.com/cssr-tools/expreccs/blob/main/tests/scripts/docs_non-regular_boundaries.sh>`_):
+
+    .. code-block:: bash
+
+        . ./tests/scripts/docs_non-regular_boundaries.sh

@@ -7,6 +7,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from expreccs.core.expreccs import main
+
 EPS = 1e-3
 
 testpth = Path(__file__).parent
@@ -16,9 +18,8 @@ def test_2_generic_deck(tmp_path, monkeypatch):
     """Run rotate and check outputs."""
     monkeypatch.chdir(tmp_path)
 
-    subprocess.run(
+    main(
         [
-            "expreccs",
             "-i",
             str(testpth / "configs" / "rotate.toml"),
             "-o",
@@ -29,8 +30,7 @@ def test_2_generic_deck(tmp_path, monkeypatch):
             "30",
             "-p",
             "site",
-        ],
-        check=True,
+        ]
     )
 
     base = tmp_path / "rotate"
@@ -51,15 +51,13 @@ def test_2_generic_deck(tmp_path, monkeypatch):
     simdir = base / "simulations"
     monkeypatch.chdir(simdir)
 
-    subprocess.run(
+    main(
         [
-            "expreccs",
             "-o",
             "expreccs",
             "-i",
             "regional/REGIONAL site_closed/SITE_CLOSED",
-        ],
-        check=True,
+        ]
     )
 
     exdir = simdir / "expreccs"

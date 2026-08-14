@@ -154,6 +154,13 @@ hello_world_sensor_pressure_over_time.png, hello_world_summary_BHP_site_referenc
 hello_world_distance_from_border.png respectively</span><a class="headerlink" href="#id4" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/scripts/docs_hello_world.sh">docs_hello_world.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_hello_world.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="layered-model">
 <h3>Layered model<a class="headerlink" href="#layered-model" title="Link to this heading"></a></h3>
@@ -209,7 +216,7 @@ two-stage approach is demonstrated in a site and regional deck generated using <
 the functionality to select if the bc mappings are written per fipnums, i.e., if there is an offset between the site and regional models along the z direction, then
 using <strong>-z 1</strong> builds the interpolators per corresponding fipnums in the regional and site models. In addition, the flag <strong>-e 0</strong> set the interpolators to be defined by pressure increase and
 not by pressure values. If you run that test, then using plopm:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;tests/regional/REGIONAL tests/expreccs/EXPRECCS tests/expreccs_dpincrease/EXPRECCS_DPINCREASE tests/expreccs_perfipnum/EXPRECCS_PERFIPNUM&#39;</span><span class="w"> </span>-v<span class="w"> </span>rpr:3
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>plopm<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;tests/regional/REGIONAL tests/expreccs/EXPRECCS tests/expreccs_dpincrease/EXPRECCS_DPINCREASE tests/expreccs_perfipnum/EXPRECCS_PERFIPNUM&#39;</span><span class="w"> </span>-v<span class="w"> </span>rpr:3<span class="w"> </span>-step<span class="w"> </span><span class="m">1</span>
 </pre></div>
 </div>
 <figure class="align-default" id="id6">
@@ -219,6 +226,13 @@ not by pressure values. If you run that test, then using plopm:</p>
 in the regional model, while to the bottom part in the site model.</span><a class="headerlink" href="#id6" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/scripts/docs_regular_boundaries.sh">docs_regular_boundaries.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_regular_boundaries.sh
+</pre></div>
+</div>
+</div>
 </section>
 <section id="non-regular-boundaries">
 <h3>Non-regular boundaries<a class="headerlink" href="#non-regular-boundaries" title="Link to this heading"></a></h3>
@@ -259,6 +273,13 @@ flow<span class="w"> </span>expreccs/EXPRECCS.DATA
 site model this variable is used to label the ij direction of the boundary conditions.</span><a class="headerlink" href="#id7" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>All previous commands can be executed as (<a class="reference external" href="https://github.com/cssr-tools/expreccs/blob/main/tests/scripts/docs_non-regular_boundaries.sh">docs_non-regular_boundaries.sh</a>):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>.<span class="w"> </span>./tests/scripts/docs_non-regular_boundaries.sh
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 </section>

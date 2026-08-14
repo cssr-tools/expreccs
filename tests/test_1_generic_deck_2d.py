@@ -7,6 +7,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from expreccs.core.expreccs import main
+
 testpth = Path(__file__).parent
 
 
@@ -14,9 +16,8 @@ def test_1_generic_deck_2d(tmp_path, monkeypatch):
     """Run rotate_2d and check outputs."""
     monkeypatch.chdir(tmp_path)
 
-    subprocess.run(
+    main(
         [
-            "expreccs",
             "-i",
             str(testpth / "configs" / "rotate_2d.toml"),
             "-o",
@@ -27,8 +28,7 @@ def test_1_generic_deck_2d(tmp_path, monkeypatch):
             "30",
             "-p",
             "site",
-        ],
-        check=True,
+        ]
     )
 
     base = tmp_path / "rotate_2d"
@@ -49,9 +49,8 @@ def test_1_generic_deck_2d(tmp_path, monkeypatch):
     simdir = base / "simulations"
     monkeypatch.chdir(simdir)
 
-    subprocess.run(
+    main(
         [
-            "expreccs",
             "-o",
             "expreccs",
             "-i",
@@ -60,8 +59,7 @@ def test_1_generic_deck_2d(tmp_path, monkeypatch):
             "3",
             "-a",
             "3.2",
-        ],
-        check=True,
+        ]
     )
 
     exdir = simdir / "expreccs"

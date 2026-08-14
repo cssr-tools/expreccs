@@ -515,7 +515,7 @@ def plot_error_extremes(model, case, order):
         "-grid",
         "black,1e-2",
         "-cbsfax",
-        "-1,0.0,0.0,0.0",
+        "empty",
         "-remove",
         "1,1,0,0",
         "-d",
