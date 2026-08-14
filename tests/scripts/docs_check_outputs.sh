@@ -10,7 +10,7 @@ files=(
   "test_outputs/regular_boundaries/regional_rpr-3.png"
 )
 
-missing_file="test_outputs/missing_figures.txt"
+missing_file="test_outputs/missing_docs_files.txt"
 missing=0
 
 rm -f "$missing_file"
@@ -23,8 +23,8 @@ for f in "${files[@]}"; do
 done
 
 if (( missing == 0 )); then
-    echo "All figures exist."
+    echo "All figures and files exist."
 else
-    echo "$missing figure(s) missing."
+    echo "$missing figure(s) or file(s) missing."
     echo "See $missing_file"
 fi

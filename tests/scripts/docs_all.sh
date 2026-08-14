@@ -3,4 +3,4 @@
 . tests/scripts/docs_non-regular_boundaries.sh &
 wait
 
-. ./tests/scripts/docs_check_figures.sh
+. ./tests/scripts/docs_check_outputs.sh
