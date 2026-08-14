@@ -1,13 +1,14 @@
 # SPDX-FileCopyrightText: 2023-2026 NORCE Research AS
 # SPDX-License-Identifier: GPL-3.0
-# pylint: disable=R0912,R0915
+# pylint: disable=R0912,R0914,R0915
 
 """Main script for expreccs"""
 
 import argparse
+import math
 import os
+import re
 import shutil
-import sys
 
 from expreccs.utils.backcoupling import (
     backcoupling,
@@ -41,13 +42,6 @@ def main(argv=None) -> None:
     dic["compare"] = cmdargs["compare"]
 
     if dic["compare"]:
-        if not dic["subfolders"]:
-            print(
-                "\nCompare requires the subfolder structure, i.e., by running expreccs "
-                "with the default value for the flag '-s 1'. Please rerun 'expreccs -c "
-                "compare' without the '-s' flag.\n"
-            )
-            sys.exit()
         print("\nExecuting the compare functionality in expreccs, please wait.")
         dic["iterations"] = 0
         plot_results(dic)
@@ -121,7 +115,7 @@ def main(argv=None) -> None:
                 "with the default value for the flag '-s 1'. Please rerun expreccs without "
                 "the '-s' flag.\n"
             )
-            sys.exit()
+            raise SystemExit(1)
         backcoupling(dic)
 
     if dic["plot"] != "no":
@@ -131,14 +125,6 @@ def main(argv=None) -> None:
                 "formats. You can install it by following the instructions in the expreccs's "
                 "documentation."
             )
-        if not dic["subfolders"]:
-            print(
-                "\nThe generation of plots requires the subfolder structure, i.e., by running "
-                "expreccs with the default value for the flag '-s 1'.\nThen you could rerun "
-                "expreccs without the '-s' flag, or you could use the plopm tool to generate "
-                "plots (see https://github.com/cssr-tools/plopm)\n"
-            )
-            sys.exit()
         plotting(dic)
 
     print(text)
@@ -268,17 +254,182 @@ def load_parser(argv):
         help="Set to '1' for a site with irregular contour, i.e., not defined in a "
         "rectangle",
     )
-    return vars(parser.parse_known_args(argv)[0])
+    return vars(parser.parse_args(argv))
 
 
-def check_cmdargs(cmdargs):
-    """Check for invalid combinations of command arguments"""
-    if len((cmdargs["input"]).split(" ")) == 1 and not (cmdargs["input"]).endswith(
-        ".toml"
+def check_cmdargs(cmdargs: dict[str, str]) -> None:
+    """Validate command-line arguments and incompatible operations.
+
+    The checks cover configuration and model-folder inputs, output names,
+    boundary specifications, frequency and time-discretization values,
+    rotations, comparison mode, workflow-specific options, and operations
+    requiring the subfolder structure.
+
+    Parameters
+    ----------
+    cmdargs
+        Parsed arguments returned by :func:`load_parser`.
+
+    Raises
+    ------
+    SystemExit
+        If an argument is invalid or an incompatible combination is requested.
+    """
+    input_value = cmdargs["input"]
+    if not input_value:
+        print("\nInvalid value for '-i', the input cannot be empty.\n")
+        raise SystemExit(1)
+    if not cmdargs["output"]:
+        print("\nInvalid value for '-o', the output folder cannot be empty.\n")
+        raise SystemExit(1)
+    input_paths = input_value.split()
+    if len(input_paths) not in [1, 2]:
+        print(
+            f"\nInvalid value '-i {input_value}', expected one configuration "
+            "file or two model-folder paths separated by a space.\n"
+        )
+        raise SystemExit(1)
+    configuration_input = len(input_paths) == 1
+    folder_input = len(input_paths) == 2
+    if configuration_input and not input_paths[0].lower().endswith(".toml"):
+        print(
+            f"\nInvalid extension for '-i {input_value}', the valid extension "
+            "is .toml, or provide paths to the regional and site model "
+            "folders.\n"
+        )
+        raise SystemExit(1)
+    transform = cmdargs["transform"]
+    try:
+        transform_value = float(transform)
+    except ValueError:
+        transform_value = float("nan")
+    if not math.isfinite(transform_value):
+        print(
+            f"\nInvalid value '-t {transform}', expected a finite number of "
+            "degrees.\n"
+        )
+        raise SystemExit(1)
+    boundaries = cmdargs["boundaries"]
+    boundary_pattern = re.fullmatch(
+        r"\[\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+\s*\]",
+        boundaries,
+    )
+    if not boundary_pattern:
+        print(
+            f"\nInvalid value '-b {boundaries}', expected four integers inside "
+            "brackets, e.g., '-b [0,2,0,0]'.\n"
+        )
+        raise SystemExit(1)
+    boundary_values = [int(value.strip()) for value in boundaries[1:-1].split(",")]
+    if any(value < -1 for value in boundary_values):
+        print(
+            f"\nInvalid value '-b {boundaries}', boundary entries must be -1 "
+            "or non-negative integers.\n"
+        )
+        raise SystemExit(1)
+    frequency = cmdargs["frequency"]
+    if not re.fullmatch(r"[1-9]\d*(?:\s*,\s*[1-9]\d*)*", frequency):
+        print(
+            f"\nInvalid value '-f {frequency}', expected positive integers "
+            "separated by commas.\n"
+        )
+        raise SystemExit(1)
+    frequency_values = [int(value.strip()) for value in frequency.split(",")]
+    acoeff = cmdargs["acoeff"]
+    try:
+        acoeff_values = [float(value.strip()) for value in acoeff.split(",")]
+    except ValueError:
+        acoeff_values = []
+    if not acoeff_values or any(
+        value < 0 or not math.isfinite(value) for value in acoeff_values
     ):
         print(
-            f"\nInvalid extension for '-i {cmdargs['input']}', "
-            "the valid extension is .toml, or give the path to the "
-            "two folders to apply the dynamic pressure bcs.\n"
+            f"\nInvalid value '-a {acoeff}', expected non-negative finite "
+            "numbers separated by commas.\n"
         )
-        sys.exit()
+        raise SystemExit(1)
+    if len(acoeff_values) not in [1, len(frequency_values)]:
+        print(
+            f"\nInvalid value '-a {acoeff}', expected one coefficient or one "
+            "coefficient for each value provided with '-f'.\n"
+        )
+        raise SystemExit(1)
+    compare = cmdargs["compare"]
+    if compare:
+        compare_options = {
+            "-i": ("input", "input.toml"),
+            "-m": ("mode", "all"),
+            "-p": ("plot", "no"),
+            "-t": ("transform", "0"),
+            "-b": ("boundaries", "[0,0,0,0]"),
+            "-f": ("frequency", "1"),
+            "-a": ("acoeff", "3.2"),
+            "-e": ("explicit", "1"),
+            "-z": ("zones", "0"),
+            "-n": ("nonregular", "0"),
+        }
+        invalid_options = [
+            option
+            for option, (name, default) in compare_options.items()
+            if cmdargs[name] != default
+        ]
+        if invalid_options:
+            print(
+                "\nInvalid combination, '-c compare' runs the standalone "
+                "comparison workflow and cannot be combined with "
+                f"{', '.join(invalid_options)}.\n"
+            )
+            raise SystemExit(1)
+        if cmdargs["subfolders"] != "1":
+            print(
+                "\nInvalid combination, '-c compare' requires the subfolder "
+                "structure and cannot be used with '-s 0'.\n"
+            )
+            raise SystemExit(1)
+        return
+    if folder_input:
+        configuration_options = {
+            "-m": ("mode", "all"),
+            "-p": ("plot", "no"),
+            "-t": ("transform", "0"),
+            "-s": ("subfolders", "1"),
+        }
+        invalid_options = [
+            option
+            for option, (name, default) in configuration_options.items()
+            if cmdargs[name] != default
+        ]
+        if invalid_options:
+            print(
+                "\nInvalid option when providing regional and site model "
+                "folders; this workflow cannot be combined with "
+                f"{', '.join(invalid_options)}.\n"
+            )
+            raise SystemExit(1)
+    if configuration_input:
+        folder_options = {
+            "-b": ("boundaries", "[0,0,0,0]"),
+            "-f": ("frequency", "1"),
+            "-a": ("acoeff", "3.2"),
+            "-e": ("explicit", "1"),
+            "-z": ("zones", "0"),
+            "-n": ("nonregular", "0"),
+        }
+        invalid_options = [
+            option
+            for option, (name, default) in folder_options.items()
+            if cmdargs[name] != default
+        ]
+        if invalid_options:
+            print(
+                "\nInvalid option for a TOML configuration file; options "
+                f"{', '.join(invalid_options)} can only be used when providing "
+                "regional and site model folders.\n"
+            )
+            raise SystemExit(1)
+    if cmdargs["plot"] != "no" and cmdargs["subfolders"] != "1":
+        print(
+            "\nInvalid combination, plot generation requires the subfolder "
+            "structure and cannot be used with '-s 0'.\n"
+        )
+        raise SystemExit(1)

@@ -3,25 +3,24 @@
 
 """Test the expreccs functionality for back-coupling"""
 
-import subprocess
 from pathlib import Path
+
+from expreccs.core.expreccs import main
 
 testpth = Path(__file__).parent
 
 
 def test_3_back_coupling(tmp_path):
     """Run back-coupling and check output."""
-    subprocess.run(
+    main(
         [
-            "expreccs",
             "-i",
             str(testpth / "configs" / "back-coupling.toml"),
             "-o",
             str(tmp_path / "back"),
             "-p",
             "all",
-        ],
-        check=True,
+        ]
     )
 
     assert (

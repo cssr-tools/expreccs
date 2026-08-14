@@ -131,9 +131,12 @@ def compute_multipliers(dic, iteration):  # pylint: disable=R1702,R0912,R0914,R0
 
                                 sum_local_fluxes[ind] = np.sum(local_fluxes[idxs])
 
-                mult = sum_local_fluxes / regional_fluxes
-                mult[np.isinf(mult)] = 1
-                mult[np.isnan(mult)] = 1
+                sum_local_fluxes = np.nan_to_num(
+                    sum_local_fluxes, nan=0.0, posinf=0.0, neginf=0.0
+                )
+                mult = np.ones_like(sum_local_fluxes, dtype=float)
+                valid = (regional_fluxes != 0) & np.isfinite(regional_fluxes)
+                np.divide(sum_local_fluxes, regional_fluxes, out=mult, where=valid)
 
                 if quantity == "FLOWATI-":
                     mult.reshape(ny_reg, nx_reg)[:, 1:] = 1
