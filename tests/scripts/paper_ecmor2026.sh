@@ -1,4 +1,4 @@
-HOME="$PWD"
+WHR="$PWD"
 OUT="test_outputs/paper_ecmor2026"
 . tests/scripts/initialize_output_folders.sh $OUT
 . tests/scripts/get_plopm.sh
@@ -11,7 +11,7 @@ cd ../results_2d_synthetic_model
 python3 figure3_table1.py
 cd ../results_3d_synthetic_model
 python3 figure4_table2.py
-cd $HOME
+cd $WHR
 
 files=(
     "$OUT/method/figure1d_bottom.png"
@@ -37,10 +37,8 @@ files=(
     "$OUT/results_3d_synthetic_model/figure4c_longest-0011.vtu"
 )
 
-missing_file="test_outputs/missing_paper_ecmor2026_files.txt"
+missing_file="test_outputs/missing_publication_files.txt"
 missing=0
-
-rm -f "$missing_file"
 
 for f in "${files[@]}"; do
     if [[ ! -f "$f" ]]; then
