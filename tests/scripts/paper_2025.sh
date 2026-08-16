@@ -34,10 +34,8 @@ files=(
     "$OUT/Case1/Case_1_difference_site_pres_pressure.png"
 )
 
-missing_file="test_outputs/missing_paper_2025_files.txt"
+missing_file="test_outputs/missing_publication_files.txt"
 missing=0
-
-rm -f "$missing_file"
 
 for f in "${files[@]}"; do
     if [[ ! -f "$f" ]]; then
